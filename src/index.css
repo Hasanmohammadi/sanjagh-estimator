@@ -95,4 +95,5 @@
 
 body {
   font-family: var(--font-fa), var(--font-en), sans-serif;
+  direction: rtl;
 }

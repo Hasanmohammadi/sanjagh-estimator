@@ -1,47 +1,43 @@
 import { defineConfig } from "eslint/config";
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
+import unusedImports from "eslint-plugin-unused-imports";
 
 export default defineConfig([
-  // -------------------------
-  // IGNORE BUILD FILES
-  // -------------------------
   {
     ignores: [".next/", "node_modules/", "dist/", "build/", "src/gen/", "**/*.config.*"],
   },
 
-  // -------------------------
-  // BASE RECOMMENDED RULES
-  // -------------------------
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
 
-  // -------------------------
-  // REACT APP CONFIG (IMPORTANT FIX)
-  // -------------------------
   {
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
     },
 
+    plugins: {
+      "unused-imports": unusedImports,
+    },
+
     rules: {
       "prefer-const": "warn",
       "no-var": "warn",
-    },
-  },
 
-  // -------------------------
-  // TYPESCRIPT RULES
-  // -------------------------
-  {
-    rules: {
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
+      "@typescript-eslint/no-unused-vars": "off",
+
+      // Auto-remove unused imports
+      "unused-imports/no-unused-imports": "error",
+
+      "unused-imports/no-unused-vars": [
+        "warn",
         {
-          argsIgnorePattern: "^_",
+          vars: "all",
           varsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_",
         },
       ],
 
@@ -50,9 +46,7 @@ export default defineConfig([
     },
   },
 
-  // -------------------------
-  // TEST FILES (VITEST)
-  // -------------------------
+  // Vitest globals
   {
     files: ["**/*.test.*", "**/*.spec.*"],
     languageOptions: {

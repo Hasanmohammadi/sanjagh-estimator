@@ -5,7 +5,7 @@ function App() {
     <div className="text-center">
       <div>بازار آنلاین خدمات</div>
       سلام سنجاق <br />
-      <div className="flex gap-10 px-4 my-10">
+      <div className="flex gap-10 my-10">
         <Button
           buttonVariant="SecondaryGrayButton"
           contentVariant={{ TAG: "Text", value: "تایید" }}
