@@ -3,43 +3,67 @@ import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
+  // -------------------------
+  // IGNORE BUILD FILES
+  // -------------------------
   {
-    ignores: [
-      ".next/",
-      "node_modules/",
-      "src/gen/",
-      "**/*.config.ts",
-      "**/*.config.mjs",
-    ],
+    ignores: [".next/", "node_modules/", "dist/", "build/", "src/gen/", "**/*.config.*"],
   },
+
+  // -------------------------
+  // BASE RECOMMENDED RULES
+  // -------------------------
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
+
+  // -------------------------
+  // REACT APP CONFIG (IMPORTANT FIX)
+  // -------------------------
   {
     languageOptions: {
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-        ecmaFeatures: { jsx: true },
-      },
-      globals: { React: "readonly", JSX: "readonly" },
+      ecmaVersion: "latest",
+      sourceType: "module",
     },
+
+    rules: {
+      "prefer-const": "warn",
+      "no-var": "warn",
+    },
+  },
+
+  // -------------------------
+  // TYPESCRIPT RULES
+  // -------------------------
+  {
     rules: {
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
       ],
-      "prefer-const": "warn",
-      "no-var": "warn",
+
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-require-imports": "off",
-      "@typescript-eslint/no-unused-expressions": "off",
-      "@typescript-eslint/triple-slash-reference": "off",
-      "empty-block": "off",
-      "unexpected-lexical-declaration-in-case-block": "off",
-      "no-fallthrough": "off",
-      "no-empty": "off",
-      "no-case-declarations": "off",
+    },
+  },
+
+  // -------------------------
+  // TEST FILES (VITEST)
+  // -------------------------
+  {
+    files: ["**/*.test.*", "**/*.spec.*"],
+    languageOptions: {
+      globals: {
+        test: "readonly",
+        expect: "readonly",
+        describe: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+        vi: "readonly",
+      },
     },
   },
 ]);
