@@ -2,7 +2,7 @@ import { Button } from "@skul/sanjagh-design-system/src/Design_Button.tsx";
 
 function App() {
   return (
-    <div className="">
+    <div className="text-center">
       <div>بازار آنلاین خدمات</div>
       سلام سنجاق <br />
       <div className="flex gap-10 px-4 my-10">
