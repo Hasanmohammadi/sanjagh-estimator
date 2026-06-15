@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+/* Tell Tailwind v4 to scan the DS package and generate its classes */
+@source "../node_modules/@skul/sanjagh-design-system/global.css";
+
+@theme {
+  --font-abar: var(--font-abar);
+  --font-montserrat: var(--font-montserrat);
+
+  --breakpoint-large: 720px;
+  --breakpoint-midLarge: 1024px;
+  --breakpoint-extraLarge: 1440px;
+
+  --shadow-center: 0 0 15px 0 rgb(0 0 0 / 15%);
+  --shadow-designLow: 0 0 10px 0 rgba(0, 0, 0, 0.12);
+  --shadow-designMain: 0 0 10px 0 rgba(0, 0, 0, 0.12);
+  --shadow-designHigh: 0 0 30px 0 rgba(0, 0, 0, 0.12);
+
+  --color-design-white: #ffffff;
+  --color-design-black-1: #000000;
+  --color-design-black-2: #212121;
+  --color-design-red: #ff3b30;
+  --color-design-green: #32c759;
+  --color-design-yellow: #ffc022;
+  --color-design-blue-1: #3f93f3;
+  --color-design-blue-2: #3e76ff;
+  --color-design-lightBlue: #dcecfd;
+  --color-design-gray-50: #f4f4f4;
+  --color-design-gray-100: #eeeeee;
+  --color-design-gray-200: #dddddd;
+  --color-design-gray-300: #cccccc;
+  --color-design-gray-400: #aeaeae;
+  --color-design-gray-500: #8f8f8f;
+  --color-design-gray-600: #707070;
+  --color-design-newYellow: #e59723;
+  --color-design-newBlue: #36447e;
+  --color-design-newGreen: #326815;
+  --color-design-newRed: #b02624;
+}
+
+@layer utilities {
+  .layout {
+    @apply grid grid-cols-4 gap-x-4 mx-3;
+
+    @media (min-width: 720px) {
+      @apply grid-cols-12 mx-4;
+    }
+
+    @media (min-width: 1024px) {
+      @apply max-w-[976px] min-w-[976px] mx-auto;
+    }
+
+    @media (min-width: 1440px) {
+      @apply max-w-[976px] min-w-[976px] mx-auto;
+    }
+  }
+
+  .topLevelComponent {
+    @apply col-span-4;
+
+    @media (min-width: 720px) {
+      @apply col-span-12;
+    }
+  }
+}
+
+@font-face {
+  font-family: "Abar";
+  src: url("./assets/fonts/AbarMidFaNum-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abar";
+  src: url("./assets/fonts/AbarMidFaNum-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("./assets/fonts/Montserrat-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-fa: "Abar";
+  --font-en: "Montserrat";
+}
+
+body {
+  font-family: var(--font-fa), var(--font-en), sans-serif;
+}
