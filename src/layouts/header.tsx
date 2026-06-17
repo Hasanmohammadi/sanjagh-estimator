@@ -1,5 +1,5 @@
 import { useMatches, useNavigate } from "react-router-dom";
-import { BackRightIcon } from "../assets/icons";
+import { BackRightIcon } from "@/assets/icons";
 import { useEffect } from "react";
 
 import { DesignTitle } from "@skul/sanjagh-design-system/src/Design_Title";

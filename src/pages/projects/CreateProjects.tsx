@@ -1,7 +1,7 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
-import { HouseColorized } from "../../assets/icons";
-import { BottomSheet } from "../../components/common";
+import { HouseColorized } from "@/assets/icons";
+import { BottomSheet } from "@/components/common";
 import { useState } from "react";
 
 export default function CreateProjects() {

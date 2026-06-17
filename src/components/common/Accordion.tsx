@@ -1,6 +1,6 @@
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { useState } from "react";
-import { ChevronDownIcon, ChevronUpIcon } from "../../assets/icons";
+import { ChevronDownIcon, ChevronUpIcon } from "@/assets/icons";
 
 type AccordionProps = {
   title: string;

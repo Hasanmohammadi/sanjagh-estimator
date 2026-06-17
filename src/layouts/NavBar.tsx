@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ReceiptIcon, SettingsIcon } from "../assets/icons";
+import { ReceiptIcon, SettingsIcon } from "@/assets/icons";
 
 export default function NavBar() {
   return (

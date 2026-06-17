@@ -1,7 +1,7 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button.tsx";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
-import { Accordion } from "../../components/common";
-import { DownloadIcon, EditIcon } from "../../assets/icons";
+import { Accordion } from "@/components/common";
+import { DownloadIcon, EditIcon } from "@/assets/icons";
 import { Link } from "react-router-dom";
 
 export default function Projects() {
