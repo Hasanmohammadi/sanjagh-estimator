@@ -1,7 +1,8 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button.tsx";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
-import { Accordion } from "../../components";
+import { Accordion } from "../../components/common";
 import { DownloadIcon, EditIcon } from "../../assets/icons";
+import { Link } from "react-router-dom";
 
 export default function Projects() {
   const projects = [
@@ -93,14 +94,14 @@ export default function Projects() {
 
   return (
     <div className="flex flex-col">
-      <div className="sticky top-0 pt-3 h-12 bg-design-white">
+      <Link to="/create-projects" className="sticky top-0 pt-3 h-12 bg-design-white">
         <Button
           buttonVariant="PrimarySolidButton"
           contentVariant={{ TAG: "Text", value: "ایجاد پروژه ی جدید" }}
           heightVariant="MDButton"
           widthVariant="FixedWidthButton"
         />
-      </div>
+      </Link>
 
       {projects.length ? (
         <div className="mt-6">

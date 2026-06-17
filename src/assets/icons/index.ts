@@ -5,5 +5,15 @@ import ChevronUpIcon from "./ChevronUpIcon";
 import ChevronDownIcon from "./ChevronDownIcon";
 import DownloadIcon from "./DownloadIcon";
 import EditIcon from "./EditIcon";
+import HouseColorized from "./HouseColorized";
 
-export { BackRightIcon, SettingsIcon, ReceiptIcon, ChevronUpIcon, ChevronDownIcon, DownloadIcon, EditIcon };
+export {
+  BackRightIcon,
+  SettingsIcon,
+  ReceiptIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  DownloadIcon,
+  EditIcon,
+  HouseColorized,
+};
