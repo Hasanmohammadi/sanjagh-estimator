@@ -1,15 +1,14 @@
+import { Outlet } from "react-router-dom";
 import Header from "./header";
 
-interface Props {
-  children: React.JSX.Element;
-}
-
-export default function Layout({ children }: Props) {
+export default function Layout() {
   return (
     <div className="layout mt-5">
       <div className="topLevelComponent">
         <Header />
-        {children}
+        <main className="mt-8">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
