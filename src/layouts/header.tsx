@@ -25,7 +25,6 @@ export default function Header() {
       <button className="absolute right-4" onClick={() => navigate(-1)}>
         <BackRightIcon />
       </button>
-
       <DesignTitle sizeVariant="FirstTitle" text={title} titleVariant="Body" />
     </header>
   );
