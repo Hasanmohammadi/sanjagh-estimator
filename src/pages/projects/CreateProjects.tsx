@@ -1,7 +1,7 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { HouseColorized } from "@/assets/icons";
-import { BottomSheet } from "@/components/common";
+import { BottomSheet, ButtonList, HLine } from "@/components/common";
 import { useState } from "react";
 
 export default function CreateProjects() {
@@ -9,7 +9,7 @@ export default function CreateProjects() {
 
   const rooms = [];
   return (
-    <div>
+    <>
       <Button
         buttonVariant="SecondaryGrayButton"
         contentVariant={{ TAG: "Text", value: "افزودن اتاق" }}
@@ -40,11 +40,41 @@ export default function CreateProjects() {
       )}
       <>
         <BottomSheet open={bottomSheetOpen} onClose={() => setBottomSheetOpen(false)}>
-          <h2 className="text-xl font-bold">Settings</h2>
-
-          <p className="mt-4">Some content...</p>
+          <div className="flex justify-center">
+            <DesignTitle sizeVariant="FirstTitle" text="افزودن اتاق" titleVariant="Body" />
+          </div>
+          <ButtonList
+            list={[
+              { title: "اتاق خواب", value: "bedroom" },
+              { title: "پذیرایی", value: "living_room" },
+              { title: "سرویس", value: "bathroom" },
+              { title: "آشپزخانه", value: "kitchen" },
+              { title: "سایر", value: "other" },
+              { title: "راهرو", value: "hallway" },
+            ]}
+            onChange={value => {
+              console.log("🚀 ~ CreateProjects ~ value:", value);
+            }}
+            defaultValue="other"
+            className="grid grid-cols-2 gap-x-3 gap-y-4 mt-4"
+          />
+          <HLine />
+          <DesignTitle sizeVariant="FirstTitle" text="رنگ دیوار" titleVariant="Body" />
+          <ButtonList
+            list={[
+              { title: "آکریلیک", value: "acrylic" },
+              { title: "روغن", value: "oil_based" },
+              { title: "پلاستیک", value: "plastic_emulsion" },
+            ]}
+            onChange={value => {
+              console.log("🚀 ~ CreateProjects ~ value:", value);
+            }}
+            defaultValue="other"
+            className="grid grid-cols-2 gap-x-3 gap-y-4 mt-1"
+          />
+          <HLine />
         </BottomSheet>
       </>
-    </div>
+    </>
   );
 }

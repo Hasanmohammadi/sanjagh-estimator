@@ -24,13 +24,12 @@ export default defineConfig([
     rules: {
       "prefer-const": "warn",
       "no-var": "warn",
-
+      "no-console": 1,
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "off",
 
       // Auto-remove unused imports
       "unused-imports/no-unused-imports": "error",
-
       "unused-imports/no-unused-vars": [
         "warn",
         {
