@@ -7,7 +7,7 @@ export default function Layout() {
     <div className="layout pt-5">
       <div className="topLevelComponent">
         <Header />
-        <main className="mt-8">
+        <main className="mt-8 pb-22">
           <Outlet />
         </main>
         <NavBar />
