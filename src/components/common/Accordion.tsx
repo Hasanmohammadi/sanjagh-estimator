@@ -4,7 +4,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@/assets/icons";
 
 type AccordionProps = {
   title: string;
-  date: string;
+  date?: string;
   children: React.ReactNode;
 };
 
@@ -17,7 +17,7 @@ export default function Accordion({ title, date, children }: AccordionProps) {
         <DesignTitle sizeVariant="Subtitle" text={title} titleVariant="Body" color="BlackMain" />
 
         <div className="flex items-center">
-          {!isOpen && <DesignTitle sizeVariant="Body" text={date} titleVariant="Caption" color="Gray600" />}
+          {!isOpen && date && <DesignTitle sizeVariant="Body" text={date} titleVariant="Caption" color="Gray600" />}
           {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
         </div>
       </button>
