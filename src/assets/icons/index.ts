@@ -6,6 +6,7 @@ import ChevronDownIcon from "./ChevronDownIcon";
 import DownloadIcon from "./DownloadIcon";
 import EditIcon from "./EditIcon";
 import HouseColorized from "./HouseColorized";
+import RemoveIcon from "./RemoveIcon";
 
 export {
   BackRightIcon,
@@ -16,4 +17,5 @@ export {
   DownloadIcon,
   EditIcon,
   HouseColorized,
+  RemoveIcon,
 };
