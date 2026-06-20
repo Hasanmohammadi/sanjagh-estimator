@@ -1,8 +1,13 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import NavBar from "./NavBar";
 
+const hideNavBarRoutes = ["/create-projects"];
+
 export default function Layout() {
+  const { pathname } = useLocation();
+  const showNavBar = !hideNavBarRoutes.includes(pathname);
+
   return (
     <div className="layout pt-5">
       <div className="topLevelComponent">
@@ -10,7 +15,7 @@ export default function Layout() {
         <main className="mt-8 pb-22">
           <Outlet />
         </main>
-        <NavBar />
+        {showNavBar && <NavBar />}
       </div>
     </div>
   );
