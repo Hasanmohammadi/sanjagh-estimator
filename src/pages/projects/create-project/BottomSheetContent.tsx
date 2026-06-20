@@ -1,6 +1,7 @@
-import { ButtonList, HLine } from "@/components/common";
+import { ButtonList, TomanCounter, HLine } from "@/components/common";
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
+import Switch from "@skul/sanjagh-design-system/src/Design_Switch";
 import { useState } from "react";
 
 export const ROOM_TYPES = [
@@ -41,15 +42,30 @@ export default function BottomSheetContent() {
       <div className="flex flex-col gap-3 ">
         <div className="flex justify-between gap-2 items-center">
           <DesignTitle sizeVariant="Body" text="طول(متر)" titleVariant="Body" />
-          <input className="border w-2/3" />
+          <TomanCounter
+            hasError={false}
+            initialCounterValue="0"
+            onCounterChange={value => console.log(value)}
+            step={1}
+          />
         </div>
         <div className="flex justify-between gap-2 items-center">
           <DesignTitle sizeVariant="Body" text="عرض(متر)" titleVariant="Body" />
-          <input className="border w-2/3" />
+          <TomanCounter
+            hasError={false}
+            initialCounterValue="0"
+            onCounterChange={value => console.log(value)}
+            step={1}
+          />
         </div>
         <div className="flex justify-between gap-2 items-center">
           <DesignTitle sizeVariant="Body" text="ارتفاع(متر)" titleVariant="Body" />
-          <input className="border w-2/3" />
+          <TomanCounter
+            hasError={false}
+            initialCounterValue="0"
+            onCounterChange={value => console.log(value)}
+            step={1}
+          />
         </div>
       </div>
 
@@ -83,7 +99,7 @@ export default function BottomSheetContent() {
 
       <div className="border-2 border-design-gray-200 rounded-lg flex justify-between px-4 py-3">
         <DesignTitle sizeVariant="SecondTitle" text="رنگ سقف" titleVariant="Body" />
-        <input type="checkbox" onChange={e => setHasRoofColor(e.target.checked)} />
+        <Switch label=" " checked={hasRoofColor} onCheckedChange={checked => setHasRoofColor(checked)} size="LG" />
       </div>
 
       {hasRoofColor && (
