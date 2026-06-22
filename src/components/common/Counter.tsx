@@ -1,14 +1,11 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
 import React, { useState } from "react";
 
-// 1. Types and Enums
 export enum BidStepDirection {
   Increment = "BidIncrement",
   Decrement = "BidDecrement",
 }
 
-// Assuming Models.Toman maps to a structure like this.
-// Adjust this interface to match your actual data model.
 interface TomanPayload {
   type: "Toman";
   value: number;
@@ -19,15 +16,29 @@ export interface TomanCounterProps {
   onCounterChange: (payload: TomanPayload) => void;
   step: number;
   hasError: boolean;
+  className?: string;
+  min?: number;
+  max?: number;
 }
 
-// 2. Helper Functions
 const removeSeparators = (value: string): string => value.replace(/,/g, "");
 
 const formatWithCommas = (value: string): string => {
   if (!value) return "";
-  // Equivalent to StringUtil.seperateCurrencyWithComma
-  return Number(value).toLocaleString("en-US");
+
+  const parts = value.split(".");
+  const integerPart = parts[0];
+  const decimalPart = parts[1];
+
+  let formattedInteger = "";
+  if (integerPart) {
+    formattedInteger = Number(integerPart).toLocaleString("en-US");
+  }
+
+  if (decimalPart !== undefined) {
+    return `${formattedInteger}.${decimalPart}`;
+  }
+  return formattedInteger;
 };
 
 const convertPersianToEnglishDigits = (str: string): string => {
@@ -39,25 +50,43 @@ const convertPersianToEnglishDigits = (str: string): string => {
   return result;
 };
 
-// 3. Component
-export const TomanCounter: React.FC<TomanCounterProps> = ({ initialCounterValue, onCounterChange, step, hasError }) => {
+const roundToStepPrecision = (value: number, step: number): number => {
+  const decimalPlaces = (step.toString().split(".")[1] || "").length;
+  const multiplier = Math.pow(10, decimalPlaces);
+  return Math.round(value * multiplier) / multiplier;
+};
+
+const isValidDecimal = (value: string): boolean => {
+  return /^\d*\.?\d*$/.test(value) && (value.match(/\./g) || []).length <= 1;
+};
+
+export const TomanCounter: React.FC<TomanCounterProps> = ({
+  initialCounterValue,
+  onCounterChange,
+  step,
+  hasError,
+  className,
+  min = 0,
+  max = 1000000000,
+}) => {
   const [counterDisplayValue, setCounterDisplayValue] = useState<string>(initialCounterValue);
+
+  const currentValue = parseFloat(removeSeparators(counterDisplayValue)) || 0;
+  const isAtMin = currentValue <= min;
+  const isAtMax = currentValue >= max;
 
   const onCounterDisplayValueChange = (value: string) => {
     const trimmedValue = value.trim();
     const rawValue = removeSeparators(trimmedValue);
-
-    // Convert Persian/Arabic digits to English
     const rawDigitsValue = convertPersianToEnglishDigits(rawValue);
 
-    const floatCounterValue = parseFloat(rawDigitsValue) || 0.0;
-
     const isEmptyString = rawDigitsValue === "";
-    const isNumeric = /^\d+$/.test(rawDigitsValue);
-    const isWithinLimit = floatCounterValue <= 1000000000.0;
-    const doesNotStartWithZero = !rawDigitsValue.startsWith("0");
+    const isNumeric = isValidDecimal(rawDigitsValue);
+    const floatCounterValue = parseFloat(rawDigitsValue) || 0.0;
+    const isWithinLimit = floatCounterValue >= min && floatCounterValue <= max;
+    const doesNotStartWithZeroUnlessDecimal = !/^0\d/.test(rawDigitsValue.replace(".", ""));
 
-    if ((isNumeric && isWithinLimit && doesNotStartWithZero) || isEmptyString) {
+    if ((isNumeric && isWithinLimit && doesNotStartWithZeroUnlessDecimal) || isEmptyString) {
       setCounterDisplayValue(formatWithCommas(rawDigitsValue));
       onCounterChange({ type: "Toman", value: floatCounterValue });
     }
@@ -68,64 +97,71 @@ export const TomanCounter: React.FC<TomanCounterProps> = ({ initialCounterValue,
 
     switch (dir) {
       case BidStepDirection.Increment: {
-        const newValue = floatValueOfCounterDisplay + step;
-        if (newValue < 1000000000.0) {
+        const newValue = roundToStepPrecision(floatValueOfCounterDisplay + step, step);
+        if (newValue <= max) {
           onCounterDisplayValueChange(newValue.toString());
         }
         break;
       }
       case BidStepDirection.Decrement: {
-        const newValue = floatValueOfCounterDisplay - step;
-        if (newValue > 0.0) {
+        const newValue = roundToStepPrecision(floatValueOfCounterDisplay - step, step);
+        if (newValue <= min) {
+          onCounterDisplayValueChange(min > 0 ? min.toString() : "");
+        } else {
           onCounterDisplayValueChange(newValue.toString());
-        }
-        if (newValue === 0.0) {
-          onCounterDisplayValueChange("");
         }
         break;
       }
     }
   };
 
+  const buttonBaseClassName =
+    "!text-black !text-[20px] font-normal !p-0 !w-10 shrink-0 border-0 !bg-transparent hover:!bg-gray-100 !rounded-none";
+
   return (
-    <div className="flex justify-center gap-x-3">
-      {/* 
-        Note: Assuming Button accepts standard React props. 
-        If it requires specific variant types, you may need to import them.
-      */}
-      <Button
-        onClick={() => onCounterDisplayChangeByStep(BidStepDirection.Increment)}
-        widthVariant="FixedWidthButton"
-        heightVariant="MDButton"
-        buttonVariant="SecondaryGrayButton"
-        contentVariant={{ TAG: "Text", value: "+" }}
-        extraClassName="!text-black !text-[40px] font-normal !p-0 !w-10 shrink-0"
-      />
-
-      <div
-        className={`flex gap-1 items-center p-1 border w-2/3 rounded-lg ${
-          hasError ? "border-redDesign-main" : "border-grayDesign-100"
-        }`}
-      >
-        <input
-          dir="ltr"
-          inputMode="numeric"
-          className="placeholder:text-xs placeholder:text-blueDesign-main w-1/2 outline-none border-0"
-          value={counterDisplayValue}
-          placeholder="قیمت را بنویسید"
-          onChange={e => onCounterDisplayValueChange(e.currentTarget.value)}
-        />
-        <span className="text-sm text-grayDesign-600">تومان</span>
-      </div>
-
+    <div
+      className={`${className} flex items-center border rounded-md overflow-hidden ${
+        hasError ? "border-redDesign-main" : "border-grayDesign-300"
+      }`}
+    >
       <Button
         onClick={() => onCounterDisplayChangeByStep(BidStepDirection.Decrement)}
         widthVariant="FixedWidthButton"
         heightVariant="MDButton"
         buttonVariant="SecondaryGrayButton"
         contentVariant={{ TAG: "Text", value: "-" }}
-        extraClassName="!text-black !text-[40px] font-normal !p-0 !w-10 shrink-0"
+        disabled={isAtMin}
+        extraClassName={`${buttonBaseClassName} ${isAtMin ? "!opacity-30 !cursor-not-allowed hover:!bg-transparent" : ""}`}
       />
+
+      <input
+        dir="ltr"
+        inputMode="decimal"
+        className="flex-1 w-full min-w-0 text-center outline-none border-x border-design-gray-200 placeholder:text-xs placeholder:text-design-blue-1"
+        value={counterDisplayValue}
+        placeholder="0"
+        onChange={e => onCounterDisplayValueChange(e.currentTarget.value)}
+      />
+
+      <Button
+        onClick={() => onCounterDisplayChangeByStep(BidStepDirection.Increment)}
+        widthVariant="FixedWidthButton"
+        heightVariant="MDButton"
+        buttonVariant="SecondaryGrayButton"
+        contentVariant={{ TAG: "Text", value: "+" }}
+        disabled={isAtMax}
+        extraClassName={`${buttonBaseClassName} ${isAtMax ? "!opacity-30 !cursor-not-allowed hover:!bg-transparent" : ""}`}
+      />
+    </div>
+  );
+};
+
+export const TomanCounterGroup = () => {
+  return (
+    <div className="flex justify-center gap-x-4 p-4">
+      <TomanCounter initialCounterValue="" onCounterChange={() => {}} step={0.2} hasError={false} min={0} max={100} />
+      <TomanCounter initialCounterValue="1.3" onCounterChange={() => {}} step={1.3} hasError={false} min={0} max={50} />
+      <TomanCounter initialCounterValue="1" onCounterChange={() => {}} step={1} hasError={false} min={0} max={1000} />
     </div>
   );
 };
