@@ -8,7 +8,7 @@ const createTables = async (): Promise<void> => {
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS projects (
-        id          SERIAL PRIMARY KEY,
+        id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         title       VARCHAR(255) NOT NULL,
         created_at  TIMESTAMP DEFAULT NOW(),
         updated_at  TIMESTAMP DEFAULT NOW()
@@ -17,8 +17,8 @@ const createTables = async (): Promise<void> => {
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS rooms (
-        id                  SERIAL PRIMARY KEY,
-        project_id          INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+        id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        project_id          UUID REFERENCES projects(id) ON DELETE CASCADE, -- CHANGED INTEGER TO UUID HERE
         type                VARCHAR(50) NOT NULL,
         width               NUMERIC(5,2) NOT NULL,
         length              NUMERIC(5,2) NOT NULL,
@@ -35,8 +35,8 @@ const createTables = async (): Promise<void> => {
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS estimates (
-        id             SERIAL PRIMARY KEY,
-        project_id     INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+        id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        project_id     UUID REFERENCES projects(id) ON DELETE CASCADE, -- CHANGED INTEGER TO UUID HERE
         with_materials BOOLEAN DEFAULT TRUE,
         slider_value   NUMERIC(4,2) DEFAULT 1.0,
         paint_prices   JSONB,
