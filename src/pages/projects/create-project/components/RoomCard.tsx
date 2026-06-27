@@ -7,10 +7,12 @@ import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   room: Room;
+  onEdit: () => void;
 }
 
 export default function RoomCard({
   room: { height, length, type, wall_paint_type, width, ceiling_paint_type, id, project_id },
+  onEdit,
 }: Props) {
   const queryClient = useQueryClient();
 
@@ -28,7 +30,7 @@ export default function RoomCard({
       <div className="flex justify-between">
         <DesignTitle sizeVariant="SecondTitle" text={RoomTypeDic[type]} titleVariant="Body" color="BlackMain" />
         <div className="flex justify-end gap-2 items-center">
-          <div className="bg-design-gray-100 p-2.5 rounded-xl">
+          <div className="bg-design-gray-100 p-2.5 rounded-xl" onClick={onEdit}>
             <EditIcon />
           </div>
           <div className="bg-red-100 p-2.5 rounded-xl" onClick={() => deleteRoom(id)}>

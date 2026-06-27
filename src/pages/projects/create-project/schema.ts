@@ -34,16 +34,16 @@ export const roomSchema = yup.object({
   ceilingPaintType: yup
     .mixed<PaintType>()
     .oneOf(Object.values(PaintType))
-    .when("hasRoofColor", {
+    .when("ceilingEnabled", {
       is: true,
       then: schema => schema.required(),
-      otherwise: schema => schema.optional(),
+      otherwise: schema => schema.optional().nullable(),
     }),
 
-  ceilingCoats: yup.number().when("hasRoofColor", {
+  ceilingCoats: yup.number().when("ceilingEnabled", {
     is: true,
     then: schema => schema.min(1).max(4, "حداکثر تعداد دست رنگ سقف ۴ است").required(),
-    otherwise: schema => schema.optional(),
+    otherwise: schema => schema.optional().nullable(),
   }),
 });
 

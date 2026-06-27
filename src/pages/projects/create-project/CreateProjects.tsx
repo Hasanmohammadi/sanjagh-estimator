@@ -1,18 +1,43 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
 import { BottomSheet } from "@/components/common";
-import { useState } from "react";
-import EmptyState from "./EmptyState";
-import BottomSheetContent from "./BottomSheetContent";
-import RoomCard from "./RoomCard";
+import { useEffect, useState } from "react";
+import EmptyState from "./components/EmptyState";
+import BottomSheetContent from "./components/BottomSheetContent";
+import RoomCard from "./components/RoomCard";
 import { useSearchParams } from "react-router-dom";
 import { useProject } from "@/hooks/projects/useProject";
+import { useForm, type UseFormReturn } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { roomSchema, type RoomFormData } from "./schema";
+import { PaintType, RoomType } from "@/api/services/rooms";
 
 export default function CreateProjects() {
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
+  const [roomSelectedId, setRoomSelectedId] = useState<string>();
+  const [bottomSheetState, setBottomSheetState] = useState<"edit" | "create">("create");
 
   const [searchParams] = useSearchParams();
-  const projectId = searchParams.get("projectId");
+  const projectId = searchParams.get("projectId") as string;
   const { data: projectData } = useProject(projectId);
+
+  const form = useForm({
+    resolver: yupResolver(roomSchema),
+    defaultValues: {
+      roomType: RoomType.LivingRoom,
+      length: 4,
+      width: 3,
+      height: 2.8,
+      wallPaintType: PaintType.Plastic,
+      wallCoats: 1,
+      ceilingEnabled: false,
+    },
+  });
+
+  useEffect(() => {
+    if (!bottomSheetOpen) {
+      form.reset();
+    }
+  }, [bottomSheetOpen]);
 
   return (
     <>
@@ -21,12 +46,34 @@ export default function CreateProjects() {
         contentVariant={{ TAG: "Text", value: "افزودن اتاق" }}
         heightVariant="MDButton"
         widthVariant="FixedWidthButton"
-        onClick={() => setBottomSheetOpen(true)}
+        onClick={() => {
+          setBottomSheetState("create");
+          setBottomSheetOpen(true);
+        }}
       />
       {projectData?.rooms?.length ? (
         <div className="flex flex-col gap-3 mt-3.5">
           {projectData.rooms.map(room => (
-            <RoomCard key={room.id} room={room} />
+            <RoomCard
+              key={room.id}
+              room={room}
+              onEdit={() => {
+                setBottomSheetState("edit");
+                setBottomSheetOpen(true);
+                form.setValues({
+                  ceilingCoats: room.ceiling_coats,
+                  ceilingEnabled: room.ceiling_enabled,
+                  ceilingPaintType: room.ceiling_paint_type,
+                  height: Number(room.height),
+                  length: Number(room.length),
+                  roomType: room.type,
+                  wallCoats: room.wall_coats,
+                  wallPaintType: room.wall_paint_type,
+                  width: Number(room.width),
+                });
+                setRoomSelectedId(room.id);
+              }}
+            />
           ))}
         </div>
       ) : (
@@ -34,7 +81,12 @@ export default function CreateProjects() {
       )}
 
       <BottomSheet open={bottomSheetOpen} onClose={() => setBottomSheetOpen(false)}>
-        <BottomSheetContent closeSheet={() => setBottomSheetOpen(false)} />
+        <BottomSheetContent
+          form={form as UseFormReturn<RoomFormData>}
+          bottomSheetState={bottomSheetState}
+          closeSheet={() => setBottomSheetOpen(false)}
+          roomSelectedId={roomSelectedId as string}
+        />
       </BottomSheet>
       {!!projectData?.rooms?.length && (
         <div className="fixed bottom-0 py-2 left-0 right-0 px-4 bg-white z-1 border border-white">

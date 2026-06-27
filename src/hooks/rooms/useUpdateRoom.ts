@@ -1,18 +1,18 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/queryKeys";
+import { useMutation } from "@tanstack/react-query";
 import { roomApi, type UpdateRoomPayload } from "@/api/services/rooms";
 
-export function useUpdateRoom(projectId: string) {
-  const queryClient = useQueryClient();
+type UseEditRoomOptions = {
+  onSuccess?: () => void;
+  projectId: string;
+};
 
+export function useUpdateRoom(options: UseEditRoomOptions) {
   return useMutation({
     mutationFn: ({ roomId, payload }: { roomId: string; payload: UpdateRoomPayload }) =>
-      roomApi.update(projectId, roomId, payload),
+      roomApi.update(options?.projectId, roomId, payload),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.rooms(projectId),
-      });
+      options?.onSuccess?.();
     },
   });
 }
