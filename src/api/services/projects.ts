@@ -6,6 +6,8 @@ export interface Project {
   title: string;
   created_at: string;
   updated_at: string;
+  customer_name: string;
+  meterage: string;
 }
 
 export interface CreateProjectPayload {
