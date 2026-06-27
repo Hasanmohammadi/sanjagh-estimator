@@ -1,17 +1,16 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/queryKeys";
-import { roomApi, type CreateRoomPayload } from "@/api/services/rooms";
+import { useMutation } from "@tanstack/react-query";
+import { roomApi, type CreateRoomPayload, type Room } from "@/api/services/rooms";
 
-export function useCreateRoom(projectId: string) {
-  const queryClient = useQueryClient();
+type UseCreateRoomOptions = {
+  onSuccess?: (data: Room | null) => void;
+  projectId: string;
+};
 
+export function useCreateRoom(options: UseCreateRoomOptions) {
   return useMutation({
-    mutationFn: (payload: CreateRoomPayload) => roomApi.create(projectId, payload),
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.rooms(projectId),
-      });
+    mutationFn: (payload: CreateRoomPayload) => roomApi.create(options.projectId, payload),
+    onSuccess: data => {
+      options?.onSuccess?.(data);
     },
   });
 }

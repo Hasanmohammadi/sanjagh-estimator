@@ -7,21 +7,12 @@ import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import Switch from "@skul/sanjagh-design-system/src/Design_Switch";
 import { roomSchema, type RoomFormData } from "./schema";
-
-export const ROOM_TYPES = [
-  { title: "اتاق خواب", value: "bedroom" },
-  { title: "پذیرایی", value: "living_room" },
-  { title: "سرویس", value: "bathroom" },
-  { title: "آشپزخانه", value: "kitchen" },
-  { title: "سایر", value: "other" },
-  { title: "راهرو", value: "hallway" },
-];
-
-export const PAINT_TYPES = [
-  { title: "آکریلیک", value: "acrylic" },
-  { title: "روغن", value: "oil_based" },
-  { title: "پلاستیک", value: "plastic_emulsion" },
-];
+import { useCreateRoom } from "@/hooks/rooms/useCreateRoom";
+import { PaintType, RoomType } from "@/api/services/rooms";
+import { useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
+import { PAINT_TYPES, ROOM_TYPES } from "./constants";
 
 const ErrorMessage = ({ message }: { message?: string }) => {
   if (!message) return null;
@@ -32,31 +23,60 @@ const ErrorMessage = ({ message }: { message?: string }) => {
   );
 };
 
-export default function BottomSheetContent() {
+interface Props {
+  closeSheet: () => void;
+}
+
+export default function BottomSheetContent({ closeSheet }: Props) {
+  const queryClient = useQueryClient();
+
   const {
     control,
     watch,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(roomSchema),
     defaultValues: {
-      roomType: "other",
+      roomType: RoomType.LivingRoom,
       length: 4,
       width: 3,
       height: 2.8,
-      wallPaintType: "acrylic",
-      wallCoatCount: 1,
-      hasRoofColor: false,
-      roofPaintType: "acrylic",
-      roofCoatCount: 1,
+      wallPaintType: PaintType.Plastic,
+      wallCoats: 1,
+      ceilingEnabled: false,
     },
   });
 
-  const hasRoofColor = watch("hasRoofColor");
+  const ceilingEnabled = watch("ceilingEnabled");
+
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get("projectId") as string;
+
+  const { mutate: createRoom } = useCreateRoom({
+    projectId,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.project(projectId),
+      });
+      reset();
+      closeSheet();
+    },
+  });
 
   const onSubmit: SubmitHandler<RoomFormData> = data => {
-    console.log(data);
+    createRoom({
+      type: data.roomType,
+      width: data.width,
+      length: data.length,
+      height: data.height,
+      wall_paint_type: data.wallPaintType,
+      wall_coats: data.wallCoats,
+      ceiling_enabled: data.ceilingEnabled,
+      ceiling_paint_type: data.ceilingPaintType,
+      ceiling_coats: data.ceilingCoats,
+    });
   };
 
   return (
@@ -70,15 +90,12 @@ export default function BottomSheetContent() {
         name="roomType"
         control={control}
         render={({ field }) => (
-          <div>
-            <ButtonList
-              list={ROOM_TYPES}
-              defaultValue={field.value}
-              onChange={field.onChange}
-              className="grid grid-cols-2 gap-x-3 gap-y-4 mt-4"
-            />
-            <ErrorMessage message={errors.roomType?.message} />
-          </div>
+          <ButtonList
+            list={ROOM_TYPES}
+            value={field.value}
+            onChange={field.onChange}
+            className="grid grid-cols-2 gap-x-3 gap-y-4 mt-4"
+          />
         )}
       />
 
@@ -164,15 +181,15 @@ export default function BottomSheetContent() {
         name="wallPaintType"
         control={control}
         render={({ field }) => (
-          <div>
+          <>
             <ButtonList
               list={PAINT_TYPES}
-              defaultValue={field.value}
+              value={field.value}
               onChange={field.onChange}
               className="grid grid-cols-3 gap-x-4 mt-1"
             />
             <ErrorMessage message={errors.wallPaintType?.message} />
-          </div>
+          </>
         )}
       />
 
@@ -180,11 +197,11 @@ export default function BottomSheetContent() {
       <div className="flex justify-between gap-2 items-center mt-6">
         <div className="flex flex-col items-start w-1/2">
           <Controller
-            name="wallCoatCount"
+            name="wallCoats"
             control={control}
             render={({ field }) => (
               <TomanCounter
-                hasError={!!errors.wallCoatCount}
+                hasError={!!errors.wallCoats}
                 initialCounterValue={String(field.value)}
                 step={1}
                 max={4}
@@ -192,7 +209,7 @@ export default function BottomSheetContent() {
               />
             )}
           />
-          <ErrorMessage message={errors.wallCoatCount?.message} />
+          <ErrorMessage message={errors.wallCoats?.message} />
         </div>
 
         <DesignTitle sizeVariant="FirstTitle" text="تعداد دست دیوار" titleVariant="Body" />
@@ -205,29 +222,29 @@ export default function BottomSheetContent() {
         <DesignTitle sizeVariant="SecondTitle" text="رنگ سقف" titleVariant="Body" />
 
         <Controller
-          name="hasRoofColor"
+          name="ceilingEnabled"
           control={control}
           render={({ field }) => <Switch label=" " size="LG" checked={field.value} onCheckedChange={field.onChange} />}
         />
       </div>
-      <ErrorMessage message={errors.hasRoofColor?.message} />
+      <ErrorMessage message={errors.ceilingEnabled?.message} />
 
-      {hasRoofColor && (
+      {ceilingEnabled && (
         <>
           {/* Roof Paint Type */}
           <Controller
-            name="roofPaintType"
+            name="ceilingPaintType"
             control={control}
             render={({ field }) => (
-              <div>
+              <>
                 <ButtonList
                   list={PAINT_TYPES}
-                  defaultValue={field.value}
+                  value={field.value}
                   onChange={field.onChange}
-                  className="grid grid-cols-3 gap-x-4 mt-4"
+                  className="grid grid-cols-2 gap-x-3 gap-y-4 mt-4"
                 />
-                <ErrorMessage message={errors.roofPaintType?.message} />
-              </div>
+                <ErrorMessage message={errors.ceilingPaintType?.message} />
+              </>
             )}
           />
 
@@ -235,11 +252,11 @@ export default function BottomSheetContent() {
           <div className="flex justify-between gap-2 items-center mt-6">
             <div className="flex flex-col items-start w-1/2">
               <Controller
-                name="roofCoatCount"
+                name="ceilingCoats"
                 control={control}
                 render={({ field }) => (
                   <TomanCounter
-                    hasError={!!errors.roofCoatCount}
+                    hasError={!!errors.ceilingCoats}
                     initialCounterValue={String(field.value)}
                     step={1}
                     onCounterChange={value => field.onChange(Number(value.value))}
@@ -247,7 +264,7 @@ export default function BottomSheetContent() {
                   />
                 )}
               />
-              <ErrorMessage message={errors.roofCoatCount?.message} />
+              <ErrorMessage message={errors.ceilingCoats?.message} />
             </div>
 
             <DesignTitle sizeVariant="FirstTitle" text="تعداد دست سقف" titleVariant="Body" />

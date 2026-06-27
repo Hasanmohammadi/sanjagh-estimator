@@ -10,24 +10,39 @@ export enum RoomType {
   Other = "other",
 }
 
+export enum RoomTypeDic {
+  "bedroom" = "اتاق خواب",
+  "living_room" = "پذیرایی",
+  "bathroom" = "سرویس",
+  "kitchen" = "آشپزخانه",
+  "hallway" = "راهرو",
+  "other" = "سایر",
+}
+
 export enum PaintType {
   Acrylic = "acrylic",
-  OilBased = "oil_based",
-  PlasticEmulsion = "plastic_emulsion",
+  Oil = "oil",
+  Plastic = "plastic",
+}
+
+export enum PaintTypeDic {
+  "acrylic" = "اکرولیک",
+  "oil" = "روغن",
+  "plastic" = "پلاستیک",
 }
 
 export interface Room {
   id: string;
   project_id: string;
   type: RoomType;
-  width: number;
-  length: number;
-  height: number;
+  width: string;
+  length: string;
+  height: string;
   wall_paint_type: PaintType;
   wall_coats: number;
   ceiling_enabled: boolean;
-  ceiling_paint_type: PaintType | null;
-  ceiling_coats: number | null;
+  ceiling_paint_type: PaintType;
+  ceiling_coats: number;
   created_at: string;
   updated_at: string;
 }

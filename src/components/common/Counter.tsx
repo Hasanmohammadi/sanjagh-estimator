@@ -1,5 +1,5 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export enum BidStepDirection {
   Increment = "BidIncrement",
@@ -91,6 +91,10 @@ export const TomanCounter: React.FC<TomanCounterProps> = ({
       onCounterChange({ type: "Toman", value: floatCounterValue });
     }
   };
+
+  useEffect(() => {
+    setCounterDisplayValue(initialCounterValue);
+  }, [initialCounterValue]);
 
   const onCounterDisplayChangeByStep = (dir: BidStepDirection) => {
     const floatValueOfCounterDisplay = parseFloat(removeSeparators(counterDisplayValue)) || 0.0;

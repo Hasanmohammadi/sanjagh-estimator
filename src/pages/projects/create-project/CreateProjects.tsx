@@ -4,18 +4,15 @@ import { useState } from "react";
 import EmptyState from "./EmptyState";
 import BottomSheetContent from "./BottomSheetContent";
 import RoomCard from "./RoomCard";
+import { useSearchParams } from "react-router-dom";
+import { useProject } from "@/hooks/projects/useProject";
 
 export default function CreateProjects() {
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
 
-  const rooms = [
-    { id: 1, name: "پذیرایی", roofColorType: "پلاستیک", wallColorType: "روغن", length: 4, width: 3, height: 2.8 },
-    { id: 2, name: "پذیرایی", roofColorType: "پلاستیک", wallColorType: "روغن", length: 4, width: 3, height: 2.8 },
-    { id: 3, name: "پذیرایی", roofColorType: "پلاستیک", wallColorType: "روغن", length: 4, width: 3, height: 2.8 },
-    { id: 4, name: "پذیرایی", roofColorType: "پلاستیک", wallColorType: "روغن", length: 4, width: 3, height: 2.8 },
-    { id: 5, name: "پذیرایی", roofColorType: "پلاستیک", wallColorType: "روغن", length: 4, width: 3, height: 2.8 },
-    { id: 6, name: "پذیرایی", roofColorType: "پلاستیک", wallColorType: "روغن", length: 4, width: 3, height: 2.8 },
-  ];
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get("projectId");
+  const { data: projectData } = useProject(projectId);
 
   return (
     <>
@@ -26,9 +23,9 @@ export default function CreateProjects() {
         widthVariant="FixedWidthButton"
         onClick={() => setBottomSheetOpen(true)}
       />
-      {rooms.length ? (
+      {projectData?.rooms?.length ? (
         <div className="flex flex-col gap-3 mt-3.5">
-          {rooms.map(room => (
+          {projectData.rooms.map(room => (
             <RoomCard key={room.id} room={room} />
           ))}
         </div>
@@ -37,9 +34,9 @@ export default function CreateProjects() {
       )}
 
       <BottomSheet open={bottomSheetOpen} onClose={() => setBottomSheetOpen(false)}>
-        <BottomSheetContent />
+        <BottomSheetContent closeSheet={() => setBottomSheetOpen(false)} />
       </BottomSheet>
-      {!!rooms.length && (
+      {!!projectData?.rooms?.length && (
         <div className="fixed bottom-0 py-2 left-0 right-0 px-4 bg-white z-1 border border-white">
           <Button
             buttonVariant="PrimarySolidButton"

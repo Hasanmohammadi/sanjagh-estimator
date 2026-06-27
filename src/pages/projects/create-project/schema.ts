@@ -1,7 +1,8 @@
+import { PaintType, RoomType } from "@/api/services/rooms";
 import * as yup from "yup";
 
 export const roomSchema = yup.object({
-  roomType: yup.string().required(),
+  roomType: yup.mixed<RoomType>().oneOf(Object.values(RoomType)).required(),
 
   length: yup
     .number()
@@ -24,19 +25,22 @@ export const roomSchema = yup.object({
     .max(10, "حداکثر ارتفاع ۱۰ متر است")
     .required(),
 
-  wallPaintType: yup.string().required(),
+  wallPaintType: yup.mixed<PaintType>().oneOf(Object.values(PaintType)).required(),
 
-  wallCoatCount: yup.number().min(1).max(4, "حداکثر تعداد دست رنگ دیوار ۴ است").required(),
+  wallCoats: yup.number().min(1).max(4, "حداکثر تعداد دست رنگ دیوار ۴ است").required(),
 
-  hasRoofColor: yup.boolean().required(),
+  ceilingEnabled: yup.boolean().required(),
 
-  roofPaintType: yup.string().when("hasRoofColor", {
-    is: true,
-    then: schema => schema.required(),
-    otherwise: schema => schema.optional(),
-  }),
+  ceilingPaintType: yup
+    .mixed<PaintType>()
+    .oneOf(Object.values(PaintType))
+    .when("hasRoofColor", {
+      is: true,
+      then: schema => schema.required(),
+      otherwise: schema => schema.optional(),
+    }),
 
-  roofCoatCount: yup.number().when("hasRoofColor", {
+  ceilingCoats: yup.number().when("hasRoofColor", {
     is: true,
     then: schema => schema.min(1).max(4, "حداکثر تعداد دست رنگ سقف ۴ است").required(),
     otherwise: schema => schema.optional(),

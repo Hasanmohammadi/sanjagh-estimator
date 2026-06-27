@@ -1,5 +1,4 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
-import { useEffect, useState } from "react";
 
 interface Item {
   title: string;
@@ -8,28 +7,25 @@ interface Item {
 
 interface Props {
   list: Item[];
-  onChange: (value: string | undefined) => void;
+  value?: string;
+  onChange: (value: string) => void;
   className?: string;
-  defaultValue?: string;
 }
 
-export default function ButtonList({ list, onChange, className, defaultValue }: Props) {
-  const [activeButton, setActiveButton] = useState<string | undefined>(defaultValue);
-
-  useEffect(() => {
-    onChange(activeButton);
-  }, [activeButton]);
-
+export default function ButtonList({ list, value, onChange, className }: Props) {
   return (
     <div className={className}>
-      {list.map(({ title, value }) => (
+      {list.map(item => (
         <Button
-          key={value}
-          buttonVariant={value === activeButton ? "PrimarySolidButton" : "SecondaryGrayButton"}
-          contentVariant={{ TAG: "Text", value: title }}
+          key={item.value}
+          buttonVariant={item.value === value ? "PrimarySolidButton" : "SecondaryGrayButton"}
+          contentVariant={{
+            TAG: "Text",
+            value: item.title,
+          }}
           heightVariant="LGButton"
           widthVariant="FixedWidthButton"
-          onClick={() => setActiveButton(value)}
+          onClick={() => onChange(item.value)}
         />
       ))}
     </div>

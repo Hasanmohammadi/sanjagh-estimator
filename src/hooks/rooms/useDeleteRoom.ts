@@ -1,17 +1,16 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/queryKeys";
+import { useMutation } from "@tanstack/react-query";
 import { roomApi } from "@/api/services/rooms";
 
-export function useDeleteRoom(projectId: string) {
-  const queryClient = useQueryClient();
+type UseDeleteRoomOptions = {
+  onSuccess?: () => void;
+  projectId: string;
+};
 
+export function useDeleteRoom(options: UseDeleteRoomOptions) {
   return useMutation({
-    mutationFn: (roomId: string) => roomApi.delete(projectId, roomId),
-
+    mutationFn: (roomId: string) => roomApi.delete(options?.projectId, roomId),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.rooms(projectId),
-      });
+      options?.onSuccess?.();
     },
   });
 }
