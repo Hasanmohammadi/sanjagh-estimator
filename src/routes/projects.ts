@@ -10,7 +10,7 @@ router.post(
   "/",
   validate(createProjectSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const project = await projectService.create(req.body.title);
+    const project = await projectService.create(req.body);
     sendSuccess(res, project, 201);
   }),
 );

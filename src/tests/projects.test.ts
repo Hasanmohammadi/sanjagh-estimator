@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app";
 
+const NON_EXISTENT_UUID = "00000000-0000-0000-0000-000000000000";
+
 describe("Projects API", () => {
   describe("POST /projects", () => {
     it("should create a project successfully", async () => {
@@ -65,8 +67,9 @@ describe("Projects API", () => {
     });
 
     it("should return 404 for non-existent project", async () => {
-      const res = await request(app).get("/projects/9999");
-
+      const res = await request(app).get(
+        "/projects/00000000-0000-0000-0000-000000000000",
+      );
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");
     });
@@ -86,7 +89,7 @@ describe("Projects API", () => {
     });
 
     it("should return 404 for non-existent project", async () => {
-      const res = await request(app).delete("/projects/9999");
+      const res = await request(app).delete(`/projects/${NON_EXISTENT_UUID}`);
 
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");

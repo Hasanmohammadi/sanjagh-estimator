@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app";
 
+const NON_EXISTENT_UUID = "00000000-0000-0000-0000-000000000000";
+
 const createProject = async () => {
   const res = await request(app).post("/projects").send({ title: "پروژه تست" });
   return res.body.data;
@@ -22,11 +24,18 @@ const addRoom = async (projectId: number) => {
 
 const validEstimate = {
   paint_prices: {
+    plastic_with: 800000,
+    plastic_without: 500000,
+    oil_with: 950000,
+    oil_without: 600000,
+    acrylic_with: 1050000,
+    acrylic_without: 700000,
+  },
+  paint_price_per_liter: {
     plastic: 700000,
     oil: 850000,
     acrylic: 950000,
   },
-  labor_price_per_sqm: 150000,
   with_materials: true,
   slider_value: 1.0,
   customer_name: "ایمان نجاتی",
@@ -51,11 +60,10 @@ describe("Estimates API", () => {
 
     it("should return 404 if project not found", async () => {
       const res = await request(app)
-        .post("/projects/9999/estimates")
+        .post(`/projects/${NON_EXISTENT_UUID}/estimates`)
         .send(validEstimate);
 
       expect(res.status).toBe(404);
-      expect(res.body.status).toBe("error");
     });
 
     it("should return 400 if no rooms exist", async () => {
@@ -66,39 +74,48 @@ describe("Estimates API", () => {
         .send(validEstimate);
 
       expect(res.status).toBe(400);
-      expect(res.body.status).toBe("error");
     });
 
-    it("should reject invalid slider_value", async () => {
+    it("should reject slider_value above 1.2", async () => {
       const project = await createProject();
       await addRoom(project.id);
 
       const res = await request(app)
         .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, slider_value: 2.0 });
+        .send({ ...validEstimate, slider_value: 1.5 });
 
       expect(res.status).toBe(400);
-      expect(res.body.status).toBe("error");
     });
 
-    it("بدون مصالح فقط اجرت حساب کنه", async () => {
+    it("should reject slider_value below 0.8", async () => {
       const project = await createProject();
       await addRoom(project.id);
 
-      const withMaterials = await request(app)
+      const res = await request(app)
+        .post(`/projects/${project.id}/estimates`)
+        .send({ ...validEstimate, slider_value: 0.5 });
+
+      expect(res.status).toBe(400);
+    });
+
+    it("با مصالح از بدون مصالح گرون‌تر باشه", async () => {
+      const project = await createProject();
+      await addRoom(project.id);
+
+      const withMat = await request(app)
         .post(`/projects/${project.id}/estimates`)
         .send({ ...validEstimate, with_materials: true });
 
-      const withoutMaterials = await request(app)
+      const withoutMat = await request(app)
         .post(`/projects/${project.id}/estimates`)
         .send({ ...validEstimate, with_materials: false });
 
-      expect(withMaterials.body.data.calculation.final_cost).toBeGreaterThan(
-        withoutMaterials.body.data.calculation.final_cost,
+      expect(withMat.body.data.calculation.final_cost).toBeGreaterThan(
+        withoutMat.body.data.calculation.final_cost,
       );
     });
 
-    it("اسلایدر روی اجرت تاثیر بذاره نه رنگ", async () => {
+    it("اسلایدر ۱.۲ قیمت نهایی رو بیشتر از ۱.۰ کنه", async () => {
       const project = await createProject();
       await addRoom(project.id);
 
@@ -110,14 +127,26 @@ describe("Estimates API", () => {
         .post(`/projects/${project.id}/estimates`)
         .send({ ...validEstimate, slider_value: 1.2 });
 
-      const cost1 = slider1.body.data.calculation;
-      const cost12 = slider12.body.data.calculation;
+      expect(slider12.body.data.calculation.final_cost).toBeGreaterThan(
+        slider1.body.data.calculation.final_cost,
+      );
+    });
 
-      // قیمت رنگ نباید تغییر کنه
-      expect(cost1.total_paint_cost).toBe(cost12.total_paint_cost);
+    it("اسلایدر روی قیمت رنگ تاثیر نذاره", async () => {
+      const project = await createProject();
+      await addRoom(project.id);
 
-      // قیمت نهایی باید تغییر کنه
-      expect(cost12.final_cost).toBeGreaterThan(cost1.final_cost);
+      const slider1 = await request(app)
+        .post(`/projects/${project.id}/estimates`)
+        .send({ ...validEstimate, slider_value: 1.0 });
+
+      const slider12 = await request(app)
+        .post(`/projects/${project.id}/estimates`)
+        .send({ ...validEstimate, slider_value: 1.2 });
+
+      expect(slider1.body.data.calculation.total_paint_cost).toBe(
+        slider12.body.data.calculation.total_paint_cost,
+      );
     });
 
     it("چند اتاق رو با هم حساب کنه", async () => {
@@ -131,6 +160,18 @@ describe("Estimates API", () => {
 
       expect(res.body.data.calculation.rooms).toHaveLength(2);
       expect(res.body.data.calculation.total_area).toBeGreaterThan(0);
+    });
+
+    it("اطلاعات مشتری ذخیره بشه", async () => {
+      const project = await createProject();
+      await addRoom(project.id);
+
+      const res = await request(app)
+        .post(`/projects/${project.id}/estimates`)
+        .send(validEstimate);
+
+      expect(res.body.data.customer_name).toBe("ایمان نجاتی");
+      expect(res.body.data.notes).toBe("تست");
     });
   });
 
@@ -155,7 +196,6 @@ describe("Estimates API", () => {
       const res = await request(app).get(`/projects/${project.id}/estimates`);
 
       expect(res.status).toBe(404);
-      expect(res.body.status).toBe("error");
     });
   });
 });

@@ -1,12 +1,24 @@
 import pool from "../db/index";
 import { AppError } from "../utils/apiResponse";
+import { isValidUUID } from "../utils/uuid";
+
+type CreateProjectInput = {
+  title: string;
+  customerName: string;
+  meterage: number;
+};
 
 export const projectService = {
-  async create(title: string) {
+  async create(data: CreateProjectInput) {
+    const { title, customerName, meterage } = data;
+
     const result = await pool.query(
-      "INSERT INTO projects (title) VALUES ($1) RETURNING *",
-      [title],
+      `INSERT INTO projects (title, customer_name, meterage)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [title, customerName, meterage],
     );
+
     return result.rows[0];
   },
 
@@ -18,6 +30,10 @@ export const projectService = {
   },
 
   async findById(id: string) {
+    if (!isValidUUID(id)) {
+      throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
+    }
+
     const project = await pool.query("SELECT * FROM projects WHERE id = $1", [
       id,
     ]);
@@ -38,6 +54,10 @@ export const projectService = {
   },
 
   async delete(id: string) {
+    if (!isValidUUID(id)) {
+      throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
+    }
+
     const result = await pool.query(
       "DELETE FROM projects WHERE id = $1 RETURNING *",
       [id],

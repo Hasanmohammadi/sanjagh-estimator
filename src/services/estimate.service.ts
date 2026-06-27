@@ -1,11 +1,15 @@
 import pool from "../db/index";
 import { AppError } from "../utils/apiResponse";
 import { calculateEstimate } from "../utils/calculate";
+import { isValidUUID } from "../utils/uuid";
 import { CreateEstimateInput } from "../validators/estimate.validator";
 
 export const estimateService = {
   async create(project_id: string, data: CreateEstimateInput) {
-    // چک کردن وجود پروژه
+    if (!isValidUUID(project_id)) {
+      throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
+    }
+
     const project = await pool.query("SELECT id FROM projects WHERE id = $1", [
       project_id,
     ]);
@@ -14,7 +18,6 @@ export const estimateService = {
       throw new AppError("Project not found", "پروژه یافت نشد", 404);
     }
 
-    // گرفتن اتاق‌ها
     const roomsResult = await pool.query(
       "SELECT * FROM rooms WHERE project_id = $1",
       [project_id],
@@ -39,21 +42,18 @@ export const estimateService = {
         ? Number(room.ceiling_coats)
         : undefined,
     }));
-
-    // محاسبه برآورد
     const estimate = calculateEstimate(
       rooms,
       data.paint_prices,
-      data.labor_price_per_sqm,
+      data.paint_price_per_liter,
+      data.with_materials,
     );
 
-    // اعمال slider روی اجرت
     const adjusted_labor_cost = estimate.total_labor_cost * data.slider_value;
-    const final_cost = data.with_materials
-      ? estimate.total_paint_cost +
-        adjusted_labor_cost +
-        estimate.accessories_cost
-      : adjusted_labor_cost;
+    const final_cost =
+      estimate.total_paint_cost +
+      adjusted_labor_cost +
+      estimate.accessories_cost;
 
     // ذخیره در دیتابیس
     const result = await pool.query(
@@ -82,11 +82,11 @@ export const estimateService = {
   },
 
   async findByProject(project_id: string) {
+    if (!isValidUUID(project_id)) {
+      throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
+    }
     const result = await pool.query(
-      `SELECT * FROM estimates 
-       WHERE project_id = $1 
-       ORDER BY created_at DESC 
-       LIMIT 1`,
+      `SELECT * FROM estimates WHERE project_id = $1 ORDER BY created_at DESC LIMIT 1`,
       [project_id],
     );
 

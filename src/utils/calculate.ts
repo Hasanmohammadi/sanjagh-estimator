@@ -1,6 +1,15 @@
 export type PaintType = "plastic" | "oil" | "acrylic";
 
 export interface PaintPrices {
+  plastic_with?: number;
+  plastic_without?: number;
+  oil_with?: number;
+  oil_without?: number;
+  acrylic_with?: number;
+  acrylic_without?: number;
+}
+
+export interface PaintPricePerLiter {
   plastic?: number;
   oil?: number;
   acrylic?: number;
@@ -63,24 +72,19 @@ const calcPaintLiters = (
 const calcRoomEstimate = (
   room: RoomInput,
   paintPrices: PaintPrices,
-  laborPricePerSqm: number,
+  paintPricePerLiter: PaintPricePerLiter,
+  withMaterials: boolean,
 ): RoomEstimate => {
-  // مساحت دیوار
   const wall_area = 2 * (room.width + room.length) * room.height;
-
-  // مساحت سقف
   const ceiling_area = room.ceiling_enabled ? room.width * room.length : 0;
-
   const total_area = wall_area + ceiling_area;
 
-  // لیتر رنگ دیوار
+  // لیتر رنگ (برای نمایش به کاربر)
   const wall_paint_liters = calcPaintLiters(
     wall_area,
     room.wall_coats,
     room.wall_paint_type,
   );
-
-  // لیتر رنگ سقف
   const ceiling_paint_liters =
     room.ceiling_enabled && room.ceiling_paint_type && room.ceiling_coats
       ? calcPaintLiters(
@@ -90,20 +94,42 @@ const calcRoomEstimate = (
         )
       : 0;
 
-  const total_paint_liters = wall_paint_liters + ceiling_paint_liters;
+  // قیمت متوسط هر متر مربع (با یا بدون مصالح)
+  const getAvgPrice = (paintType: PaintType): number => {
+    const withKey = `${paintType}_with` as keyof PaintPrices;
+    const withoutKey = `${paintType}_without` as keyof PaintPrices;
+    const priceWith = paintPrices[withKey] ?? 0;
+    const priceWithout = paintPrices[withoutKey] ?? 0;
 
-  // هزینه رنگ دیوار
-  const wallPricePerLiter = paintPrices[room.wall_paint_type] ?? 0;
+    if (withMaterials && priceWith && priceWithout) {
+      return (priceWith + priceWithout) / 2;
+    }
+    if (!withMaterials && priceWithout) {
+      return priceWithout;
+    }
+    return withMaterials ? priceWith : priceWithout;
+  };
+
+  // هزینه دیوار
+  const wallAvgPrice = getAvgPrice(room.wall_paint_type);
+  const wall_cost = wall_area * room.wall_coats * WASTE_FACTOR * wallAvgPrice;
+
+  // هزینه سقف
+  let ceiling_cost = 0;
+  if (room.ceiling_enabled && room.ceiling_paint_type && room.ceiling_coats) {
+    const ceilAvgPrice = getAvgPrice(room.ceiling_paint_type);
+    ceiling_cost =
+      ceiling_area * room.ceiling_coats * WASTE_FACTOR * ceilAvgPrice;
+  }
+
+  // هزینه رنگ جداگانه (برای نمایش جزییات)
+  const wallPricePerLiter = paintPricePerLiter[room.wall_paint_type] ?? 0;
   const wall_paint_cost = wall_paint_liters * wallPricePerLiter;
 
-  // هزینه رنگ سقف
   const ceilPricePerLiter = room.ceiling_paint_type
-    ? (paintPrices[room.ceiling_paint_type] ?? 0)
+    ? (paintPricePerLiter[room.ceiling_paint_type] ?? 0)
     : 0;
   const ceiling_paint_cost = ceiling_paint_liters * ceilPricePerLiter;
-
-  // هزینه اجرت
-  const labor_cost = total_area * laborPricePerSqm;
 
   return {
     wall_area,
@@ -111,18 +137,18 @@ const calcRoomEstimate = (
     total_area,
     wall_paint_liters,
     ceiling_paint_liters,
-    total_paint_liters,
+    total_paint_liters: wall_paint_liters + ceiling_paint_liters,
     wall_paint_cost,
     ceiling_paint_cost,
-    labor_cost,
+    labor_cost: wall_cost + ceiling_cost, // اجرت بر اساس فرمول سند
   };
 };
 
 const calcAccessoriesCost = (
-  paintPrices: PaintPrices,
+  paintPricePerLiter: PaintPricePerLiter,
   total_area: number,
 ): number => {
-  const prices = Object.values(paintPrices).filter(
+  const prices = Object.values(paintPricePerLiter).filter(
     (p): p is number => p !== undefined && p > 0,
   );
 
@@ -138,10 +164,11 @@ const calcAccessoriesCost = (
 export const calculateEstimate = (
   rooms: RoomInput[],
   paintPrices: PaintPrices,
-  laborPricePerSqm: number,
+  paintPricePerLiter: PaintPricePerLiter,
+  withMaterials: boolean,
 ): EstimateResult => {
   const roomEstimates = rooms.map((room) =>
-    calcRoomEstimate(room, paintPrices, laborPricePerSqm),
+    calcRoomEstimate(room, paintPrices, paintPricePerLiter, withMaterials),
   );
 
   const total_area = roomEstimates.reduce((s, r) => s + r.total_area, 0);
@@ -154,7 +181,7 @@ export const calculateEstimate = (
     0,
   );
   const total_labor_cost = roomEstimates.reduce((s, r) => s + r.labor_cost, 0);
-  const accessories_cost = calcAccessoriesCost(paintPrices, total_area);
+  const accessories_cost = calcAccessoriesCost(paintPricePerLiter, total_area);
 
   const base_cost = total_paint_cost + total_labor_cost + accessories_cost;
 

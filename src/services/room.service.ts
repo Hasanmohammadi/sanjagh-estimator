@@ -1,9 +1,14 @@
 import pool from "../db/index";
 import { AppError } from "../utils/apiResponse";
 import { CreateRoomInput, UpdateRoomInput } from "../validators/room.validator";
+import { isValidUUID } from "../utils/uuid";
 
 export const roomService = {
   async checkProjectExists(project_id: string) {
+    if (!isValidUUID(project_id)) {
+      throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
+    }
+
     const project = await pool.query("SELECT id FROM projects WHERE id = $1", [
       project_id,
     ]);
@@ -39,26 +44,24 @@ export const roomService = {
   },
 
   async update(room_id: string, data: UpdateRoomInput) {
-    const id = parseInt(room_id, 10);
-
-    if (isNaN(id)) {
+    if (!isValidUUID(room_id)) {
       throw new AppError("Invalid room id", "شناسه اتاق معتبر نیست", 400);
     }
 
     const result = await pool.query(
       `UPDATE rooms SET
-      type = COALESCE($1, type),
-      width = COALESCE($2, width),
-      length = COALESCE($3, length),
-      height = COALESCE($4, height),
-      wall_paint_type = COALESCE($5, wall_paint_type),
-      wall_coats = COALESCE($6, wall_coats),
-      ceiling_enabled = COALESCE($7, ceiling_enabled),
-      ceiling_paint_type = COALESCE($8, ceiling_paint_type),
-      ceiling_coats = COALESCE($9, ceiling_coats),
-      updated_at = NOW()
-    WHERE id = $10
-    RETURNING *`,
+        type = COALESCE($1, type),
+        width = COALESCE($2, width),
+        length = COALESCE($3, length),
+        height = COALESCE($4, height),
+        wall_paint_type = COALESCE($5, wall_paint_type),
+        wall_coats = COALESCE($6, wall_coats),
+        ceiling_enabled = COALESCE($7, ceiling_enabled),
+        ceiling_paint_type = COALESCE($8, ceiling_paint_type),
+        ceiling_coats = COALESCE($9, ceiling_coats),
+        updated_at = NOW()
+      WHERE id = $10
+      RETURNING *`,
       [
         data.type,
         data.width,
@@ -69,7 +72,7 @@ export const roomService = {
         data.ceiling_enabled,
         data.ceiling_paint_type || null,
         data.ceiling_coats || null,
-        id,
+        room_id,
       ],
     );
 
@@ -81,15 +84,13 @@ export const roomService = {
   },
 
   async delete(room_id: string) {
-    const id = parseInt(room_id, 10);
-
-    if (isNaN(id)) {
+    if (!isValidUUID(room_id)) {
       throw new AppError("Invalid room id", "شناسه اتاق معتبر نیست", 400);
     }
 
     const result = await pool.query(
       "DELETE FROM rooms WHERE id = $1 RETURNING *",
-      [id],
+      [room_id],
     );
 
     if (result.rows.length === 0) {

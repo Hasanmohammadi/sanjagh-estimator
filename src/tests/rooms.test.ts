@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app";
 
+const NON_EXISTENT_UUID = "00000000-0000-0000-0000-000000000000";
+
 const createProject = async () => {
   const res = await request(app).post("/projects").send({ title: "پروژه تست" });
   return res.body.data;
@@ -34,7 +36,7 @@ describe("Rooms API", () => {
 
     it("should fail if project does not exist", async () => {
       const res = await request(app)
-        .post("/projects/9999/rooms")
+        .post(`/projects/${NON_EXISTENT_UUID}/rooms`)
         .send(validRoom);
 
       expect(res.status).toBe(404);
@@ -102,7 +104,7 @@ describe("Rooms API", () => {
       const project = await createProject();
 
       const res = await request(app)
-        .put(`/projects/${project.id}/rooms/9999`)
+        .put(`/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`)
         .send(validRoom);
 
       expect(res.status).toBe(404);
@@ -132,9 +134,8 @@ describe("Rooms API", () => {
       const project = await createProject();
 
       const res = await request(app).delete(
-        `/projects/${project.id}/rooms/9999`,
+        `/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`,
       );
-
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");
     });
