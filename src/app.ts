@@ -5,6 +5,7 @@ import roomsRouter from "./routes/rooms";
 import estimatesRouter from "./routes/estimates";
 import { errorHandler } from "./utils/apiResponse";
 import { authenticate } from "./middlewares/auth";
+import priceConfigRouter from "./routes/price-config";
 
 const app: Application = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(authenticate);
 app.use("/projects", projectsRouter);
 app.use("/projects/:project_id/rooms", roomsRouter);
+app.use("/price-config", priceConfigRouter);
 
 app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "ok" });
