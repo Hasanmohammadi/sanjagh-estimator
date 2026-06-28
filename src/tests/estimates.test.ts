@@ -1,15 +1,14 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app";
-
-const NON_EXISTENT_UUID = "00000000-0000-0000-0000-000000000000";
+import { NON_EXISTENT_UUID } from "./setup";
 
 const createProject = async () => {
   const res = await request(app).post("/projects").send({ title: "پروژه تست" });
   return res.body.data;
 };
 
-const addRoom = async (projectId: number) => {
+const addRoom = async (projectId: string) => {
   const res = await request(app).post(`/projects/${projectId}/rooms`).send({
     type: "bedroom",
     width: 4,
@@ -68,7 +67,6 @@ describe("Estimates API", () => {
 
     it("should return 400 if no rooms exist", async () => {
       const project = await createProject();
-
       const res = await request(app)
         .post(`/projects/${project.id}/estimates`)
         .send(validEstimate);
@@ -192,7 +190,6 @@ describe("Estimates API", () => {
 
     it("should return 404 if no estimate exists", async () => {
       const project = await createProject();
-
       const res = await request(app).get(`/projects/${project.id}/estimates`);
 
       expect(res.status).toBe(404);

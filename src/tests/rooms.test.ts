@@ -1,8 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app";
-
-const NON_EXISTENT_UUID = "00000000-0000-0000-0000-000000000000";
+import { NON_EXISTENT_UUID } from "./setup";
 
 const createProject = async () => {
   const res = await request(app).post("/projects").send({ title: "پروژه تست" });
@@ -45,7 +44,6 @@ describe("Rooms API", () => {
 
     it("should fail if required fields are missing", async () => {
       const project = await createProject();
-
       const res = await request(app)
         .post(`/projects/${project.id}/rooms`)
         .send({ type: "bedroom" });
@@ -56,7 +54,6 @@ describe("Rooms API", () => {
 
     it("should fail if ceiling_enabled but ceiling_paint_type missing", async () => {
       const project = await createProject();
-
       const res = await request(app)
         .post(`/projects/${project.id}/rooms`)
         .send({ ...validRoom, ceiling_enabled: true });
@@ -67,7 +64,6 @@ describe("Rooms API", () => {
 
     it("should create room with ceiling successfully", async () => {
       const project = await createProject();
-
       const res = await request(app)
         .post(`/projects/${project.id}/rooms`)
         .send({
@@ -85,13 +81,11 @@ describe("Rooms API", () => {
   describe("PUT /projects/:project_id/rooms/:room_id", () => {
     it("should update room successfully", async () => {
       const project = await createProject();
-
       const created = await request(app)
         .post(`/projects/${project.id}/rooms`)
         .send(validRoom);
 
       const roomId = created.body.data.id;
-
       const res = await request(app)
         .put(`/projects/${project.id}/rooms/${roomId}`)
         .send({ ...validRoom, width: 6 });
@@ -102,7 +96,6 @@ describe("Rooms API", () => {
 
     it("should return 404 for non-existent room", async () => {
       const project = await createProject();
-
       const res = await request(app)
         .put(`/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`)
         .send(validRoom);
@@ -115,13 +108,11 @@ describe("Rooms API", () => {
   describe("DELETE /projects/:project_id/rooms/:room_id", () => {
     it("should delete room successfully", async () => {
       const project = await createProject();
-
       const created = await request(app)
         .post(`/projects/${project.id}/rooms`)
         .send(validRoom);
 
       const roomId = created.body.data.id;
-
       const res = await request(app).delete(
         `/projects/${project.id}/rooms/${roomId}`,
       );
@@ -132,10 +123,10 @@ describe("Rooms API", () => {
 
     it("should return 404 for non-existent room", async () => {
       const project = await createProject();
-
       const res = await request(app).delete(
         `/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`,
       );
+
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");
     });

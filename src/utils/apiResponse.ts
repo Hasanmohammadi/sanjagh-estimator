@@ -78,8 +78,8 @@ export const errorHandler = (
     return res.status(400).json(response);
   }
 
-  // Fallback for unexpected database or system errors
-  console.error("Unexpected Error:", err);
+  // فقط خطاهای unexpected رو لاگ کن
+  console.error("Unexpected Error:", err.message, err.stack);
   const response: ApiResponse<null> = {
     data: null,
     status: "error",

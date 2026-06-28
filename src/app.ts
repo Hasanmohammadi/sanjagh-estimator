@@ -4,12 +4,14 @@ import projectsRouter from "./routes/projects";
 import roomsRouter from "./routes/rooms";
 import estimatesRouter from "./routes/estimates";
 import { errorHandler } from "./utils/apiResponse";
+import { authenticate } from "./middlewares/auth";
 
 const app: Application = express();
 
 app.use(cors());
 app.use(express.json());
 
+app.use(authenticate);
 app.use("/projects", projectsRouter);
 app.use("/projects/:project_id/rooms", roomsRouter);
 

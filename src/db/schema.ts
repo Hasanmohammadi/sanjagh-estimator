@@ -9,6 +9,7 @@ const createTables = async (): Promise<void> => {
     await client.query(`
       CREATE TABLE IF NOT EXISTS projects (
         id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id         UUID NOT NULL,
         title           VARCHAR(255) NOT NULL,
         customer_name   VARCHAR(255),
         meterage        NUMERIC(10,2),
@@ -20,6 +21,7 @@ const createTables = async (): Promise<void> => {
     await client.query(`
       CREATE TABLE IF NOT EXISTS rooms (
         id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id             UUID NOT NULL,
         project_id          UUID REFERENCES projects(id) ON DELETE CASCADE, -- CHANGED INTEGER TO UUID HERE
         type                VARCHAR(50) NOT NULL,
         width               NUMERIC(5,2) NOT NULL,
@@ -34,6 +36,26 @@ const createTables = async (): Promise<void> => {
         updated_at          TIMESTAMP DEFAULT NOW()
       );
     `);
+
+    await client.query(`
+  CREATE TABLE IF NOT EXISTS price_configs (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id         UUID NOT NULL,
+    project_id      UUID REFERENCES projects(id) ON DELETE CASCADE UNIQUE,
+    currency        VARCHAR(10) NOT NULL DEFAULT 'تومان',
+    plastic_per_liter   NUMERIC(12,2),
+    plastic_sqm_min     NUMERIC(12,2),
+    plastic_sqm_max     NUMERIC(12,2),
+    oil_per_liter       NUMERIC(12,2),
+    oil_sqm_min         NUMERIC(12,2),
+    oil_sqm_max         NUMERIC(12,2),
+    acrylic_per_liter   NUMERIC(12,2),
+    acrylic_sqm_min     NUMERIC(12,2),
+    acrylic_sqm_max     NUMERIC(12,2),
+    created_at      TIMESTAMP DEFAULT NOW(),
+    updated_at      TIMESTAMP DEFAULT NOW()
+  );
+`);
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS estimates (

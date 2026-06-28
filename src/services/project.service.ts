@@ -9,34 +9,35 @@ type CreateProjectInput = {
 };
 
 export const projectService = {
-  async create(data: CreateProjectInput) {
+  async create(data: CreateProjectInput, userId: string) {
     const { title, customerName, meterage } = data;
 
     const result = await pool.query(
-      `INSERT INTO projects (title, customer_name, meterage)
-       VALUES ($1, $2, $3)
-       RETURNING *`,
-      [title, customerName, meterage],
+      `INSERT INTO projects (title, customer_name, meterage, user_id)
+     VALUES ($1, $2, $3, $4)
+     RETURNING *`,
+      [title, customerName, meterage, userId],
     );
-
     return result.rows[0];
   },
 
-  async findAll() {
+  async findAll(userId: string) {
     const result = await pool.query(
-      "SELECT * FROM projects ORDER BY created_at DESC",
+      "SELECT * FROM projects WHERE user_id = $1 ORDER BY created_at DESC",
+      [userId],
     );
     return result.rows;
   },
 
-  async findById(id: string) {
+  async findById(id: string, userId: string) {
     if (!isValidUUID(id)) {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
 
-    const project = await pool.query("SELECT * FROM projects WHERE id = $1", [
-      id,
-    ]);
+    const project = await pool.query(
+      "SELECT * FROM projects WHERE id = $1 AND user_id = $2",
+      [id, userId],
+    );
 
     if (project.rows.length === 0) {
       throw new AppError("Project not found", "پروژه یافت نشد", 404);
@@ -53,14 +54,14 @@ export const projectService = {
     };
   },
 
-  async delete(id: string) {
+  async delete(id: string, userId: string) {
     if (!isValidUUID(id)) {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
 
     const result = await pool.query(
-      "DELETE FROM projects WHERE id = $1 RETURNING *",
-      [id],
+      "DELETE FROM projects WHERE id = $1 AND user_id = $2 RETURNING *",
+      [id, userId],
     );
 
     if (result.rows.length === 0) {

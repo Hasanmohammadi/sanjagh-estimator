@@ -18,7 +18,11 @@ router.post(
   "/",
   validate<RoomParams>(createRoomSchema),
   asyncHandler<RoomParams>(async (req, res) => {
-    const room = await roomService.create(req.params.project_id, req.body);
+    const room = await roomService.create(
+      req.params.project_id,
+      req.body,
+      req.user!.id,
+    );
     sendSuccess(res, room, 201);
   }),
 );
@@ -27,7 +31,11 @@ router.put(
   "/:room_id",
   validate<RoomParams>(updateRoomSchema),
   asyncHandler<RoomParams>(async (req, res) => {
-    const room = await roomService.update(req.params.room_id, req.body);
+    const room = await roomService.update(
+      req.params.room_id,
+      req.body,
+      req.user!.id,
+    );
     sendSuccess(res, room);
   }),
 );
@@ -35,7 +43,7 @@ router.put(
 router.delete(
   "/:room_id",
   asyncHandler<RoomParams>(async (req, res) => {
-    await roomService.delete(req.params.room_id);
+    await roomService.delete(req.params.room_id, req.user!.id);
     sendSuccess(res, { message: "Room deleted successfully" });
   }),
 );

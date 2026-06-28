@@ -10,7 +10,7 @@ router.post(
   "/",
   validate(createProjectSchema),
   asyncHandler(async (req: Request, res: Response) => {
-    const project = await projectService.create(req.body);
+    const project = await projectService.create(req.body, req.user!.id);
     sendSuccess(res, project, 201);
   }),
 );
@@ -18,7 +18,7 @@ router.post(
 router.get(
   "/",
   asyncHandler(async (req: Request, res: Response) => {
-    const projects = await projectService.findAll();
+    const projects = await projectService.findAll(req.user!.id);
     sendSuccess(res, projects);
   }),
 );
@@ -30,7 +30,7 @@ interface ProjectParams {
 router.get(
   "/:id",
   asyncHandler<ProjectParams>(async (req, res) => {
-    const project = await projectService.findById(req.params.id);
+    const project = await projectService.findById(req.params.id, req.user!.id);
     sendSuccess(res, project);
   }),
 );
@@ -38,7 +38,7 @@ router.get(
 router.delete(
   "/:id",
   asyncHandler<ProjectParams>(async (req, res) => {
-    await projectService.delete(req.params.id);
+    await projectService.delete(req.params.id, req.user!.id);
     sendSuccess(res, { message: "Project deleted successfully" });
   }),
 );

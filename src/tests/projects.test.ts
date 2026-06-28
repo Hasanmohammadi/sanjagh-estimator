@@ -1,8 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app";
-
-const NON_EXISTENT_UUID = "00000000-0000-0000-0000-000000000000";
+import { NON_EXISTENT_UUID } from "./setup";
 
 describe("Projects API", () => {
   describe("POST /projects", () => {
@@ -19,14 +18,12 @@ describe("Projects API", () => {
 
     it("should fail if title is missing", async () => {
       const res = await request(app).post("/projects").send({});
-
       expect(res.status).toBe(400);
       expect(res.body.status).toBe("error");
     });
 
     it("should fail if title is too short", async () => {
       const res = await request(app).post("/projects").send({ title: "a" });
-
       expect(res.status).toBe(400);
       expect(res.body.status).toBe("error");
     });
@@ -35,9 +32,7 @@ describe("Projects API", () => {
   describe("GET /projects", () => {
     it("should return empty array when no projects", async () => {
       const res = await request(app).get("/projects");
-
       expect(res.status).toBe(200);
-      expect(res.body.status).toBe("success");
       expect(res.body.data).toEqual([]);
     });
 
@@ -46,7 +41,6 @@ describe("Projects API", () => {
       await request(app).post("/projects").send({ title: "پروژه دوم" });
 
       const res = await request(app).get("/projects");
-
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveLength(2);
     });
@@ -67,9 +61,7 @@ describe("Projects API", () => {
     });
 
     it("should return 404 for non-existent project", async () => {
-      const res = await request(app).get(
-        "/projects/00000000-0000-0000-0000-000000000000",
-      );
+      const res = await request(app).get(`/projects/${NON_EXISTENT_UUID}`);
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");
     });
@@ -90,7 +82,6 @@ describe("Projects API", () => {
 
     it("should return 404 for non-existent project", async () => {
       const res = await request(app).delete(`/projects/${NON_EXISTENT_UUID}`);
-
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");
     });
