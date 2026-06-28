@@ -47,9 +47,7 @@ describe("Estimates API", () => {
       const project = await createProject();
       await addRoom(project.id);
 
-      const res = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send(validEstimate);
+      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
 
       expect(res.status).toBe(201);
       expect(res.body.status).toBe("success");
@@ -58,18 +56,14 @@ describe("Estimates API", () => {
     });
 
     it("should return 404 if project not found", async () => {
-      const res = await request(app)
-        .post(`/projects/${NON_EXISTENT_UUID}/estimates`)
-        .send(validEstimate);
+      const res = await request(app).post(`/projects/${NON_EXISTENT_UUID}/estimates`).send(validEstimate);
 
       expect(res.status).toBe(404);
     });
 
     it("should return 400 if no rooms exist", async () => {
       const project = await createProject();
-      const res = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send(validEstimate);
+      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
 
       expect(res.status).toBe(400);
     });
@@ -108,9 +102,7 @@ describe("Estimates API", () => {
         .post(`/projects/${project.id}/estimates`)
         .send({ ...validEstimate, with_materials: false });
 
-      expect(withMat.body.data.calculation.final_cost).toBeGreaterThan(
-        withoutMat.body.data.calculation.final_cost,
-      );
+      expect(withMat.body.data.calculation.final_cost).toBeGreaterThan(withoutMat.body.data.calculation.final_cost);
     });
 
     it("اسلایدر ۱.۲ قیمت نهایی رو بیشتر از ۱.۰ کنه", async () => {
@@ -125,9 +117,7 @@ describe("Estimates API", () => {
         .post(`/projects/${project.id}/estimates`)
         .send({ ...validEstimate, slider_value: 1.2 });
 
-      expect(slider12.body.data.calculation.final_cost).toBeGreaterThan(
-        slider1.body.data.calculation.final_cost,
-      );
+      expect(slider12.body.data.calculation.final_cost).toBeGreaterThan(slider1.body.data.calculation.final_cost);
     });
 
     it("اسلایدر روی قیمت رنگ تاثیر نذاره", async () => {
@@ -142,9 +132,7 @@ describe("Estimates API", () => {
         .post(`/projects/${project.id}/estimates`)
         .send({ ...validEstimate, slider_value: 1.2 });
 
-      expect(slider1.body.data.calculation.total_paint_cost).toBe(
-        slider12.body.data.calculation.total_paint_cost,
-      );
+      expect(slider1.body.data.calculation.total_paint_cost).toBe(slider12.body.data.calculation.total_paint_cost);
     });
 
     it("چند اتاق رو با هم حساب کنه", async () => {
@@ -152,9 +140,7 @@ describe("Estimates API", () => {
       await addRoom(project.id);
       await addRoom(project.id);
 
-      const res = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send(validEstimate);
+      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
 
       expect(res.body.data.calculation.rooms).toHaveLength(2);
       expect(res.body.data.calculation.total_area).toBeGreaterThan(0);
@@ -164,9 +150,7 @@ describe("Estimates API", () => {
       const project = await createProject();
       await addRoom(project.id);
 
-      const res = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send(validEstimate);
+      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
 
       expect(res.body.data.customer_name).toBe("ایمان نجاتی");
       expect(res.body.data.notes).toBe("تست");
@@ -178,9 +162,7 @@ describe("Estimates API", () => {
       const project = await createProject();
       await addRoom(project.id);
 
-      await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send(validEstimate);
+      await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
 
       const res = await request(app).get(`/projects/${project.id}/estimates`);
 

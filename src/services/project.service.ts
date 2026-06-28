@@ -22,10 +22,7 @@ export const projectService = {
   },
 
   async findAll(userId: string) {
-    const result = await pool.query(
-      "SELECT * FROM projects WHERE user_id = $1 ORDER BY created_at DESC",
-      [userId],
-    );
+    const result = await pool.query("SELECT * FROM projects WHERE user_id = $1 ORDER BY created_at DESC", [userId]);
     return result.rows;
   },
 
@@ -34,19 +31,13 @@ export const projectService = {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
 
-    const project = await pool.query(
-      "SELECT * FROM projects WHERE id = $1 AND user_id = $2",
-      [id, userId],
-    );
+    const project = await pool.query("SELECT * FROM projects WHERE id = $1 AND user_id = $2", [id, userId]);
 
     if (project.rows.length === 0) {
       throw new AppError("Project not found", "پروژه یافت نشد", 404);
     }
 
-    const rooms = await pool.query(
-      "SELECT * FROM rooms WHERE project_id = $1 ORDER BY created_at ASC",
-      [id],
-    );
+    const rooms = await pool.query("SELECT * FROM rooms WHERE project_id = $1 ORDER BY created_at ASC", [id]);
 
     return {
       ...project.rows[0],
@@ -59,10 +50,7 @@ export const projectService = {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
 
-    const result = await pool.query(
-      "DELETE FROM projects WHERE id = $1 AND user_id = $2 RETURNING *",
-      [id, userId],
-    );
+    const result = await pool.query("DELETE FROM projects WHERE id = $1 AND user_id = $2 RETURNING *", [id, userId]);
 
     if (result.rows.length === 0) {
       throw new AppError("Project not found", "پروژه یافت نشد", 404);

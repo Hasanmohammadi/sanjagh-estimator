@@ -9,10 +9,7 @@ export const roomService = {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
 
-    const project = await pool.query(
-      "SELECT id FROM projects WHERE id = $1 AND user_id = $2",
-      [project_id, userId],
-    );
+    const project = await pool.query("SELECT id FROM projects WHERE id = $1 AND user_id = $2", [project_id, userId]);
 
     if (project.rows.length === 0) {
       throw new AppError("Project not found", "پروژه یافت نشد", 404);

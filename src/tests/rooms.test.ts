@@ -23,9 +23,7 @@ describe("Rooms API", () => {
     it("should create a room successfully", async () => {
       const project = await createProject();
 
-      const res = await request(app)
-        .post(`/projects/${project.id}/rooms`)
-        .send(validRoom);
+      const res = await request(app).post(`/projects/${project.id}/rooms`).send(validRoom);
 
       expect(res.status).toBe(201);
       expect(res.body.status).toBe("success");
@@ -34,9 +32,7 @@ describe("Rooms API", () => {
     });
 
     it("should fail if project does not exist", async () => {
-      const res = await request(app)
-        .post(`/projects/${NON_EXISTENT_UUID}/rooms`)
-        .send(validRoom);
+      const res = await request(app).post(`/projects/${NON_EXISTENT_UUID}/rooms`).send(validRoom);
 
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");
@@ -44,9 +40,7 @@ describe("Rooms API", () => {
 
     it("should fail if required fields are missing", async () => {
       const project = await createProject();
-      const res = await request(app)
-        .post(`/projects/${project.id}/rooms`)
-        .send({ type: "bedroom" });
+      const res = await request(app).post(`/projects/${project.id}/rooms`).send({ type: "bedroom" });
 
       expect(res.status).toBe(400);
       expect(res.body.status).toBe("error");
@@ -81,9 +75,7 @@ describe("Rooms API", () => {
   describe("PUT /projects/:project_id/rooms/:room_id", () => {
     it("should update room successfully", async () => {
       const project = await createProject();
-      const created = await request(app)
-        .post(`/projects/${project.id}/rooms`)
-        .send(validRoom);
+      const created = await request(app).post(`/projects/${project.id}/rooms`).send(validRoom);
 
       const roomId = created.body.data.id;
       const res = await request(app)
@@ -96,9 +88,7 @@ describe("Rooms API", () => {
 
     it("should return 404 for non-existent room", async () => {
       const project = await createProject();
-      const res = await request(app)
-        .put(`/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`)
-        .send(validRoom);
+      const res = await request(app).put(`/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`).send(validRoom);
 
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");
@@ -108,14 +98,10 @@ describe("Rooms API", () => {
   describe("DELETE /projects/:project_id/rooms/:room_id", () => {
     it("should delete room successfully", async () => {
       const project = await createProject();
-      const created = await request(app)
-        .post(`/projects/${project.id}/rooms`)
-        .send(validRoom);
+      const created = await request(app).post(`/projects/${project.id}/rooms`).send(validRoom);
 
       const roomId = created.body.data.id;
-      const res = await request(app).delete(
-        `/projects/${project.id}/rooms/${roomId}`,
-      );
+      const res = await request(app).delete(`/projects/${project.id}/rooms/${roomId}`);
 
       expect(res.status).toBe(200);
       expect(res.body.status).toBe("success");
@@ -123,9 +109,7 @@ describe("Rooms API", () => {
 
     it("should return 404 for non-existent room", async () => {
       const project = await createProject();
-      const res = await request(app).delete(
-        `/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`,
-      );
+      const res = await request(app).delete(`/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`);
 
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");

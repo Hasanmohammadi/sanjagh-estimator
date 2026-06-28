@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { asyncHandler, sendSuccess } from "../utils/apiResponse";
 import { validate } from "../middlewares/validate";
 import { createEstimateSchema } from "../validators/estimate.validator";
@@ -14,10 +14,7 @@ router.post(
   "/",
   validate<EstimateParams>(createEstimateSchema),
   asyncHandler<EstimateParams>(async (req, res) => {
-    const estimate = await estimateService.create(
-      req.params.project_id,
-      req.body,
-    );
+    const estimate = await estimateService.create(req.params.project_id, req.body);
     sendSuccess(res, estimate, 201);
   }),
 );

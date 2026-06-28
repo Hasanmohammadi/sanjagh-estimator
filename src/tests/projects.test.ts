@@ -6,9 +6,7 @@ import { NON_EXISTENT_UUID } from "./setup";
 describe("Projects API", () => {
   describe("POST /projects", () => {
     it("should create a project successfully", async () => {
-      const res = await request(app)
-        .post("/projects")
-        .send({ title: "پروژه تست" });
+      const res = await request(app).post("/projects").send({ title: "پروژه تست" });
 
       expect(res.status).toBe(201);
       expect(res.body.status).toBe("success");
@@ -48,9 +46,7 @@ describe("Projects API", () => {
 
   describe("GET /projects/:id", () => {
     it("should return project with rooms", async () => {
-      const created = await request(app)
-        .post("/projects")
-        .send({ title: "پروژه تست" });
+      const created = await request(app).post("/projects").send({ title: "پروژه تست" });
 
       const id = created.body.data.id;
       const res = await request(app).get(`/projects/${id}`);
@@ -69,9 +65,7 @@ describe("Projects API", () => {
 
   describe("DELETE /projects/:id", () => {
     it("should delete project successfully", async () => {
-      const created = await request(app)
-        .post("/projects")
-        .send({ title: "پروژه تست" });
+      const created = await request(app).post("/projects").send({ title: "پروژه تست" });
 
       const id = created.body.data.id;
       const res = await request(app).delete(`/projects/${id}`);

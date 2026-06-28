@@ -1,10 +1,7 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { asyncHandler, sendSuccess } from "../utils/apiResponse";
 import { validate } from "../middlewares/validate";
-import {
-  createRoomSchema,
-  updateRoomSchema,
-} from "../validators/room.validator";
+import { createRoomSchema, updateRoomSchema } from "../validators/room.validator";
 import { roomService } from "../services/room.service";
 
 interface RoomParams {
@@ -18,11 +15,7 @@ router.post(
   "/",
   validate<RoomParams>(createRoomSchema),
   asyncHandler<RoomParams>(async (req, res) => {
-    const room = await roomService.create(
-      req.params.project_id,
-      req.body,
-      req.user!.id,
-    );
+    const room = await roomService.create(req.params.project_id, req.body, req.user!.id);
     sendSuccess(res, room, 201);
   }),
 );
@@ -31,11 +24,7 @@ router.put(
   "/:room_id",
   validate<RoomParams>(updateRoomSchema),
   asyncHandler<RoomParams>(async (req, res) => {
-    const room = await roomService.update(
-      req.params.room_id,
-      req.body,
-      req.user!.id,
-    );
+    const room = await roomService.update(req.params.room_id, req.body, req.user!.id);
     sendSuccess(res, room);
   }),
 );

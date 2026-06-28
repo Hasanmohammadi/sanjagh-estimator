@@ -11,8 +11,7 @@ export default defineConfig({
     fileParallelism: false,
 
     env: {
-      DATABASE_URL:
-        "postgresql://postgres:postgres@localhost:5433/painting_estimator_test",
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/painting_estimator_test",
       NODE_ENV: "test",
     },
   },

@@ -27,11 +27,7 @@ export class AppError extends Error {
 }
 
 // 3. Helper function to send success responses
-export function sendSuccess<T>(
-  res: Response,
-  data: T,
-  statusCode: number = 200,
-) {
+export function sendSuccess<T>(res: Response, data: T, statusCode: number = 200) {
   const response: ApiResponse<T> = {
     data: data,
     status: "success",
@@ -50,12 +46,7 @@ export const asyncHandler = <P = ParamsDictionary>(
 };
 
 // 5. Global Error Handling Middleware
-export const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof AppError) {
     const response: ApiResponse<null> = {
       data: null,

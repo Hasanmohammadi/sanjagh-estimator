@@ -23,15 +23,15 @@ export const priceConfigSchema = z
     acrylic_sqm_min: positivePrice("حداقل قیمت هر متر مربع رنگ آکریلیک"),
     acrylic_sqm_max: positivePrice("حداکثر قیمت هر متر مربع رنگ آکریلیک"),
   })
-  .refine((data) => data.plastic_sqm_min < data.plastic_sqm_max, {
+  .refine(data => data.plastic_sqm_min < data.plastic_sqm_max, {
     message: "حداقل قیمت پلاستیک باید کمتر از حداکثر باشد",
     path: ["plastic_sqm_min"],
   })
-  .refine((data) => data.oil_sqm_min < data.oil_sqm_max, {
+  .refine(data => data.oil_sqm_min < data.oil_sqm_max, {
     message: "حداقل قیمت روغن باید کمتر از حداکثر باشد",
     path: ["oil_sqm_min"],
   })
-  .refine((data) => data.acrylic_sqm_min < data.acrylic_sqm_max, {
+  .refine(data => data.acrylic_sqm_min < data.acrylic_sqm_max, {
     message: "حداقل قیمت آکریلیک باید کمتر از حداکثر باشد",
     path: ["acrylic_sqm_min"],
   });

@@ -10,50 +10,31 @@ export const estimateService = {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
 
-    const project = await pool.query("SELECT id FROM projects WHERE id = $1", [
-      project_id,
-    ]);
+    const project = await pool.query("SELECT id FROM projects WHERE id = $1", [project_id]);
 
     if (project.rows.length === 0) {
       throw new AppError("Project not found", "پروژه یافت نشد", 404);
     }
 
-    const roomsResult = await pool.query(
-      "SELECT * FROM rooms WHERE project_id = $1",
-      [project_id],
-    );
+    const roomsResult = await pool.query("SELECT * FROM rooms WHERE project_id = $1", [project_id]);
 
     if (roomsResult.rows.length === 0) {
-      throw new AppError(
-        "No rooms found for this project",
-        "هیچ اتاقی برای این پروژه وجود ندارد",
-        400,
-      );
+      throw new AppError("No rooms found for this project", "هیچ اتاقی برای این پروژه وجود ندارد", 400);
     }
 
     // تبدیل string به number
-    const rooms = roomsResult.rows.map((room) => ({
+    const rooms = roomsResult.rows.map(room => ({
       ...room,
       width: Number(room.width),
       length: Number(room.length),
       height: Number(room.height),
       wall_coats: Number(room.wall_coats),
-      ceiling_coats: room.ceiling_coats
-        ? Number(room.ceiling_coats)
-        : undefined,
+      ceiling_coats: room.ceiling_coats ? Number(room.ceiling_coats) : undefined,
     }));
-    const estimate = calculateEstimate(
-      rooms,
-      data.paint_prices,
-      data.paint_price_per_liter,
-      data.with_materials,
-    );
+    const estimate = calculateEstimate(rooms, data.paint_prices, data.paint_price_per_liter, data.with_materials);
 
     const adjusted_labor_cost = estimate.total_labor_cost * data.slider_value;
-    const final_cost =
-      estimate.total_paint_cost +
-      adjusted_labor_cost +
-      estimate.accessories_cost;
+    const final_cost = estimate.total_paint_cost + adjusted_labor_cost + estimate.accessories_cost;
 
     // ذخیره در دیتابیس
     const result = await pool.query(
@@ -85,17 +66,12 @@ export const estimateService = {
     if (!isValidUUID(project_id)) {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
-    const result = await pool.query(
-      `SELECT * FROM estimates WHERE project_id = $1 ORDER BY created_at DESC LIMIT 1`,
-      [project_id],
-    );
+    const result = await pool.query(`SELECT * FROM estimates WHERE project_id = $1 ORDER BY created_at DESC LIMIT 1`, [
+      project_id,
+    ]);
 
     if (result.rows.length === 0) {
-      throw new AppError(
-        "No estimate found for this project",
-        "برآوردی برای این پروژه یافت نشد",
-        404,
-      );
+      throw new AppError("No estimate found for this project", "برآوردی برای این پروژه یافت نشد", 404);
     }
 
     return result.rows[0];

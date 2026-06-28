@@ -61,11 +61,7 @@ const COVERAGE: Record<PaintType, number> = {
 const WASTE_FACTOR = 1.1;
 const SQM_PER_DAY = 53;
 
-const calcPaintLiters = (
-  area: number,
-  coats: number,
-  paintType: PaintType,
-): number => {
+const calcPaintLiters = (area: number, coats: number, paintType: PaintType): number => {
   return Math.ceil((area * coats * WASTE_FACTOR) / COVERAGE[paintType]);
 };
 
@@ -80,18 +76,10 @@ const calcRoomEstimate = (
   const total_area = wall_area + ceiling_area;
 
   // لیتر رنگ (برای نمایش به کاربر)
-  const wall_paint_liters = calcPaintLiters(
-    wall_area,
-    room.wall_coats,
-    room.wall_paint_type,
-  );
+  const wall_paint_liters = calcPaintLiters(wall_area, room.wall_coats, room.wall_paint_type);
   const ceiling_paint_liters =
     room.ceiling_enabled && room.ceiling_paint_type && room.ceiling_coats
-      ? calcPaintLiters(
-          ceiling_area,
-          room.ceiling_coats,
-          room.ceiling_paint_type,
-        )
+      ? calcPaintLiters(ceiling_area, room.ceiling_coats, room.ceiling_paint_type)
       : 0;
 
   // قیمت متوسط هر متر مربع (با یا بدون مصالح)
@@ -118,17 +106,14 @@ const calcRoomEstimate = (
   let ceiling_cost = 0;
   if (room.ceiling_enabled && room.ceiling_paint_type && room.ceiling_coats) {
     const ceilAvgPrice = getAvgPrice(room.ceiling_paint_type);
-    ceiling_cost =
-      ceiling_area * room.ceiling_coats * WASTE_FACTOR * ceilAvgPrice;
+    ceiling_cost = ceiling_area * room.ceiling_coats * WASTE_FACTOR * ceilAvgPrice;
   }
 
   // هزینه رنگ جداگانه (برای نمایش جزییات)
   const wallPricePerLiter = paintPricePerLiter[room.wall_paint_type] ?? 0;
   const wall_paint_cost = wall_paint_liters * wallPricePerLiter;
 
-  const ceilPricePerLiter = room.ceiling_paint_type
-    ? (paintPricePerLiter[room.ceiling_paint_type] ?? 0)
-    : 0;
+  const ceilPricePerLiter = room.ceiling_paint_type ? (paintPricePerLiter[room.ceiling_paint_type] ?? 0) : 0;
   const ceiling_paint_cost = ceiling_paint_liters * ceilPricePerLiter;
 
   return {
@@ -144,15 +129,12 @@ const calcRoomEstimate = (
   };
 };
 
-const calcAccessoriesCost = (
-  paintPricePerLiter: PaintPricePerLiter,
-  total_area: number,
-): number => {
-  const prices = Object.values(paintPricePerLiter).filter(
-    (p): p is number => p !== undefined && p > 0,
-  );
+const calcAccessoriesCost = (paintPricePerLiter: PaintPricePerLiter, total_area: number): number => {
+  const prices = Object.values(paintPricePerLiter).filter((p): p is number => p !== undefined && p > 0);
 
-  if (prices.length === 0) return 0;
+  if (prices.length === 0) {
+    return 0;
+  }
 
   const avgPricePerLiter = prices.reduce((a, b) => a + b, 0) / prices.length;
   const base = avgPricePerLiter * 2;
@@ -167,19 +149,11 @@ export const calculateEstimate = (
   paintPricePerLiter: PaintPricePerLiter,
   withMaterials: boolean,
 ): EstimateResult => {
-  const roomEstimates = rooms.map((room) =>
-    calcRoomEstimate(room, paintPrices, paintPricePerLiter, withMaterials),
-  );
+  const roomEstimates = rooms.map(room => calcRoomEstimate(room, paintPrices, paintPricePerLiter, withMaterials));
 
   const total_area = roomEstimates.reduce((s, r) => s + r.total_area, 0);
-  const total_paint_liters = roomEstimates.reduce(
-    (s, r) => s + r.total_paint_liters,
-    0,
-  );
-  const total_paint_cost = roomEstimates.reduce(
-    (s, r) => s + r.wall_paint_cost + r.ceiling_paint_cost,
-    0,
-  );
+  const total_paint_liters = roomEstimates.reduce((s, r) => s + r.total_paint_liters, 0);
+  const total_paint_cost = roomEstimates.reduce((s, r) => s + r.wall_paint_cost + r.ceiling_paint_cost, 0);
   const total_labor_cost = roomEstimates.reduce((s, r) => s + r.labor_cost, 0);
   const accessories_cost = calcAccessoriesCost(paintPricePerLiter, total_area);
 

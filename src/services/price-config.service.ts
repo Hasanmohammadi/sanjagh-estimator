@@ -3,10 +3,7 @@ import { PriceConfigInput } from "../validators/price-config.validator";
 
 export const priceConfigService = {
   async findByUser(userId: string) {
-    const result = await pool.query(
-      "SELECT * FROM price_configs WHERE user_id = $1",
-      [userId],
-    );
+    const result = await pool.query("SELECT * FROM price_configs WHERE user_id = $1", [userId]);
 
     if (result.rows.length === 0) {
       return null;
