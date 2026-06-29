@@ -12,8 +12,8 @@ importers:
         specifier: ^5.4.0
         version: 5.4.0(react-hook-form@7.79.0(react@19.2.7))
       '@skul/sanjagh-design-system':
-        specifier: ^1.268.202606290833
-        version: 1.268.202606290833(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: ^1.271.202606290913
+        version: 1.271.202606290913(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tailwindcss/vite':
         specifier: ^4.3.1
         version: 4.3.1(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -579,8 +579,8 @@ packages:
   '@ryyppy/rescript-promise@2.1.0':
     resolution: {integrity: sha512-+dW6msBrj2Lr2hbEMX+HoWCvN89qVjl94RwbYWJgHQuj8jm/izdPC0YzxgpGoEFdeAEW2sOozoLcYHxT6o5WXQ==}
 
-  '@skul/sanjagh-design-system@1.268.202606290833':
-    resolution: {integrity: sha512-JEOojPZQNBCNRiZK7aO9XLZasM3CkAlx6tDEctp+li5+GYUx45HPhn9lFanKt5ZlV3RieFuqgE5IadXOkf4K0Q==}
+  '@skul/sanjagh-design-system@1.271.202606290913':
+    resolution: {integrity: sha512-p7/iOKMjCa5Hwvew36YgEclDBaZ99J/bAUOlCZSf6mC8cbf8EAfjmMIy+2uj/4zV8/9GX+96loUWSTOpzaEjUg==}
     peerDependencies:
       react: ^18
 
@@ -2487,7 +2487,7 @@ snapshots:
 
   '@ryyppy/rescript-promise@2.1.0': {}
 
-  '@skul/sanjagh-design-system@1.268.202606290833(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@skul/sanjagh-design-system@1.271.202606290913(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@rescript/react': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@ryyppy/rescript-promise': 2.1.0
