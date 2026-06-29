@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
-    "@skul/sanjagh-design-system": "^1.266.202606201340",
+    "@skul/sanjagh-design-system": "^1.268.202606290833",
     "@tailwindcss/vite": "^4.3.1",
     "@tanstack/react-query": "^5.101.0",
     "axios": "^1.18.1",
