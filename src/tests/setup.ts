@@ -14,7 +14,8 @@ beforeEach(async () => {
     TRUNCATE TABLE
       estimates,
       rooms,
-      projects
+      projects,
+      price_configs
     RESTART IDENTITY CASCADE;
   `);
 });
