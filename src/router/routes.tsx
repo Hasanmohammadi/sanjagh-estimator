@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Projects } from "@/pages";
 import Layout from "@/layouts";
 import CreateProjects from "@/pages/projects/create-project";
+import Projects from "@/pages/projects";
+import EstimationResult from "@/pages/estimation-results";
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,13 @@ export const router = createBrowserRouter([
         element: <CreateProjects />,
         handle: {
           title: "برآورد جدید",
+        },
+      },
+      {
+        path: "estimation-results",
+        element: <EstimationResult />,
+        handle: {
+          title: "نتایج برآورد",
         },
       },
     ],
