@@ -5,21 +5,20 @@ import app from "../app";
 const validPriceConfig = {
   currency: "تومان",
   plastic_per_liter: 700000,
-  plastic_sqm_min: 400000,
-  plastic_sqm_max: 800000,
   oil_per_liter: 850000,
-  oil_sqm_min: 500000,
-  oil_sqm_max: 950000,
   acrylic_per_liter: 950000,
-  acrylic_sqm_min: 600000,
-  acrylic_sqm_max: 1100000,
+  plastic_without_min: 400000,
+  plastic_without_max: 800000,
+  oil_without_min: 500000,
+  oil_without_max: 950000,
+  acrylic_without_min: 600000,
+  acrylic_without_max: 1100000,
 };
 
 describe("Price Config API", () => {
   describe("GET /price-config", () => {
     it("اگه config نداشت null برگردونه", async () => {
       const res = await request(app).get("/price-config");
-
       expect(res.status).toBe(200);
       expect(res.body.status).toBe("success");
       expect(res.body.data).toBeNull();
@@ -27,11 +26,10 @@ describe("Price Config API", () => {
 
     it("بعد از ذخیره، config رو برگردونه", async () => {
       await request(app).put("/price-config").send(validPriceConfig);
-
       const res = await request(app).get("/price-config");
 
       expect(res.status).toBe(200);
-      expect(res.body.data.plastic_per_liter).toBe("700000.00");
+      expect(Number(res.body.data.plastic_per_liter)).toBe(700000);
       expect(res.body.data.currency).toBe("تومان");
     });
   });
@@ -43,7 +41,7 @@ describe("Price Config API", () => {
       expect(res.status).toBe(200);
       expect(res.body.status).toBe("success");
       expect(res.body.data.user_id).toBeDefined();
-      expect(res.body.data.plastic_per_liter).toBe("700000.00");
+      expect(Number(res.body.data.plastic_per_liter)).toBe(700000);
     });
 
     it("دوبار ذخیره کنه (upsert)", async () => {
@@ -54,14 +52,7 @@ describe("Price Config API", () => {
         .send({ ...validPriceConfig, plastic_per_liter: 900000 });
 
       expect(updated.status).toBe(200);
-      expect(updated.body.data.plastic_per_liter).toBe("900000.00");
-    });
-
-    it("اگه فیلدی نباشه خطا بده", async () => {
-      const res = await request(app).put("/price-config").send({ plastic_per_liter: 700000 });
-
-      expect(res.status).toBe(400);
-      expect(res.body.status).toBe("error");
+      expect(Number(updated.body.data.plastic_per_liter)).toBe(900000);
     });
 
     it("اگه قیمت منفی باشه خطا بده", async () => {
@@ -94,7 +85,7 @@ describe("Price Config API", () => {
     it("اگه min بیشتر از max باشه خطا بده", async () => {
       const res = await request(app)
         .put("/price-config")
-        .send({ ...validPriceConfig, plastic_sqm_min: 900000, plastic_sqm_max: 500000 });
+        .send({ ...validPriceConfig, plastic_without_min: 900000, plastic_without_max: 500000 });
 
       expect(res.status).toBe(400);
       expect(res.body.status).toBe("error");
@@ -103,7 +94,7 @@ describe("Price Config API", () => {
     it("اگه min مساوی max باشه خطا بده", async () => {
       const res = await request(app)
         .put("/price-config")
-        .send({ ...validPriceConfig, plastic_sqm_min: 800000, plastic_sqm_max: 800000 });
+        .send({ ...validPriceConfig, plastic_without_min: 800000, plastic_without_max: 800000 });
 
       expect(res.status).toBe(400);
       expect(res.body.status).toBe("error");

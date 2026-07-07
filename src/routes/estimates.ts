@@ -27,4 +27,16 @@ router.get(
   }),
 );
 
+router.get(
+  "/calculate",
+  asyncHandler<EstimateParams>(async (req, res) => {
+    const with_materials = req.query.with_materials !== "false";
+    const slider_value = parseFloat(req.query.slider_value as string) || 1.0;
+
+    const result = await estimateService.calculate(req.params.project_id, req.user!.id, with_materials, slider_value);
+
+    sendSuccess(res, result);
+  }),
+);
+
 export default router;
