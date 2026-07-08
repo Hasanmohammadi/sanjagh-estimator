@@ -30,7 +30,7 @@ export default function PaintSummary() {
                     titleVariant="Body"
                     color="BlackMain"
                   />
-                  <Link to="price-config" className="flex gap-2">
+                  <Link to="/price-config" className="flex gap-2">
                     <DesignTitle sizeVariant="Subtitle" text="قیمت رنگ من" titleVariant="Body" color="BlueMain" />
                     <SettingsIcon color="#3F93F3" />
                   </Link>

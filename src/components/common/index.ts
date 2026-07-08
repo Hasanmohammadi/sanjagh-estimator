@@ -3,5 +3,6 @@ import BottomSheet from "./BottomSheet";
 import ButtonList from "./ButtonList";
 import { TomanCounter } from "./Counter";
 import HLine from "./HLine";
+import { PriceSlider } from "./PriceSlider";
 
-export { Accordion, BottomSheet, ButtonList, HLine, TomanCounter };
+export { Accordion, BottomSheet, ButtonList, HLine, TomanCounter, PriceSlider };

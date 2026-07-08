@@ -8,4 +8,6 @@ export const queryKeys = {
   room: (projectId: string, roomId: string) => ["projects", projectId, "rooms", roomId] as const,
 
   estimate: (projectId: string) => ["projects", projectId, "estimate"] as const,
+
+  priceConfig: ["price-config"] as const,
 };

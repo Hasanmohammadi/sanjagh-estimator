@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export default function PriceConfig() {
   return (
-    <Link to="price-config">
+    <Link to="/price-config">
       <Card
         children={
           <div className="flex justify-between items-center">

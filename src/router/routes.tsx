@@ -3,6 +3,7 @@ import Layout from "@/layouts";
 import CreateProjects from "@/pages/projects/create-project";
 import Projects from "@/pages/projects";
 import EstimationResult from "@/pages/estimation-results";
+import PriceConfig from "@/pages/price-config";
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,13 @@ export const router = createBrowserRouter([
         element: <EstimationResult />,
         handle: {
           title: "نتایج برآورد",
+        },
+      },
+      {
+        path: "price-config",
+        element: <PriceConfig />,
+        handle: {
+          title: "تنظیم قیمت پایه",
         },
       },
     ],

@@ -7,7 +7,8 @@ import DownloadIcon from "./DownloadIcon";
 import EditIcon from "./EditIcon";
 import HouseColorized from "./HouseColorized";
 import RemoveIcon from "./RemoveIcon";
-
+import PriceSettingIcon from "./PriceSettingIcon";
+import ColorPriceIcon from "./ColorPriceIcon";
 export {
   BackRightIcon,
   SettingsIcon,
@@ -18,4 +19,6 @@ export {
   EditIcon,
   HouseColorized,
   RemoveIcon,
+  PriceSettingIcon,
+  ColorPriceIcon,
 };
