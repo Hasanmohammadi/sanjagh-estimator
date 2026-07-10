@@ -6,12 +6,12 @@ import { CreateEstimateInput } from "../validators/estimate.validator";
 import { priceConfigService } from "./price-config.service";
 
 export const estimateService = {
-  async create(project_id: string, data: CreateEstimateInput) {
+  async create(project_id: string, userId: string, data: CreateEstimateInput) {
     if (!isValidUUID(project_id)) {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
 
-    const project = await pool.query("SELECT id FROM projects WHERE id = $1", [project_id]);
+    const project = await pool.query("SELECT id FROM projects WHERE id = $1 AND user_id = $2", [project_id, userId]);
 
     if (project.rows.length === 0) {
       throw new AppError("Project not found", "پروژه یافت نشد", 404);
@@ -23,6 +23,23 @@ export const estimateService = {
       throw new AppError("No rooms found for this project", "هیچ اتاقی برای این پروژه وجود ندارد", 400);
     }
 
+    // گرفتن price_config
+    const priceConfigRow = await priceConfigService.findByUser(userId);
+
+    const config: PriceConfig = priceConfigRow
+      ? {
+          plastic_per_liter: Number(priceConfigRow.plastic_per_liter) || undefined,
+          oil_per_liter: Number(priceConfigRow.oil_per_liter) || undefined,
+          acrylic_per_liter: Number(priceConfigRow.acrylic_per_liter) || undefined,
+          plastic_without_min: Number(priceConfigRow.plastic_without_min) || undefined,
+          plastic_without_max: Number(priceConfigRow.plastic_without_max) || undefined,
+          oil_without_min: Number(priceConfigRow.oil_without_min) || undefined,
+          oil_without_max: Number(priceConfigRow.oil_without_max) || undefined,
+          acrylic_without_min: Number(priceConfigRow.acrylic_without_min) || undefined,
+          acrylic_without_max: Number(priceConfigRow.acrylic_without_max) || undefined,
+        }
+      : {};
+
     const rooms = roomsResult.rows.map(room => ({
       ...room,
       width: Number(room.width),
@@ -32,89 +49,71 @@ export const estimateService = {
       ceiling_coats: room.ceiling_coats ? Number(room.ceiling_coats) : undefined,
     }));
 
-    // ساخت config از داده‌های ورودی
-    const config: PriceConfig = {
-      plastic_per_liter: data.paint_price_per_liter?.plastic,
-      oil_per_liter: data.paint_price_per_liter?.oil,
-      acrylic_per_liter: data.paint_price_per_liter?.acrylic,
-      plastic_without_min: data.paint_prices?.plastic_without,
-      plastic_without_max: data.paint_prices?.plastic_without,
-      oil_without_min: data.paint_prices?.oil_without,
-      oil_without_max: data.paint_prices?.oil_without,
-      acrylic_without_min: data.paint_prices?.acrylic_without,
-      acrylic_without_max: data.paint_prices?.acrylic_without,
-    };
-
     const estimate = calculateEstimate(rooms, config, data.with_materials);
 
-    const paintSummaryMap = new Map<
-      "plastic" | "oil" | "acrylic",
-      {
-        type: "plastic" | "oil" | "acrylic";
-        liters: number;
-        total_cost: number;
-      }
-    >();
-
-    const addPaint = (type: "plastic" | "oil" | "acrylic" | null | undefined, liters: number, totalCost: number) => {
-      if (!type || liters === 0) return;
-
-      const current = paintSummaryMap.get(type);
-
-      if (current) {
-        current.liters += liters;
-        current.total_cost += totalCost;
-      } else {
-        paintSummaryMap.set(type, {
-          type,
-          liters,
-          total_cost: totalCost,
-        });
-      }
-    };
+    // paint details
+    const paintSummaryMap = new Map<"plastic" | "oil" | "acrylic", { liters: number; total_cost: number }>();
 
     estimate.rooms.forEach((roomEstimate, index) => {
       const room = rooms[index];
 
-      addPaint(room.wall_paint_type, roomEstimate.wall_paint_liters, roomEstimate.wall_paint_cost);
+      const addPaint = (type: "plastic" | "oil" | "acrylic" | null | undefined, liters: number, totalCost: number) => {
+        if (!type || liters === 0) return;
+        const current = paintSummaryMap.get(type);
+        if (current) {
+          current.liters += liters;
+          current.total_cost += totalCost;
+        } else {
+          paintSummaryMap.set(type, { liters, total_cost: totalCost });
+        }
+      };
 
+      addPaint(room.wall_paint_type, roomEstimate.wall_paint_liters, roomEstimate.wall_paint_cost);
       addPaint(room.ceiling_paint_type, roomEstimate.ceiling_paint_liters, roomEstimate.ceiling_paint_cost);
     });
 
-    const paint_summary = Array.from(paintSummaryMap.values());
+    const paints = {
+      plastic: {
+        liters: paintSummaryMap.get("plastic")?.liters ?? 0,
+        total_cost: paintSummaryMap.get("plastic")?.total_cost ?? 0,
+        price_per_liter: config.plastic_per_liter ?? 0,
+      },
+      oil: {
+        liters: paintSummaryMap.get("oil")?.liters ?? 0,
+        total_cost: paintSummaryMap.get("oil")?.total_cost ?? 0,
+        price_per_liter: config.oil_per_liter ?? 0,
+      },
+      acrylic: {
+        liters: paintSummaryMap.get("acrylic")?.liters ?? 0,
+        total_cost: paintSummaryMap.get("acrylic")?.total_cost ?? 0,
+        price_per_liter: config.acrylic_per_liter ?? 0,
+      },
+    };
 
-    const adjusted_labor_cost = estimate.total_labor_cost * data.slider_value;
+    const adjusted_labor_cost = estimate.total_labor_cost;
     const final_cost = data.with_materials
       ? estimate.total_paint_cost + adjusted_labor_cost + estimate.accessories_cost
       : adjusted_labor_cost;
 
     const result = await pool.query(
       `INSERT INTO estimates
-        (project_id, with_materials, slider_value, paint_prices, customer_name, notes)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
-      [
-        project_id,
-        data.with_materials,
-        data.slider_value,
-        JSON.stringify(config),
-        data.customer_name || null,
-        data.notes || null,
-      ],
+      (project_id, with_materials, slider_value, paint_prices, customer_name, notes)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING *`,
+      [project_id, data.with_materials, 1.0, JSON.stringify(config), data.customer_name || null, data.notes || null],
     );
 
     const totalMaterialsCost = estimate.total_paint_cost + estimate.accessories_cost;
 
     return {
       ...result.rows[0],
-
       calculation: {
         final_cost,
         days: estimate.days,
         paint_area: estimate.total_area,
-
+        total_paint_cost: estimate.total_paint_cost,
         materials: {
-          paints: paint_summary,
+          paints,
           accessories_cost: estimate.accessories_cost,
           total_materials_cost: totalMaterialsCost,
         },
@@ -142,7 +141,7 @@ export const estimateService = {
     return result.rows[0];
   },
 
-  async calculate(project_id: string, userId: string, withMaterials: boolean, sliderValue: number) {
+  async calculate(project_id: string, userId: string, withMaterials: boolean) {
     if (!isValidUUID(project_id)) {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
@@ -164,25 +163,25 @@ export const estimateService = {
     // TODO: اگه config نبود از API سنجاق بگیر
     const config: PriceConfig = priceConfigRow
       ? {
-          plastic_per_liter: Number(priceConfigRow.plastic_per_liter) || undefined,
-          oil_per_liter: Number(priceConfigRow.oil_per_liter) || undefined,
-          acrylic_per_liter: Number(priceConfigRow.acrylic_per_liter) || undefined,
-          plastic_without_min: Number(priceConfigRow.plastic_without_min) || undefined,
-          plastic_without_max: Number(priceConfigRow.plastic_without_max) || undefined,
-          oil_without_min: Number(priceConfigRow.oil_without_min) || undefined,
-          oil_without_max: Number(priceConfigRow.oil_without_max) || undefined,
-          acrylic_without_min: Number(priceConfigRow.acrylic_without_min) || undefined,
-          acrylic_without_max: Number(priceConfigRow.acrylic_without_max) || undefined,
+          plastic_per_liter: priceConfigRow.plastic_per_liter || undefined,
+          oil_per_liter: priceConfigRow.oil_per_liter || undefined,
+          acrylic_per_liter: priceConfigRow.acrylic_per_liter || undefined,
+          plastic_without_min: priceConfigRow.plastic_without_min || undefined,
+          plastic_without_max: priceConfigRow.plastic_without_max || undefined,
+          oil_without_min: priceConfigRow.oil_without_min || undefined,
+          oil_without_max: priceConfigRow.oil_without_max || undefined,
+          acrylic_without_min: priceConfigRow.acrylic_without_min || undefined,
+          acrylic_without_max: priceConfigRow.acrylic_without_max || undefined,
         }
       : {};
 
     const rooms = roomsResult.rows.map(room => ({
       ...room,
-      width: Number(room.width),
-      length: Number(room.length),
-      height: Number(room.height),
-      wall_coats: Number(room.wall_coats),
-      ceiling_coats: room.ceiling_coats ? Number(room.ceiling_coats) : undefined,
+      width: room.width,
+      length: room.length,
+      height: room.height,
+      wall_coats: room.wall_coats,
+      ceiling_coats: room.ceiling_coats ? room.ceiling_coats : undefined,
     }));
 
     const estimate = calculateEstimate(rooms, config, withMaterials);
@@ -221,19 +220,36 @@ export const estimateService = {
       addPaint(room.ceiling_paint_type, roomEstimate.ceiling_paint_liters, roomEstimate.ceiling_paint_cost);
     });
 
-    const paint_summary = Array.from(paintSummaryMap.values());
-
-    const adjusted_labor_cost = estimate.total_labor_cost * sliderValue;
+    const paints = {
+      plastic: {
+        liters: paintSummaryMap.get("plastic")?.liters ?? 0,
+        total_cost: paintSummaryMap.get("plastic")?.total_cost ?? 0,
+        price_per_liter: config.plastic_per_liter ?? 0,
+      },
+      oil: {
+        liters: paintSummaryMap.get("oil")?.liters ?? 0,
+        total_cost: paintSummaryMap.get("oil")?.total_cost ?? 0,
+        price_per_liter: config.oil_per_liter ?? 0,
+      },
+      acrylic: {
+        liters: paintSummaryMap.get("acrylic")?.liters ?? 0,
+        total_cost: paintSummaryMap.get("acrylic")?.total_cost ?? 0,
+        price_per_liter: config.acrylic_per_liter ?? 0,
+      },
+    };
+    const adjusted_labor_cost = estimate.total_labor_cost;
     const final_cost = withMaterials
-      ? estimate.total_paint_cost + adjusted_labor_cost + estimate.accessories_cost
-      : adjusted_labor_cost;
+      ? Math.ceil(estimate.total_paint_cost / 1_000_000) +
+        Math.ceil(adjusted_labor_cost / 1_000_000) +
+        Math.ceil(estimate.accessories_cost / 1_000_000)
+      : Math.ceil(adjusted_labor_cost / 1_000_000);
 
-    const totalMaterialsCost = estimate.total_paint_cost + estimate.accessories_cost;
+    const totalMaterialsCost =
+      Math.ceil(estimate.total_paint_cost) + Math.ceil(estimate.accessories_cost / 500_000) * 500_000;
 
     return {
       project_id,
       with_materials: withMaterials,
-      slider_value: sliderValue,
       has_price_config: !!priceConfigRow,
 
       // customer: {
@@ -244,11 +260,11 @@ export const estimateService = {
       calculation: {
         final_cost,
         days: estimate.days,
-        paint_area: estimate.total_area,
+        paint_area: Number(estimate.total_area.toFixed(1)),
 
         materials: {
-          paints: paint_summary,
-          accessories_cost: estimate.accessories_cost,
+          paints,
+          accessories_cost: Math.ceil(estimate.accessories_cost / 500_000) * 500_000,
           total_materials_cost: totalMaterialsCost,
         },
       },

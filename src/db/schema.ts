@@ -42,7 +42,6 @@ const createTables = async (): Promise<void> => {
         id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         project_id     UUID REFERENCES projects(id) ON DELETE CASCADE,
         with_materials BOOLEAN DEFAULT TRUE,
-        slider_value   NUMERIC(4,2) DEFAULT 1.0,
         paint_prices   JSONB,
         customer_name  VARCHAR(255),
         notes          TEXT,

@@ -22,8 +22,40 @@ export const projectService = {
   },
 
   async findAll(userId: string) {
+    // Delete project that doesn't have any rooms after 5 minutes
+    await pool.query(
+      `DELETE FROM projects 
+     WHERE user_id = $1
+     AND created_at < NOW() - INTERVAL '5 minutes'
+     AND id NOT IN (
+       SELECT DISTINCT project_id FROM rooms
+     )`,
+      [userId],
+    );
+
     const result = await pool.query("SELECT * FROM projects WHERE user_id = $1 ORDER BY created_at DESC", [userId]);
-    return result.rows;
+
+    const projectsWithMeterage = await Promise.all(
+      result.rows.map(async project => {
+        const rooms = await pool.query(
+          "SELECT width, length, height, ceiling_enabled FROM rooms WHERE project_id = $1",
+          [project.id],
+        );
+
+        const meterage = rooms.rows.reduce((sum, room) => {
+          const wall_area = 2 * (room.width + room.length) * room.height;
+          const ceiling_area = room.ceiling_enabled ? room.width * room.length : 0;
+          return sum + wall_area + ceiling_area;
+        }, 0);
+
+        return {
+          ...project,
+          meterage: Math.round(meterage * 100) / 100,
+        };
+      }),
+    );
+
+    return projectsWithMeterage;
   },
 
   async findById(id: string, userId: string) {
@@ -39,8 +71,15 @@ export const projectService = {
 
     const rooms = await pool.query("SELECT * FROM rooms WHERE project_id = $1 ORDER BY created_at ASC", [id]);
 
+    const meterage = rooms.rows.reduce((sum, room) => {
+      const wall_area = 2 * (room.width + room.length) * room.height;
+      const ceiling_area = room.ceiling_enabled ? room.width * room.length : 0;
+      return sum + wall_area + ceiling_area;
+    }, 0);
+
     return {
       ...project.rows[0],
+      meterage: Math.round(meterage * 100) / 100,
       rooms: rooms.rows,
     };
   },

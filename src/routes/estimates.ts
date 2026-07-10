@@ -14,7 +14,7 @@ router.post(
   "/",
   validate<EstimateParams>(createEstimateSchema),
   asyncHandler<EstimateParams>(async (req, res) => {
-    const estimate = await estimateService.create(req.params.project_id, req.body);
+    const estimate = await estimateService.create(req.params.project_id, req.user!.id, req.body);
     sendSuccess(res, estimate, 201);
   }),
 );
@@ -31,9 +31,8 @@ router.get(
   "/calculate",
   asyncHandler<EstimateParams>(async (req, res) => {
     const with_materials = req.query.with_materials !== "false";
-    const slider_value = parseFloat(req.query.slider_value as string) || 1.0;
 
-    const result = await estimateService.calculate(req.params.project_id, req.user!.id, with_materials, slider_value);
+    const result = await estimateService.calculate(req.params.project_id, req.user!.id, with_materials);
 
     sendSuccess(res, result);
   }),

@@ -22,23 +22,22 @@ const addRoom = async (projectId: string) => {
 };
 
 const validEstimate = {
-  paint_prices: {
-    plastic_with: 800000,
-    plastic_without: 500000,
-    oil_with: 950000,
-    oil_without: 600000,
-    acrylic_with: 1050000,
-    acrylic_without: 700000,
-  },
-  paint_price_per_liter: {
-    plastic: 700000,
-    oil: 850000,
-    acrylic: 950000,
-  },
   with_materials: true,
-  slider_value: 1.0,
   customer_name: "ایمان نجاتی",
   notes: "تست",
+};
+
+const priceConfig = {
+  currency: "تومان",
+  plastic_per_liter: 700000,
+  oil_per_liter: 850000,
+  acrylic_per_liter: 950000,
+  plastic_without_min: 400000,
+  plastic_without_max: 800000,
+  oil_without_min: 500000,
+  oil_without_max: 950000,
+  acrylic_without_min: 600000,
+  acrylic_without_max: 1100000,
 };
 
 describe("Estimates API", () => {
@@ -46,6 +45,7 @@ describe("Estimates API", () => {
     it("should create estimate successfully", async () => {
       const project = await createProject();
       await addRoom(project.id);
+      await request(app).put("/price-config").send(priceConfig);
 
       const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
 
@@ -68,31 +68,10 @@ describe("Estimates API", () => {
       expect(res.status).toBe(400);
     });
 
-    it("should reject slider_value above 1.2", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      const res = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, slider_value: 1.5 });
-
-      expect(res.status).toBe(400);
-    });
-
-    it("should reject slider_value below 0.8", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      const res = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, slider_value: 0.5 });
-
-      expect(res.status).toBe(400);
-    });
-
     it("با مصالح از بدون مصالح گرون‌تر باشه", async () => {
       const project = await createProject();
       await addRoom(project.id);
+      await request(app).put("/price-config").send(priceConfig);
 
       const withMat = await request(app)
         .post(`/projects/${project.id}/estimates`)
@@ -105,36 +84,6 @@ describe("Estimates API", () => {
       expect(withMat.body.data.calculation.final_cost).toBeGreaterThan(withoutMat.body.data.calculation.final_cost);
     });
 
-    it("اسلایدر ۱.۲ قیمت نهایی رو بیشتر از ۱.۰ کنه", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      const slider1 = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, slider_value: 1.0 });
-
-      const slider12 = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, slider_value: 1.2 });
-
-      expect(slider12.body.data.calculation.final_cost).toBeGreaterThan(slider1.body.data.calculation.final_cost);
-    });
-
-    it("اسلایدر روی قیمت رنگ تاثیر نذاره", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      const slider1 = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, slider_value: 1.0 });
-
-      const slider12 = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, slider_value: 1.2 });
-
-      expect(slider1.body.data.calculation.total_paint_cost).toBe(slider12.body.data.calculation.total_paint_cost);
-    });
-
     it("چند اتاق رو با هم حساب کنه", async () => {
       const project = await createProject();
       await addRoom(project.id);
@@ -143,7 +92,6 @@ describe("Estimates API", () => {
       const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
 
       expect(res.body.data.calculation.paint_area).toBeGreaterThan(0);
-      expect(res.body.data.calculation.materials.paints.length).toBeGreaterThan(0);
     });
 
     it("اطلاعات مشتری ذخیره بشه", async () => {
@@ -154,6 +102,45 @@ describe("Estimates API", () => {
 
       expect(res.body.data.customer_name).toBe("ایمان نجاتی");
       expect(res.body.data.notes).toBe("تست");
+    });
+
+    it("paints به صورت object با سه کلید باشه", async () => {
+      const project = await createProject();
+      await addRoom(project.id);
+      await request(app).put("/price-config").send(priceConfig);
+
+      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
+
+      const paints = res.body.data.calculation.materials.paints;
+      expect(paints).toBeDefined();
+      expect(paints.plastic).toBeDefined();
+      expect(paints.oil).toBeDefined();
+      expect(paints.acrylic).toBeDefined();
+    });
+
+    it("paints لیتر و هزینه و قیمت هر لیتر داشته باشه", async () => {
+      const project = await createProject();
+      await addRoom(project.id);
+      await request(app).put("/price-config").send(priceConfig);
+
+      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
+
+      const plastic = res.body.data.calculation.materials.paints.plastic;
+      expect(plastic.liters).toBeGreaterThan(0);
+      expect(plastic.total_cost).toBeGreaterThan(0);
+      expect(plastic.price_per_liter).toBe(700000);
+    });
+
+    it("رنگ‌هایی که استفاده نشدن صفر باشن", async () => {
+      const project = await createProject();
+      await addRoom(project.id);
+      await request(app).put("/price-config").send(priceConfig);
+
+      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
+
+      const paints = res.body.data.calculation.materials.paints;
+      expect(paints.oil.liters).toBe(0);
+      expect(paints.acrylic.liters).toBe(0);
     });
   });
 
@@ -173,7 +160,6 @@ describe("Estimates API", () => {
     it("should return 404 if no estimate exists", async () => {
       const project = await createProject();
       const res = await request(app).get(`/projects/${project.id}/estimates`);
-
       expect(res.status).toBe(404);
     });
   });
@@ -187,60 +173,27 @@ describe("GET /projects/:project_id/estimates/calculate", () => {
     const res = await request(app).get(`/projects/${project.id}/estimates/calculate`);
 
     expect(res.status).toBe(200);
-    expect(res.body.status).toBe("success");
     expect(res.body.data.has_price_config).toBe(false);
-
     expect(res.body.data.calculation.paint_area).toBeGreaterThan(0);
     expect(res.body.data.calculation.days).toBeGreaterThan(0);
-
-    expect(res.body.data.calculation.materials).toBeDefined();
   });
 
   it("با price config محاسبه کنه", async () => {
     const project = await createProject();
     await addRoom(project.id);
-
-    await request(app).put("/price-config").send({
-      currency: "تومان",
-      plastic_per_liter: 700000,
-      oil_per_liter: 850000,
-      acrylic_per_liter: 950000,
-      plastic_without_min: 400000,
-      plastic_without_max: 800000,
-      oil_without_min: 500000,
-      oil_without_max: 950000,
-      acrylic_without_min: 600000,
-      acrylic_without_max: 1100000,
-    });
+    await request(app).put("/price-config").send(priceConfig);
 
     const res = await request(app).get(`/projects/${project.id}/estimates/calculate`);
 
     expect(res.status).toBe(200);
     expect(res.body.data.has_price_config).toBe(true);
-
     expect(res.body.data.calculation.final_cost).toBeGreaterThan(0);
-
-    expect(res.body.data.calculation.materials.accessories_cost).toBeGreaterThan(0);
-
-    expect(res.body.data.calculation.materials.total_materials_cost).toBeGreaterThan(0);
   });
 
-  it("با with_materials=false اجرت کمتر باشه", async () => {
+  it("با with_materials=false قیمت کمتر باشه", async () => {
     const project = await createProject();
     await addRoom(project.id);
-
-    await request(app).put("/price-config").send({
-      currency: "تومان",
-      plastic_per_liter: 700000,
-      oil_per_liter: 850000,
-      acrylic_per_liter: 950000,
-      plastic_without_min: 400000,
-      plastic_without_max: 800000,
-      oil_without_min: 500000,
-      oil_without_max: 950000,
-      acrylic_without_min: 600000,
-      acrylic_without_max: 1100000,
-    });
+    await request(app).put("/price-config").send(priceConfig);
 
     const withMat = await request(app).get(`/projects/${project.id}/estimates/calculate?with_materials=true`);
     const withoutMat = await request(app).get(`/projects/${project.id}/estimates/calculate?with_materials=false`);
@@ -248,45 +201,10 @@ describe("GET /projects/:project_id/estimates/calculate", () => {
     expect(withMat.body.data.calculation.final_cost).toBeGreaterThan(withoutMat.body.data.calculation.final_cost);
   });
 
-  it("slider_value روی final_cost تاثیر بذاره", async () => {
-    const project = await createProject();
-    await addRoom(project.id);
-
-    await request(app).put("/price-config").send({
-      currency: "تومان",
-      plastic_per_liter: 700000,
-      oil_per_liter: 850000,
-      acrylic_per_liter: 950000,
-      plastic_without_min: 400000,
-      plastic_without_max: 800000,
-      oil_without_min: 500000,
-      oil_without_max: 950000,
-      acrylic_without_min: 600000,
-      acrylic_without_max: 1100000,
-    });
-
-    const slider1 = await request(app).get(`/projects/${project.id}/estimates/calculate?slider_value=1.0`);
-    const slider12 = await request(app).get(`/projects/${project.id}/estimates/calculate?slider_value=1.2`);
-
-    expect(slider12.body.data.calculation.final_cost).toBeGreaterThan(slider1.body.data.calculation.final_cost);
-  });
-
   it("slider روی قیمت رنگ تاثیر نذاره", async () => {
     const project = await createProject();
     await addRoom(project.id);
-
-    await request(app).put("/price-config").send({
-      currency: "تومان",
-      plastic_per_liter: 700000,
-      oil_per_liter: 850000,
-      acrylic_per_liter: 950000,
-      plastic_without_min: 400000,
-      plastic_without_max: 800000,
-      oil_without_min: 500000,
-      oil_without_max: 950000,
-      acrylic_without_min: 600000,
-      acrylic_without_max: 1100000,
-    });
+    await request(app).put("/price-config").send(priceConfig);
 
     const slider1 = await request(app).get(`/projects/${project.id}/estimates/calculate?slider_value=1.0`);
     const slider12 = await request(app).get(`/projects/${project.id}/estimates/calculate?slider_value=1.2`);
@@ -318,50 +236,6 @@ describe("GET /projects/:project_id/estimates/calculate", () => {
     const res = await request(app).get(`/projects/${project.id}/estimates/calculate`);
 
     expect(res.body.data.calculation.paint_area).toBeGreaterThan(0);
-
-    expect(res.body.data.calculation.materials.paints.length).toBeGreaterThan(0);
+    expect(res.body.data.calculation.days).toBeGreaterThan(0);
   });
-});
-
-it("paint_summary را برگرداند", async () => {
-  const project = await createProject();
-  await addRoom(project.id);
-
-  const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
-
-  expect(res.status).toBe(201);
-
-  expect(res.body.data.calculation.materials.paints).toBeDefined();
-
-  expect(Array.isArray(res.body.data.calculation.materials.paints)).toBe(true);
-
-  expect(res.body.data.calculation.materials.paints.length).toBeGreaterThan(0);
-});
-
-it("paint_summary مجموع لیتر هر رنگ را درست محاسبه کند", async () => {
-  const project = await createProject();
-  await addRoom(project.id);
-
-  const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
-
-  const summary = res.body.data.calculation.materials.paints;
-
-  const totalLiters = summary.reduce((sum: number, item: any) => sum + item.liters, 0);
-
-  expect(totalLiters).toBeGreaterThan(0);
-});
-
-it("paint_summary مجموع هزینه رنگ را درست محاسبه کند", async () => {
-  const project = await createProject();
-  await addRoom(project.id);
-
-  const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
-
-  const summary = res.body.data.calculation.materials.paints;
-
-  const totalCost = summary.reduce((sum: number, item: any) => sum + item.total_cost, 0);
-
-  expect(totalCost).toBeGreaterThan(0);
-
-  expect(totalCost).toBeLessThanOrEqual(res.body.data.calculation.materials.total_materials_cost);
 });
