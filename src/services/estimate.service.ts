@@ -97,10 +97,15 @@ export const estimateService = {
 
     const result = await pool.query(
       `INSERT INTO estimates
-      (project_id, with_materials, slider_value, paint_prices, customer_name, notes)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING *`,
-      [project_id, data.with_materials, 1.0, JSON.stringify(config), data.customer_name || null, data.notes || null],
+          (project_id, with_materials, paint_prices, notes)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (project_id) DO UPDATE SET
+           with_materials = EXCLUDED.with_materials,
+           paint_prices   = EXCLUDED.paint_prices,
+           notes          = EXCLUDED.notes,
+           updated_at     = NOW()
+         RETURNING *`,
+      [project_id, data.with_materials, JSON.stringify(config), data.notes || null],
     );
 
     const totalMaterialsCost = estimate.total_paint_cost + estimate.accessories_cost;

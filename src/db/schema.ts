@@ -22,7 +22,6 @@ const createTables = async (): Promise<void> => {
       CREATE TABLE IF NOT EXISTS rooms (
         id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         project_id          UUID REFERENCES projects(id) ON DELETE CASCADE,
-        user_id             UUID NOT NULL,
         type                VARCHAR(50) NOT NULL,
         width               NUMERIC(5,2) NOT NULL,
         length              NUMERIC(5,2) NOT NULL,
@@ -40,13 +39,13 @@ const createTables = async (): Promise<void> => {
     await client.query(`
       CREATE TABLE IF NOT EXISTS estimates (
         id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        project_id     UUID REFERENCES projects(id) ON DELETE CASCADE,
+        project_id     UUID REFERENCES projects(id) ON DELETE CASCADE UNIQUE,
         with_materials BOOLEAN DEFAULT TRUE,
         paint_prices   JSONB,
-        customer_name  VARCHAR(255),
         notes          TEXT,
-        created_at     TIMESTAMP DEFAULT NOW()
-      );
+        created_at     TIMESTAMP DEFAULT NOW(),
+        updated_at     TIMESTAMP DEFAULT NOW()
+        );
     `);
 
     await client.query(`
@@ -54,20 +53,15 @@ const createTables = async (): Promise<void> => {
         id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id              UUID NOT NULL UNIQUE,
         currency             VARCHAR(10) NOT NULL DEFAULT 'تومان',
-
-        -- قیمت هر لیتر رنگ
         plastic_per_liter    NUMERIC(12,2),
         oil_per_liter        NUMERIC(12,2),
         acrylic_per_liter    NUMERIC(12,2),
-
-        -- قیمت بدون مصالح هر متر مربع
         plastic_without_min  NUMERIC(12,2),
         plastic_without_max  NUMERIC(12,2),
         oil_without_min      NUMERIC(12,2),
         oil_without_max      NUMERIC(12,2),
         acrylic_without_min  NUMERIC(12,2),
         acrylic_without_max  NUMERIC(12,2),
-
         created_at           TIMESTAMP DEFAULT NOW(),
         updated_at           TIMESTAMP DEFAULT NOW()
       );

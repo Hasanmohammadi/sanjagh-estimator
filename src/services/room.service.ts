@@ -21,12 +21,11 @@ export const roomService = {
 
     const result = await pool.query(
       `INSERT INTO rooms 
-      (project_id, user_id, type, width, length, height, wall_paint_type, wall_coats, ceiling_enabled, ceiling_paint_type, ceiling_coats)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
-     RETURNING *`,
+        (project_id, type, width, length, height, wall_paint_type, wall_coats, ceiling_enabled, ceiling_paint_type, ceiling_coats)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+       RETURNING *`,
       [
         project_id,
-        userId,
         data.type,
         data.width,
         data.length,

@@ -94,13 +94,14 @@ describe("Estimates API", () => {
       expect(res.body.data.calculation.paint_area).toBeGreaterThan(0);
     });
 
-    it("اطلاعات مشتری ذخیره بشه", async () => {
+    it("notes ذخیره بشه", async () => {
       const project = await createProject();
       await addRoom(project.id);
 
-      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
+      const res = await request(app)
+        .post(`/projects/${project.id}/estimates`)
+        .send({ ...validEstimate, notes: "تست" });
 
-      expect(res.body.data.customer_name).toBe("ایمان نجاتی");
       expect(res.body.data.notes).toBe("تست");
     });
 
