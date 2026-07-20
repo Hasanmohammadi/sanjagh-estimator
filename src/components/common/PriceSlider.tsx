@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDownIcon, ChevronUpIcon } from "@/assets/icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/assets/icons";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 
 export interface PriceSliderProps {
@@ -163,10 +163,10 @@ export function PriceSlider({
             tabIndex={0}
             onKeyDown={handleKeyDown}
             style={{ left: `calc(${percent}% - 22px)` }}
-            className="absolute flex h-6 bg-design-white w-12 items-center justify-center rounded-full border border-design-gray-400 outline-none transition-shadow hover:shadow focus-visible:ring-2 focus-visible:ring-ring"
+            className="absolute flex h-6 bg-design-white w-12 items-center justify-evenly rounded-full border border-design-gray-400 outline-none transition-shadow hover:shadow focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <ChevronDownIcon />
-            <ChevronUpIcon />
+            <ChevronRightIcon />
+            <ChevronLeftIcon />
           </button>
         </div>
 

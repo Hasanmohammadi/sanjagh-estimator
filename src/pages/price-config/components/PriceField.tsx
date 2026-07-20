@@ -25,7 +25,7 @@ export function PriceField({
             backgroundVariant="Outlined"
             heightVariant="MDTextField"
             value={field.value == null ? "" : String(field.value)}
-            onTextChanged={(text: string) => field.onChange(text)}
+            onTextChanged={(text: string) => field.onChange(Number(text))}
             className="border border-design-gray-200 h-10 pl-2"
             placeholder={placeholder}
             leftContent={{ TAG: "Text", value: "تومان" }}

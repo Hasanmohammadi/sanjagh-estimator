@@ -25,7 +25,7 @@ export default function Projects() {
           heightVariant="MDButton"
           widthVariant="FixedWidthButton"
           onClick={() => {
-            createProject({ title: `test ${Math.floor(Math.random() * 10)}` });
+            createProject({ title: `پروژه ناقص است` });
           }}
         />
       </div>
@@ -35,7 +35,7 @@ export default function Projects() {
           <DesignTitle sizeVariant="SecondTitle" text="پروژه های قبلی" titleVariant="Body" color="BlackMain" />
           {projects.map(({ id, created_at, customer_name, meterage, title }) => (
             <div className="mt-3" key={id}>
-              <Accordion date={formatJalaliDate(created_at)} title={title}>
+              <Accordion date={formatJalaliDate(created_at)} title={`پروژه: ${title}`}>
                 <div className="flex justify-between items-center mt-4">
                   <DesignTitle
                     sizeVariant="SmallSubtitle"

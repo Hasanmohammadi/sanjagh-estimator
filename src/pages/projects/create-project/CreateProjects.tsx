@@ -1,24 +1,30 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
-import { BottomSheet } from "@/components/common";
+import { BottomSheet, ConfirmModal } from "@/components/common";
 import { useEffect, useState } from "react";
 import EmptyState from "./components/EmptyState";
 import BottomSheetContent from "./components/BottomSheetContent";
 import RoomCard from "./components/RoomCard";
-import { useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useProject } from "@/hooks/projects/useProject";
-import { useForm, type UseFormReturn } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { roomSchema, type RoomFormData } from "./schema";
+import { roomSchema } from "./schema";
 import { PaintType, RoomType } from "@/api/services/rooms";
+import { usePriceConfig } from "@/hooks/price-config/usePriceConfig";
+import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 
 export default function CreateProjects() {
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [roomSelectedId, setRoomSelectedId] = useState<string>();
   const [bottomSheetState, setBottomSheetState] = useState<"edit" | "create">("create");
+  const [priceConfigNotice, setPriceConfigNotice] = useState(false);
+
+  const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get("projectId") as string;
   const { data: projectData } = useProject(projectId);
+  const { data: configData } = usePriceConfig();
 
   const form = useForm({
     resolver: yupResolver(roomSchema),
@@ -79,25 +85,51 @@ export default function CreateProjects() {
       ) : (
         <EmptyState />
       )}
-
-      <BottomSheet open={bottomSheetOpen} onClose={() => setBottomSheetOpen(false)}>
-        <BottomSheetContent
-          form={form as UseFormReturn<RoomFormData>}
-          bottomSheetState={bottomSheetState}
-          closeSheet={() => setBottomSheetOpen(false)}
-          roomSelectedId={roomSelectedId as string}
-        />
-      </BottomSheet>
-      {!!projectData?.rooms?.length && (
-        <div className="fixed bottom-0 py-2 left-0 right-0 px-4 bg-white z-1 border border-white">
+      <FormProvider {...form}>
+        <BottomSheet open={bottomSheetOpen} onClose={() => setBottomSheetOpen(false)}>
+          <BottomSheetContent
+            bottomSheetState={bottomSheetState}
+            closeSheet={() => setBottomSheetOpen(false)}
+            roomSelectedId={roomSelectedId as string}
+          />
+        </BottomSheet>
+      </FormProvider>
+      {!!projectData?.rooms?.length && !!configData ? (
+        <Link
+          to={`/estimation-results?projectId=${projectId}`}
+          className="fixed bottom-0 py-2 left-0 right-0 px-4 bg-white z-1 border border-white"
+        >
           <Button
             buttonVariant="PrimarySolidButton"
             contentVariant={{ TAG: "Text", value: "مشاهده نتایج" }}
             heightVariant="LGButton"
             widthVariant="FixedWidthButton"
           />
+        </Link>
+      ) : (
+        <div className="fixed bottom-0 py-2 left-0 right-0 px-4 bg-white z-1 border border-white">
+          <Button
+            buttonVariant="PrimarySolidButton"
+            contentVariant={{ TAG: "Text", value: "مشاهده نتایج" }}
+            heightVariant="LGButton"
+            widthVariant="FixedWidthButton"
+            onClick={() => setPriceConfigNotice(true)}
+          />
         </div>
       )}
+      <ConfirmModal
+        open={priceConfigNotice}
+        title="جدول قیمت"
+        onCancel={() => setPriceConfigNotice(false)}
+        onConfirm={() => navigate("/price-config")}
+        description={
+          <>
+            <DesignTitle sizeVariant="Subtitle" text="قیمتی از شما در دسترس نیست!" titleVariant="Caption" />
+            <br />
+            <DesignTitle sizeVariant="Subtitle" text="جدول قیمت خود  را پر کنید" titleVariant="Caption" />
+          </>
+        }
+      />
     </>
   );
 }

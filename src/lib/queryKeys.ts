@@ -9,5 +9,7 @@ export const queryKeys = {
 
   estimate: (projectId: string) => ["projects", projectId, "estimate"] as const,
 
+  calculate: (projectId: string) => ["projects", projectId, "calculate"] as const,
+
   priceConfig: ["price-config"] as const,
 };

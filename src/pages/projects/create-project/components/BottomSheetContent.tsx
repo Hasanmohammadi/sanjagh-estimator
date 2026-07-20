@@ -1,4 +1,4 @@
-import { Controller, type SubmitHandler, type UseFormReturn } from "react-hook-form";
+import { Controller, useFormContext, type SubmitHandler } from "react-hook-form";
 
 import { ButtonList, HLine, TomanCounter } from "@/components/common";
 
@@ -24,13 +24,13 @@ const ErrorMessage = ({ message }: { message?: string }) => {
 
 interface Props {
   closeSheet: () => void;
-  form: UseFormReturn<RoomFormData>;
   bottomSheetState: "edit" | "create";
   roomSelectedId: string;
 }
 
-export default function BottomSheetContent({ closeSheet, form, bottomSheetState, roomSelectedId }: Props) {
+export default function BottomSheetContent({ closeSheet, bottomSheetState, roomSelectedId }: Props) {
   const queryClient = useQueryClient();
+  const form = useFormContext<RoomFormData>();
 
   const ceilingEnabled = form.watch("ceilingEnabled");
 
@@ -306,7 +306,7 @@ export default function BottomSheetContent({ closeSheet, form, bottomSheetState,
           />
         </div>
       ) : (
-        <div className="fixed bottom-0 left-0 right-0 px-4 py-2 bg-white border border-white z-10">
+        <div className="fixed bottom-0 left-0 right-0 px-4 py-2 bg-white border shadow-design-black-1 shadow-2xl rounded-t-3xl border-white z-10">
           <Button
             buttonVariant="PrimarySolidButton"
             contentVariant={{

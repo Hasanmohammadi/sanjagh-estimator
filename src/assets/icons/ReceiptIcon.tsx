@@ -1,14 +1,15 @@
 const ReceiptIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
-      d="M6.16884 18.0584C6.92051 17.2517 8.06634 17.3159 8.72634 18.1959L9.65217 19.4334C10.3947 20.4142 11.5955 20.4142 12.338 19.4334L13.2638 18.1959C13.9238 17.3159 15.0697 17.2517 15.8213 18.0584C17.453 19.8 18.7822 19.2225 18.7822 16.7842V6.45337C18.7913 2.75921 17.9297 1.83337 14.4647 1.83337H7.53467C4.06967 1.83337 3.20801 2.75921 3.20801 6.45337V16.775C3.20801 19.2225 4.54634 19.7909 6.16884 18.0584Z"
-      stroke="black"
+      d="M6.73 19.7C7.55 18.82 8.8 18.89 9.52 19.85L10.53 21.2C11.34 22.27 12.65 22.27 13.46 21.2L14.47 19.85C15.19 18.89 16.44 18.82 17.26 19.7C19.04 21.6 20.49 20.97 20.49 18.31V7.04C20.5 3.01 19.56 2 15.78 2H8.22C4.44 2 3.5 3.01 3.5 7.04V18.3C3.5 20.97 4.96 21.59 6.73 19.7Z"
+      fill="black"
+      stroke="#292D32"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
-    <path d="M7.33301 6.41663H14.6663" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M8.25 10.0834H13.75" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8 7H16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9 11H15" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 

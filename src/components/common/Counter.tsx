@@ -19,6 +19,7 @@ export interface TomanCounterProps {
   className?: string;
   min?: number;
   max?: number;
+  size?: "md" | "sm";
 }
 
 const removeSeparators = (value: string): string => value.replace(/,/g, "");
@@ -68,6 +69,7 @@ export const TomanCounter: React.FC<TomanCounterProps> = ({
   className,
   min = 0,
   max = 1000000000,
+  size = "md",
 }) => {
   const [counterDisplayValue, setCounterDisplayValue] = useState<string>(initialCounterValue);
 
@@ -120,22 +122,22 @@ export const TomanCounter: React.FC<TomanCounterProps> = ({
   };
 
   const buttonBaseClassName =
-    "!text-black !text-[20px] font-normal !p-0 !w-10 shrink-0 border-0 !bg-transparent hover:!bg-gray-100 !rounded-none";
+    "!text-black !text-[20px] font-normal !p-0 !w-10 shrink-0 !border-0 !bg-transparent hover:!bg-gray-100 !rounded-none ";
 
   return (
     <div
       className={`${className} flex items-center border rounded-md overflow-hidden ${
-        hasError ? "border-redDesign-main" : "border-grayDesign-300"
+        hasError ? "border-redDesign-main" : "border-design-gray-300"
       }`}
     >
       <Button
-        onClick={() => onCounterDisplayChangeByStep(BidStepDirection.Decrement)}
+        onClick={() => onCounterDisplayChangeByStep(BidStepDirection.Increment)}
         widthVariant="FixedWidthButton"
-        heightVariant="MDButton"
+        heightVariant={size === "md" ? "MDButton" : "SMButton"}
         buttonVariant="SecondaryGrayButton"
-        contentVariant={{ TAG: "Text", value: "-" }}
-        disabled={isAtMin}
-        extraClassName={`${buttonBaseClassName} ${isAtMin ? "!opacity-30 !cursor-not-allowed hover:!bg-transparent" : ""}`}
+        contentVariant={{ TAG: "Text", value: "+" }}
+        disabled={isAtMax}
+        extraClassName={`${buttonBaseClassName} ${isAtMax ? "!opacity-30 !cursor-not-allowed hover:!bg-transparent" : ""}`}
       />
 
       <input
@@ -146,15 +148,14 @@ export const TomanCounter: React.FC<TomanCounterProps> = ({
         placeholder="0"
         onChange={e => onCounterDisplayValueChange(e.currentTarget.value)}
       />
-
       <Button
-        onClick={() => onCounterDisplayChangeByStep(BidStepDirection.Increment)}
+        onClick={() => onCounterDisplayChangeByStep(BidStepDirection.Decrement)}
         widthVariant="FixedWidthButton"
-        heightVariant="MDButton"
+        heightVariant={size === "md" ? "MDButton" : "SMButton"}
         buttonVariant="SecondaryGrayButton"
-        contentVariant={{ TAG: "Text", value: "+" }}
-        disabled={isAtMax}
-        extraClassName={`${buttonBaseClassName} ${isAtMax ? "!opacity-30 !cursor-not-allowed hover:!bg-transparent" : ""}`}
+        contentVariant={{ TAG: "Text", value: "-" }}
+        disabled={isAtMin}
+        extraClassName={`${buttonBaseClassName} ${isAtMin ? "!opacity-30 !cursor-not-allowed hover:!bg-transparent" : ""}`}
       />
     </div>
   );

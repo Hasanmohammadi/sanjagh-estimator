@@ -1,18 +1,17 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { estimateApi } from "@/api/services/estimates";
-import { queryKeys } from "@/lib/queryKeys";
-import type { CreateEstimatePayload } from "@/api/services/estimates";
+import type { EstimateFormValues } from "@/pages/estimation-results/schema";
 
-export function useCreateEstimate(projectId: string) {
-  const queryClient = useQueryClient();
+type UseUpdatePriceConfig = {
+  onSuccess?: () => void;
+};
 
+export function useCreateEstimate(projectId: string, options?: UseUpdatePriceConfig) {
   return useMutation({
-    mutationFn: (payload: CreateEstimatePayload) => estimateApi.create(projectId, payload),
+    mutationFn: (payload: EstimateFormValues) => estimateApi.create(projectId, payload),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.estimate(projectId),
-      });
+      options?.onSuccess?.();
     },
   });
 }

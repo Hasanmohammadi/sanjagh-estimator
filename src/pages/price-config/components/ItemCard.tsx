@@ -23,10 +23,8 @@ export function ItemCard({
           <DesignTitle sizeVariant="ThirdTitle" text={item.label} titleVariant="Body" color="BlackMain" />
 
           {section.variant === "single" ? (
-            // Materials section: a single price field per item.
             <PriceField control={control} name={`${item.key}.price`} placeholder={section.priceLabel} />
           ) : (
-            // Services section: min + max fields per item.
             <>
               <PriceField control={control} name={`${item.key}.min`} placeholder={section.minLabel} />
               <PriceField control={control} name={`${item.key}.max`} placeholder={section.maxLabel} />
