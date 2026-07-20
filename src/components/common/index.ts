@@ -5,5 +5,6 @@ import { ConfirmModal } from "./ConfirmModal";
 import { TomanCounter } from "./Counter";
 import HLine from "./HLine";
 import { PriceSlider } from "./PriceSlider";
+import Spinner from "./Spinner";
 
-export { Accordion, BottomSheet, ButtonList, HLine, TomanCounter, PriceSlider, ConfirmModal };
+export { Accordion, BottomSheet, ButtonList, HLine, TomanCounter, PriceSlider, ConfirmModal, Spinner };

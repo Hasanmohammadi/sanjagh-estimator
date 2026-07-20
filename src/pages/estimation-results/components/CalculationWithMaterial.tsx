@@ -7,11 +7,16 @@ import { useState, useEffect, useRef } from "react";
 import type { EstimateFormValues } from "../schema";
 
 export default function CalculationWithMaterial() {
-  const { setValue, control, getValues } = useFormContext<EstimateFormValues>();
+  const { setValue, control } = useFormContext<EstimateFormValues>();
 
   const totalCost = useWatch({
     control,
     name: "totalCost",
+  });
+
+  const finalCostVisibility = useWatch({
+    control,
+    name: "visibility.final_cost",
   });
 
   const [materialBasedTotalCost, setMaterialBasedTotalCost] = useState<number | null>(null);
@@ -45,13 +50,13 @@ export default function CalculationWithMaterial() {
           className="text-design-blue-1"
           label="نمایش"
           size="LG"
-          checked={getValues("visibility.final_cost")}
+          checked={finalCostVisibility}
           onCheckedChange={checked => {
             setValue("visibility.final_cost", checked);
           }}
         />
       </div>
-      {getValues("visibility.final_cost") && (
+      {finalCostVisibility && (
         <>
           {materialBasedTotalCost != null && (
             <Card extraClassName="mt-3 border-2 border-design-gray-200" shadow="NoShadow" variant="SM">

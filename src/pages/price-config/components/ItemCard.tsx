@@ -1,5 +1,3 @@
-"use client";
-
 import type { Control } from "react-hook-form";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { Card } from "@skul/sanjagh-design-system/src/Design_Card";

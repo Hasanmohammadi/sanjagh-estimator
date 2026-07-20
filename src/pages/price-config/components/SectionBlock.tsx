@@ -1,5 +1,3 @@
-"use client";
-
 import { useFormContext } from "react-hook-form";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { HLine } from "@/components/common";

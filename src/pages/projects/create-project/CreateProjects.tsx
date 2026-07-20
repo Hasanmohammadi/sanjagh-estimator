@@ -123,11 +123,10 @@ export default function CreateProjects() {
         onCancel={() => setPriceConfigNotice(false)}
         onConfirm={() => navigate("/price-config")}
         description={
-          <>
+          <div className="flex flex-col gap-0.5">
             <DesignTitle sizeVariant="Subtitle" text="قیمتی از شما در دسترس نیست!" titleVariant="Caption" />
-            <br />
             <DesignTitle sizeVariant="Subtitle" text="جدول قیمت خود  را پر کنید" titleVariant="Caption" />
-          </>
+          </div>
         }
       />
     </>

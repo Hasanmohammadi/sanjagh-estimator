@@ -9,7 +9,9 @@
     "lint": "eslint . --max-warnings=0",
     "preview": "vite preview",
     "prepare": "husky",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "type-check": "tsc -b --noEmit",
+    "check": "pnpm run type-check && pnpm run lint"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -29,6 +31,7 @@
     "react-hook-form": "^7.79.0",
     "react-router-dom": "^7.17.0",
     "tailwindcss": "^4.3.1",
+    "use-debounce": "^10.1.1",
     "yup": "^1.7.1"
   },
   "devDependencies": {

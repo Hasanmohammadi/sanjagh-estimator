@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { createPortal } from "react-dom";

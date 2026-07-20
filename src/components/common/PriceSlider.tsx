@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/assets/icons";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";

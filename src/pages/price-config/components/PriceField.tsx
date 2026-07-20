@@ -1,5 +1,3 @@
-"use client";
-
 import { Controller, type Control } from "react-hook-form";
 import TextField from "@skul/sanjagh-design-system/src/Design_TextField";
 import type { PricingFormValues } from "../lib/schema";
