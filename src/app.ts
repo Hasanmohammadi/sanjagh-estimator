@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
 import cors from "cors";
 import projectsRouter from "./routes/projects";
 import roomsRouter from "./routes/rooms";
@@ -16,10 +16,6 @@ app.use(authenticate);
 app.use("/projects", projectsRouter);
 app.use("/projects/:project_id/rooms", roomsRouter);
 app.use("/price-config", priceConfigRouter);
-
-app.get("/health", (req: Request, res: Response) => {
-  res.json({ status: "ok" });
-});
 
 app.use("/projects/:project_id/estimates", estimatesRouter);
 app.use(errorHandler);

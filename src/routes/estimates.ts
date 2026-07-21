@@ -30,10 +30,7 @@ router.get(
 router.get(
   "/calculate",
   asyncHandler<EstimateParams>(async (req, res) => {
-    const with_materials = req.query.with_materials !== "false";
-
-    const result = await estimateService.calculate(req.params.project_id, req.user!.id, with_materials);
-
+    const result = await estimateService.calculate(req.params.project_id, req.user!.id);
     sendSuccess(res, result);
   }),
 );

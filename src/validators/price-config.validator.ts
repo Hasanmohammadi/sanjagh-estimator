@@ -6,18 +6,15 @@ const priceField = (fieldName: string) =>
     .positive(`${fieldName} باید بزرگتر از صفر باشد`)
     .min(1000, `${fieldName} نمی‌تواند کمتر از ۱,۰۰۰ تومان باشد`)
     .max(100_000_000, `${fieldName} نمی‌تواند بیشتر از ۱۰۰,۰۰۰,۰۰۰ تومان باشد`)
-    .optional();
+    .optional()
+    .nullable();
 
 export const priceConfigSchema = z
   .object({
     currency: z.string().default("تومان"),
-
-    // قیمت هر لیتر رنگ
     plastic_per_liter: priceField("قیمت هر لیتر رنگ پلاستیک"),
     oil_per_liter: priceField("قیمت هر لیتر رنگ روغن"),
     acrylic_per_liter: priceField("قیمت هر لیتر رنگ آکریلیک"),
-
-    // قیمت بدون مصالح
     plastic_without_min: priceField("حداقل قیمت پلاستیک بدون مصالح"),
     plastic_without_max: priceField("حداکثر قیمت پلاستیک بدون مصالح"),
     oil_without_min: priceField("حداقل قیمت روغن بدون مصالح"),

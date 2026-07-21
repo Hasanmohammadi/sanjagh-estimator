@@ -25,12 +25,12 @@ const simpleRoom: RoomInput = {
 describe("calculateEstimate", () => {
   describe("محاسبه مساحت", () => {
     it("مساحت دیوار رو درست حساب کنه", () => {
-      const result = calculateEstimate([simpleRoom], defaultConfig, true);
+      const result = calculateEstimate([simpleRoom], defaultConfig);
       expect(result.rooms[0].wall_area).toBeCloseTo(50.4);
     });
 
     it("وقتی سقف غیرفعاله، مساحت سقف صفر باشه", () => {
-      const result = calculateEstimate([simpleRoom], defaultConfig, true);
+      const result = calculateEstimate([simpleRoom], defaultConfig);
       expect(result.rooms[0].ceiling_area).toBe(0);
     });
 
@@ -41,7 +41,7 @@ describe("calculateEstimate", () => {
         ceiling_paint_type: "plastic",
         ceiling_coats: 2,
       };
-      const result = calculateEstimate([roomWithCeiling], defaultConfig, true);
+      const result = calculateEstimate([roomWithCeiling], defaultConfig);
       expect(result.rooms[0].ceiling_area).toBe(20);
     });
 
@@ -52,7 +52,7 @@ describe("calculateEstimate", () => {
         ceiling_paint_type: "plastic",
         ceiling_coats: 2,
       };
-      const result = calculateEstimate([roomWithCeiling], defaultConfig, true);
+      const result = calculateEstimate([roomWithCeiling], defaultConfig);
       expect(result.rooms[0].total_area).toBeCloseTo(70.4);
     });
 
@@ -65,14 +65,14 @@ describe("calculateEstimate", () => {
         wall_coats: 2,
         ceiling_enabled: false,
       };
-      const result = calculateEstimate([simpleRoom, room2], defaultConfig, true);
+      const result = calculateEstimate([simpleRoom, room2], defaultConfig);
       expect(result.total_area).toBeCloseTo(84);
     });
   });
 
   describe("محاسبه لیتر رنگ", () => {
     it("لیتر رنگ دیوار رو با ضریب هدررفت حساب کنه", () => {
-      const result = calculateEstimate([simpleRoom], defaultConfig, true);
+      const result = calculateEstimate([simpleRoom], defaultConfig);
       // (50.4 * 2 * 1.1) / 10 = 11.088 → ceil = 12
       expect(result.rooms[0].wall_paint_liters).toBe(12);
     });
@@ -84,21 +84,21 @@ describe("calculateEstimate", () => {
         ceiling_paint_type: "acrylic",
         ceiling_coats: 2,
       };
-      const result = calculateEstimate([roomWithCeiling], defaultConfig, true);
+      const result = calculateEstimate([roomWithCeiling], defaultConfig);
       // (20 * 2 * 1.1) / 12 = 3.67 → ceil = 4
       expect(result.rooms[0].ceiling_paint_liters).toBe(4);
     });
 
     it("ضریب پوشش رنگ روغنی رو درست اعمال کنه", () => {
       const oilRoom: RoomInput = { ...simpleRoom, wall_paint_type: "oil" };
-      const result = calculateEstimate([oilRoom], defaultConfig, true);
+      const result = calculateEstimate([oilRoom], defaultConfig);
       // (50.4 * 2 * 1.1) / 9 = 12.32 → ceil = 13
       expect(result.rooms[0].wall_paint_liters).toBe(13);
     });
 
     it("ضریب پوشش آکریلیک رو درست اعمال کنه", () => {
       const acrylicRoom: RoomInput = { ...simpleRoom, wall_paint_type: "acrylic" };
-      const result = calculateEstimate([acrylicRoom], defaultConfig, true);
+      const result = calculateEstimate([acrylicRoom], defaultConfig);
       // (50.4 * 2 * 1.1) / 12 = 9.24 → ceil = 10
       expect(result.rooms[0].wall_paint_liters).toBe(10);
     });
@@ -107,8 +107,8 @@ describe("calculateEstimate", () => {
       const threeCoats: RoomInput = { ...simpleRoom, wall_coats: 3 };
       const twoCoats: RoomInput = { ...simpleRoom, wall_coats: 2 };
 
-      const result3 = calculateEstimate([threeCoats], defaultConfig, true);
-      const result2 = calculateEstimate([twoCoats], defaultConfig, true);
+      const result3 = calculateEstimate([threeCoats], defaultConfig);
+      const result2 = calculateEstimate([twoCoats], defaultConfig);
 
       expect(result3.rooms[0].wall_paint_liters).toBeGreaterThan(result2.rooms[0].wall_paint_liters);
     });
@@ -116,22 +116,13 @@ describe("calculateEstimate", () => {
 
   describe("محاسبه هزینه طبق فرمول سند", () => {
     it("هزینه دیوار بدون مصالح رو درست حساب کنه", () => {
-      const result = calculateEstimate([simpleRoom], defaultConfig, false);
-      // قیمت متوسط بدون مصالح = (500000 + 800000) / 2 = 650000
-      // هزینه = 50.4 * 2 * 1.1 * 650000
+      const result = calculateEstimate([simpleRoom], defaultConfig);
       const expectedLaborCost = 50.4 * 2 * 1.1 * 650000;
-      expect(result.rooms[0].labor_cost).toBeCloseTo(expectedLaborCost);
-    });
-
-    it("با مصالح از بدون مصالح گرون‌تر باشه", () => {
-      const withMat = calculateEstimate([simpleRoom], defaultConfig, true);
-      const withoutMat = calculateEstimate([simpleRoom], defaultConfig, false);
-      expect(withMat.rooms[0].labor_cost).toBeGreaterThan(withoutMat.rooms[0].labor_cost);
+      expect(result.rooms[0].wall_labor_cost).toBeCloseTo(expectedLaborCost);
     });
 
     it("هزینه رنگ per liter رو درست حساب کنه", () => {
-      const result = calculateEstimate([simpleRoom], defaultConfig, true);
-      // 12 لیتر * 700000
+      const result = calculateEstimate([simpleRoom], defaultConfig);
       expect(result.rooms[0].wall_paint_cost).toBe(12 * 700000);
     });
 
@@ -140,14 +131,14 @@ describe("calculateEstimate", () => {
         plastic_without_min: 500000,
         plastic_without_max: 800000,
       };
-      const result = calculateEstimate([simpleRoom], configWithoutLiter, true);
+      const result = calculateEstimate([simpleRoom], configWithoutLiter);
       expect(result.rooms[0].wall_paint_cost).toBe(0);
     });
   });
 
   describe("ملزومات", () => {
     it("ملزومات رو درست حساب کنه", () => {
-      const result = calculateEstimate([simpleRoom], defaultConfig, true);
+      const result = calculateEstimate([simpleRoom], defaultConfig);
       expect(result.accessories_cost).toBeGreaterThan(0);
     });
 
@@ -156,19 +147,19 @@ describe("calculateEstimate", () => {
         plastic_without_min: 500000,
         plastic_without_max: 800000,
       };
-      const result = calculateEstimate([simpleRoom], configWithoutLiter, true);
+      const result = calculateEstimate([simpleRoom], configWithoutLiter);
       expect(result.accessories_cost).toBe(0);
     });
   });
 
   describe("بازه قیمت", () => {
     it("حداقل قیمت ۸۰٪ قیمت پایه باشه", () => {
-      const result = calculateEstimate([simpleRoom], defaultConfig, true);
+      const result = calculateEstimate([simpleRoom], defaultConfig);
       expect(result.min_price).toBeCloseTo(result.base_cost * 0.8);
     });
 
     it("حداکثر قیمت ۱۲۰٪ قیمت پایه باشه", () => {
-      const result = calculateEstimate([simpleRoom], defaultConfig, true);
+      const result = calculateEstimate([simpleRoom], defaultConfig);
       expect(result.max_price).toBeCloseTo(result.base_cost * 1.2);
     });
   });
@@ -183,7 +174,7 @@ describe("calculateEstimate", () => {
         wall_coats: 1,
         ceiling_enabled: false,
       };
-      const result = calculateEstimate([tinyRoom], defaultConfig, true);
+      const result = calculateEstimate([tinyRoom], defaultConfig);
       expect(result.days).toBe(1);
     });
 
@@ -196,7 +187,7 @@ describe("calculateEstimate", () => {
         wall_coats: 2,
         ceiling_enabled: false,
       };
-      const result = calculateEstimate([bigRoom], defaultConfig, true);
+      const result = calculateEstimate([bigRoom], defaultConfig);
       // 2*(10+10)*2.8 = 112 → ceil(112/53) = 3
       expect(result.days).toBe(3);
     });
@@ -204,8 +195,8 @@ describe("calculateEstimate", () => {
 
   describe("اسلایدر", () => {
     it("قیمت رنگ با config یکسان تغییر نکنه", () => {
-      const result1 = calculateEstimate([simpleRoom], defaultConfig, true);
-      const result2 = calculateEstimate([simpleRoom], defaultConfig, true);
+      const result1 = calculateEstimate([simpleRoom], defaultConfig);
+      const result2 = calculateEstimate([simpleRoom], defaultConfig);
       expect(result1.total_paint_cost).toBe(result2.total_paint_cost);
     });
   });

@@ -12,7 +12,6 @@ const createTables = async (): Promise<void> => {
         user_id       UUID NOT NULL,
         title         VARCHAR(255) NOT NULL,
         customer_name VARCHAR(255),
-        meterage      NUMERIC(10,2),
         created_at    TIMESTAMP DEFAULT NOW(),
         updated_at    TIMESTAMP DEFAULT NOW()
       );
@@ -40,9 +39,10 @@ const createTables = async (): Promise<void> => {
       CREATE TABLE IF NOT EXISTS estimates (
         id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         project_id     UUID REFERENCES projects(id) ON DELETE CASCADE UNIQUE,
-        with_materials BOOLEAN DEFAULT TRUE,
         paint_prices   JSONB,
         notes          TEXT,
+        customer_name  TEXT,
+        visibility     JSONB DEFAULT '{"final_cost":true,"days":true,"paint_area":true,"materials":true,"accessories":true,"paints":true}',
         created_at     TIMESTAMP DEFAULT NOW(),
         updated_at     TIMESTAMP DEFAULT NOW()
         );

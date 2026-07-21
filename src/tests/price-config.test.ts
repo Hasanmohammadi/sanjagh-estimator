@@ -99,5 +99,15 @@ describe("Price Config API", () => {
       expect(res.status).toBe(400);
       expect(res.body.status).toBe("error");
     });
+
+    it("draft رو ذخیره کنه (فقط چند فیلد)", async () => {
+      const res = await request(app).put("/price-config").send({
+        plastic_per_liter: 700000,
+      });
+
+      expect(res.status).toBe(200);
+      expect(Number(res.body.data.plastic_per_liter)).toBe(700000);
+      expect(res.body.data.oil_per_liter).toBeNull();
+    });
   });
 });
