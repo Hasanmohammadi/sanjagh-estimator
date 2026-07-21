@@ -1,6 +1,6 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button.tsx";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
-import { Accordion } from "@/components/common";
+import { Accordion, Spinner } from "@/components/common";
 import { useNavigate } from "react-router-dom";
 import { useProjects } from "@/hooks/projects/useProjects";
 import { useCreateProject } from "@/hooks/projects/useCreateProject";
@@ -9,7 +9,7 @@ import { formatJalaliDate } from "@/utils/date";
 export default function Projects() {
   const navigate = useNavigate();
 
-  const { data: projects } = useProjects();
+  const { data: projects, isPending } = useProjects();
   const { mutate: createProject } = useCreateProject({
     onSuccess: project => {
       navigate(`/create-projects?projectId=${project?.id}`);
@@ -30,7 +30,11 @@ export default function Projects() {
         />
       </div>
 
-      {projects?.length ? (
+      {isPending ? (
+        <div className="flex min-h-75 items-center justify-center">
+          <Spinner />
+        </div>
+      ) : projects?.length ? (
         <div className="mt-6">
           <DesignTitle sizeVariant="SecondTitle" text="پروژه های قبلی" titleVariant="Body" color="BlackMain" />
           {projects.map(({ id, created_at, customer_name, meterage, title }) => (
