@@ -23,10 +23,17 @@ export const estimateService = {
       throw new AppError("No rooms found for this project", "هیچ اتاقی برای این پروژه وجود ندارد", 400);
     }
 
-    // آپدیت customer_name توی projects
-    await pool.query(`UPDATE projects SET customer_name = $1 WHERE id = $2`, [data.customerName || null, project_id]);
+    await pool.query(
+      `
+      UPDATE projects
+        SET
+          title = $1,
+          customer_name = $1
+        WHERE id = $2
+    `,
+      [data.customerName, project_id],
+    );
 
-    // ذخیره estimate با اعداد کاربر
     const result = await pool.query(
       `INSERT INTO estimates
       (project_id, paint_prices, notes, visibility, customer_name)
