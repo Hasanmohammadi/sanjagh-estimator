@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ComingSoon, ReceiptIcon, SettingsIcon } from "@/assets/icons";
+import { ReceiptIcon, SettingsIcon } from "@/assets/icons";
 
 export default function NavBar() {
   return (
@@ -8,16 +8,10 @@ export default function NavBar() {
         <ReceiptIcon />
         پروژه ها
       </Link>
-
-      <div className="relative">
-        <div className="absolute -right-2 top-3">
-          <ComingSoon />
-        </div>
-        <div className="items-center gap-1 flex flex-col opacity-40">
-          <SettingsIcon />
-          تنظیمات
-        </div>
-      </div>
+      <Link to="/settings" className="items-center gap-1 flex flex-col">
+        <SettingsIcon />
+        تنظیمات
+      </Link>
     </div>
   );
 }

@@ -11,7 +11,9 @@ import PriceSettingIcon from "./PriceSettingIcon";
 import ColorPriceIcon from "./ColorPriceIcon";
 import ChevronRightIcon from "./ChevronRightIcon";
 import ChevronLeftIcon from "./ChevronLeftIcon";
-import ComingSoon from "./ComingSoon";
+import MenuStarIcon from "./MenuStarIcon";
+import ProLogo from "./ProLogo";
+import VideoIcon from "./VideoIcon";
 
 export {
   BackRightIcon,
@@ -27,5 +29,7 @@ export {
   ColorPriceIcon,
   ChevronRightIcon,
   ChevronLeftIcon,
-  ComingSoon,
+  MenuStarIcon,
+  ProLogo,
+  VideoIcon,
 };

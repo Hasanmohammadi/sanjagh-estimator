@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { Spinner } from "@/components/common";
 
 export function PricingForm() {
-  const { data: priceConfigData } = usePriceConfig();
+  const { data: priceConfigData, isPending: getPriceConfigLoading } = usePriceConfig();
   const navigate = useNavigate();
 
   const isInitialized = useRef(false);
@@ -166,7 +166,11 @@ export function PricingForm() {
     submitForm(values, true);
   });
 
-  return (
+  return getPriceConfigLoading ? (
+    <div className="flex min-h-75 items-center justify-center">
+      <Spinner />
+    </div>
+  ) : (
     <FormProvider {...form}>
       <form dir="rtl" noValidate className="mx-auto flex w-full max-w-md flex-col gap-8 py-8">
         {pricingSections.map(section => (

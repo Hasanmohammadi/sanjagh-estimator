@@ -1,4 +1,4 @@
-import { Controller, useFormContext, type SubmitHandler } from "react-hook-form";
+import { Controller, useFormContext, useWatch, type SubmitHandler } from "react-hook-form";
 
 import { ButtonList, HLine, TomanCounter } from "@/components/common";
 
@@ -12,6 +12,8 @@ import { queryKeys } from "@/lib/queryKeys";
 import { useUpdateRoom } from "@/hooks/rooms/useUpdateRoom";
 import type { RoomFormData } from "../schema";
 import { PAINT_TYPES, ROOM_TYPES } from "../constants";
+import { useEffect } from "react";
+import { PaintType } from "@/api/services/rooms";
 
 const ErrorMessage = ({ message }: { message?: string }) => {
   if (!message) return null;
@@ -87,6 +89,16 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
       },
     });
   };
+
+  const hasCeilingConfig = useWatch({
+    control: form.control,
+    name: "ceilingEnabled",
+  });
+
+  useEffect(() => {
+    form.setValue("ceilingPaintType", PaintType.Plastic);
+    form.setValue("ceilingCoats", 1);
+  }, [hasCeilingConfig]);
 
   return (
     <div className="mb-20">
