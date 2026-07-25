@@ -67,6 +67,16 @@ const createTables = async (): Promise<void> => {
       );
     `);
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS settings (
+        id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id    UUID NOT NULL UNIQUE,
+        theme      VARCHAR(20) NOT NULL DEFAULT 'simple',
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
     await client.query("COMMIT");
     console.log("Tables created successfully");
   } catch (err: any) {

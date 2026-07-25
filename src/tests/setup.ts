@@ -15,7 +15,8 @@ beforeEach(async () => {
       estimates,
       rooms,
       projects,
-      price_configs
+      price_configs,
+      settings
     RESTART IDENTITY CASCADE;
   `);
 });

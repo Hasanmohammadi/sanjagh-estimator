@@ -5,18 +5,17 @@ import { isValidUUID } from "../utils/uuid";
 type CreateProjectInput = {
   title: string;
   customerName: string;
-  meterage: number;
 };
 
 export const projectService = {
   async create(data: CreateProjectInput, userId: string) {
-    const { title, customerName, meterage } = data;
+    const { title, customerName } = data;
 
     const result = await pool.query(
-      `INSERT INTO projects (title, customer_name, meterage, user_id)
-     VALUES ($1, $2, $3, $4)
+      `INSERT INTO projects (title, customer_name, user_id)
+     VALUES ($1, $2, $3)
      RETURNING *`,
-      [title, customerName, meterage, userId],
+      [title, customerName || null, userId],
     );
     return result.rows[0];
   },
