@@ -7,7 +7,6 @@ import {
   VerificationIcon,
   WalletIcon,
 } from "@/assets/icons";
-import { VLine } from "@/components/common";
 import type { EstimateFormValues } from "@/pages/estimation-results/schema";
 import TextArea from "@skul/sanjagh-design-system/src/Design_TextArea";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
@@ -18,15 +17,21 @@ interface StatItemProps {
   value: string | number;
   sub?: string;
   label: string;
+  subSub?: string;
 }
 
-const StatItem: React.FC<StatItemProps> = ({ icon, value, sub = "", label }) => (
-  <div className="flex flex-1 flex-col items-center justify-between gap-1.5 px-1 text-center">
-    <DesignTitle sizeVariant="Caption" text={label} titleVariant="FristHeader" />
-    <div className="mt-3 mb-1">{icon}</div>
-    <div>
+const StatItem: React.FC<StatItemProps> = ({ icon, value, sub = "", label, subSub }) => (
+  <div className="flex flex-1 flex-col items-center justify-between text-center">
+    <DesignTitle sizeVariant="SmallSubtitle" text={label} titleVariant="Caption" />
+    <div className="mt-1 mb-1">{icon}</div>
+    <div className="mt-3.5">
       <DesignTitle sizeVariant="Subtitle" text={`${value}`} titleVariant="FristHeader" />
       <DesignTitle sizeVariant="Subtitle" text={`${sub}`} titleVariant="FristHeader" />
+      {subSub && (
+        <div className="-mt-2">
+          <DesignTitle sizeVariant="Caption" text={`${subSub}`} titleVariant="Caption" />
+        </div>
+      )}
     </div>
   </div>
 );
@@ -40,7 +45,7 @@ interface TableRowProps {
 
 const TableRow: React.FC<TableRowProps> = ({ color, price, liter, bold }) => (
   <div
-    className={`flex items-center justify-between border-slate-100 py-3 text-[13px] last:border-b-0 last:pb-0 ${
+    className={`flex items-center border-b justify-between border-slate-100 py-3 text-[13px] last:border-b-0 last:pb-0 ${
       bold ? "font-bold text-slate-800" : "font-medium text-slate-600"
     }`}
   >
@@ -67,37 +72,22 @@ export default function ClassicTheme({ data }: Props) {
         <HorizontalFrame />
       </div>
 
-      <div className="mt-4 rounded-lg border border-design-gray-200 px-1.5 py-2">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center pb-3 border-b border-design-gray-200">
-          {/* Left */}
+      <div className="mt-4 bg-gray-50 rounded-lg border border-design-gray-200 px-1.5 py-2">
+        <div className="flex justify-between items-center pb-3 border-b border-design-gray-200">
           <div className="flex justify-start whitespace-nowrap">
-            <DesignTitle color="BlackMain" sizeVariant="Body" text={`${data.customerName}:`} titleVariant="Body" />
+            <DesignTitle color="BlackMain" sizeVariant="Body" text={`توسط ${data.customerName}:`} titleVariant="Body" />
           </div>
-
-          {/* Center */}
-          <div className="flex justify-center px-4">
-            <VLine />
-          </div>
-
-          {/* Right */}
           <div className="flex items-center gap-2 justify-end whitespace-nowrap">
             <DesignTitle color="BlackMain" sizeVariant="Body" text="متخصص نقاشی ساختمان" titleVariant="Body" />
             <VerificationIcon />
           </div>
         </div>
 
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-3">
-          {/* Left */}
+        <div className="flex justify-between items-center pt-3">
           <div className="flex justify-start whitespace-nowrap">
             <DesignTitle color="BlackMain" sizeVariant="Body" text="مشتری:" titleVariant="Body" />
           </div>
 
-          {/* Center */}
-          <div className="flex justify-center px-4">
-            <VLine />
-          </div>
-
-          {/* Right */}
           <div className="flex items-center gap-2 justify-end whitespace-nowrap">
             <DesignTitle color="BlackMain" sizeVariant="Body" text={`${data.customerName}`} titleVariant="Body" />
             <CallIcon />
@@ -110,21 +100,22 @@ export default function ClassicTheme({ data }: Props) {
       </div>
       {/* Stats card */}
       <div className="flex items-center gap-2 mt-4">
-        <div className="rounded-lg px-1 py-2 border border-design-gray-200 w-full h-40">
+        <div className="rounded-lg py-2 border border-design-gray-200 w-full h-40 bg-design-gray-50">
           <StatItem
             icon={<WalletIcon />}
             value={data.totalCost.toLocaleString()}
             label="هزینه نهایی"
-            sub="تومان(مصالح و اجرت)"
+            subSub="(مصالح و اجرت)"
+            sub="تومان"
           />
         </div>
-        <div className="rounded-lg px-1 py-2 border border-design-gray-200 w-full h-40">
+        <div className="rounded-lg py-2 border border-design-gray-200 w-full h-40">
           <StatItem icon={<CalendarIcon />} value={data.days} sub="(روز)" label="زمان اجرا" />
         </div>
-        <div className="rounded-lg px-1 py-2 border border-design-gray-200 w-full h-40">
+        <div className="rounded-lg py-2 border border-design-gray-200 w-full h-40">
           <StatItem icon={<DropletIcon />} value={data.meterage} sub="(متر مربع)" label="متر رنگ آمیزی" />
         </div>
-        <div className="rounded-lg px-1 py-2 border border-design-gray-200 w-full h-40">
+        <div className="rounded-lg py-2 border border-design-gray-200 w-full h-40">
           <StatItem
             icon={<ColorPriceIcon />}
             value={data.paints.acrylic.liters + data.paints.oil.liters + data.paints.plastic.liters}
@@ -138,7 +129,11 @@ export default function ClassicTheme({ data }: Props) {
       </div>
       {/* Materials table */}
       <div className="my-4 px-6 py-4 rounded-lg border border-design-gray-200">
-        <div className="flex items-center justify-between  pb-2 text-[11.5px] font-bold text-slate-400">
+        <div className="flex justify-center items-center">
+          <DesignTitle sizeVariant="ThirdTitle" text="جزییات مصالح و قیمت ها" titleVariant="ThirdHeader" />
+        </div>
+
+        <div className="flex items-center justify-between pb-2 mt-4">
           <div className="w-1/3 text-right">
             <DesignTitle sizeVariant="Subtitle" text="رنگ" titleVariant="Body" color="NewGreenMain" />
           </div>
@@ -153,7 +148,17 @@ export default function ClassicTheme({ data }: Props) {
         <TableRow color="رنگ روغنی" price={data.paints.oil.liters} liter={data.paints.oil.liters} />
         <TableRow color="رنگ آکریلیک" price={data.paints.acrylic.liters} liter={data.paints.acrylic.liters} />
         <TableRow color="سایر ملزومات و ابزار" price={data.totalMaterialCost} liter="-" />
-        <TableRow color="جمع کل" price={data.totalCost} liter="-" bold />
+        <TableRow
+          color="جمع کل"
+          price={
+            data.paints.plastic.total_cost +
+            data.paints.oil.liters +
+            data.paints.acrylic.liters +
+            data.totalMaterialCost
+          }
+          liter="-"
+          bold
+        />
       </div>
 
       {/* Other notes */}

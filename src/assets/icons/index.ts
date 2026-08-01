@@ -20,6 +20,8 @@ import DropletIcon from "./DropletIcon";
 import VerificationIcon from "./VerificationIcon";
 import CallIcon from "./CallIcon";
 import HorizontalFrame from "./HorizontalFrame";
+import UserIcon from "./UserIcon";
+import ThreeLineIcon from "./ThreeLineIcon";
 
 export {
   BackRightIcon,
@@ -44,4 +46,6 @@ export {
   VerificationIcon,
   CallIcon,
   HorizontalFrame,
+  UserIcon,
+  ThreeLineIcon,
 };

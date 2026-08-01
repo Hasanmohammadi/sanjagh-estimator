@@ -1,9 +1,9 @@
 import { useEstimate } from "@/hooks/estimates/useEstimate";
-import ClassicTheme from "./components/ClassicTheme";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Spinner } from "@/components/common";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
+import LightTheme from "./components/LightTheme";
 
 export function FinalEstimation() {
   const [searchParams] = useSearchParams();
@@ -35,5 +35,10 @@ export function FinalEstimation() {
     );
   }
 
-  return <ClassicTheme data={data} />;
+  return (
+    <>
+      <LightTheme data={data} />
+      {/* <ClassicTheme data={data} /> */}
+    </>
+  );
 }
