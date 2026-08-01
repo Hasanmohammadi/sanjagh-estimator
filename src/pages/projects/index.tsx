@@ -54,6 +54,16 @@ export default function Projects() {
                     titleVariant="Body"
                     color="BlackMain"
                   />
+                  <Button
+                    buttonVariant="PrimarySolidButton"
+                    contentVariant={{
+                      TAG: "Text",
+                      value: "جزئیات بیشتر",
+                    }}
+                    heightVariant="XSButton"
+                    widthVariant="AutoWidthButton"
+                    onClick={() => navigate(`/final-estimation?projectId=${id}`)}
+                  />
                 </div>
               </Accordion>
             </div>

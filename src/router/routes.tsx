@@ -5,6 +5,8 @@ import Projects from "@/pages/projects";
 import EstimationResult from "@/pages/estimation-results";
 import PriceConfig from "@/pages/price-config";
 import Settings from "@/pages/settings";
+import ThemeSelector from "@/pages/settings/ThemeSelector";
+import { FinalEstimation } from "@/pages/final-estimation";
 
 export const router = createBrowserRouter([
   {
@@ -44,10 +46,24 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: "settings/theme-selector",
+        element: <ThemeSelector />,
+        handle: {
+          title: "زمینه های  نمایش",
+        },
+      },
+      {
         path: "settings",
         element: <Settings />,
         handle: {
           title: "تنظیمات",
+        },
+      },
+      {
+        path: "final-estimation",
+        element: <FinalEstimation />,
+        handle: {
+          title: "برآورد رنگ آمیزی",
         },
       },
     ],

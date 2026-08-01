@@ -2,7 +2,13 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import NavBar from "./NavBar";
 
-const hideNavBarRoutes = ["/create-projects", "/estimation-results", "/price-config"];
+const hideNavBarRoutes = [
+  "/create-projects",
+  "/estimation-results",
+  "/settings/price-config",
+  "/settings/theme-selector",
+  "/final-estimation",
+];
 
 export default function Layout() {
   const { pathname } = useLocation();

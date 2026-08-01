@@ -87,7 +87,7 @@ export default function EstimationResult() {
       meterage: form.getValues("meterage"),
       notes: form.getValues("notes"),
       paints: form.getValues("paints"),
-      totalCost: form.getValues("totalCost"),
+      totalCost: form.getValues("totalCost") * 1000000,
       totalMaterialCost: form.getValues("totalMaterialCost"),
       visibility: form.getValues("visibility"),
     });
@@ -100,11 +100,11 @@ export default function EstimationResult() {
   ) : (
     <FormProvider {...form}>
       <div className="flex flex-col gap-2.5">
-        <PriceConfig />
+        <PriceConfig projectId={projectId} />
         <CalculationWithMaterial />
         <Period />
         <PaintArea />
-        <PaintSummary />
+        <PaintSummary projectId={projectId} />
         <UserInfo />
         <div className="fixed bottom-0 left-0 right-0 px-4 py-4 shadow-design-black-1 shadow-2xl rounded-t-3xl bg-white border border-white z-10">
           <Button

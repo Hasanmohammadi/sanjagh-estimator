@@ -7,7 +7,11 @@ import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Link } from "react-router-dom";
 import type { EstimateFormValues } from "../schema";
 
-export default function PaintSummary() {
+interface Props {
+  projectId: string;
+}
+
+export default function PaintSummary({ projectId }: Props) {
   const { control, setValue } = useFormContext<EstimateFormValues>();
 
   const paints = useWatch({
@@ -77,7 +81,10 @@ export default function PaintSummary() {
             <div className="mb-1 flex items-center justify-between">
               <DesignTitle sizeVariant="ThirdTitle" text="جزییات مصالح و لوازم" titleVariant="Body" color="BlackMain" />
 
-              <Link to="/price-config" className="flex gap-2">
+              <Link
+                to={`/settings/price-config?callback=/estimation-results?projectId=${projectId}`}
+                className="flex gap-2"
+              >
                 <DesignTitle sizeVariant="Subtitle" text="قیمت رنگ من" titleVariant="Body" color="BlueMain" />
 
                 <SettingsIcon color="#3F93F3" />
@@ -136,11 +143,9 @@ export default function PaintSummary() {
             ))}
 
             <div className="my-1.5 flex items-center justify-between">
-              <div className="w-1/3">
-                <DesignTitle sizeVariant="Body" text="سایر ملزومات" titleVariant="Body" color="BlackMain" />
-              </div>
+              <DesignTitle sizeVariant="Body" text="سایر ملزومات" titleVariant="Body" color="BlackMain" />
 
-              <div className="w-2/3 text-center">
+              <div className="w-[72%] text-center">
                 <Controller
                   name="accessoriesCost"
                   control={control}

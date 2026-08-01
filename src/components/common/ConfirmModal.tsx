@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 export interface ConfirmModalProps {
   open: boolean;
-  title: string;
+  title: string | ReactNode;
   description?: ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
@@ -117,7 +117,11 @@ export function ConfirmModal({
       >
         <div className="flex flex-col items-center text-center">
           <div id="confirm-modal-title" className="text-balance leading-relaxed">
-            <DesignTitle sizeVariant="ThirdTitle" text={title} titleVariant="ThirdHeader" />
+            {typeof title === "string" ? (
+              <DesignTitle sizeVariant="ThirdTitle" text={title} titleVariant="ThirdHeader" />
+            ) : (
+              title
+            )}
           </div>
 
           {description && (

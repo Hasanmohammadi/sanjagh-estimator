@@ -26,7 +26,7 @@ export enum PaintType {
 }
 
 export enum PaintTypeDic {
-  "acrylic" = "اکرولیک",
+  "acrylic" = "آکریلیک",
   "oil" = "روغن",
   "plastic" = "پلاستیک",
 }

@@ -2,10 +2,13 @@ import { SettingsIcon } from "@/assets/icons";
 import { Card } from "@skul/sanjagh-design-system/src/Design_Card";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { Link } from "react-router-dom";
+interface Props {
+  projectId: string;
+}
 
-export default function PriceConfig() {
+export default function PriceConfig({ projectId }: Props) {
   return (
-    <Link to="/price-config">
+    <Link to={`/settings/price-config?callback=/estimation-results?projectId=${projectId}`}>
       <Card
         children={
           <div className="flex justify-between items-center">

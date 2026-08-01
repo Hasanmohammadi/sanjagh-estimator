@@ -3,7 +3,7 @@ import { apiClient } from "../client";
 import type { EstimateFormValues } from "@/pages/estimation-results/schema";
 
 export const estimateApi = {
-  getByProject: async (projectId: string) => {
+  getByProject: async (projectId: string): Promise<EstimateFormValues | null> => {
     const { data } = await apiClient.get<ApiResponse<EstimateFormValues>>(`/projects/${projectId}/estimates`);
 
     return data.data;

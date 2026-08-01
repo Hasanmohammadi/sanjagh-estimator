@@ -13,12 +13,16 @@ import { SectionBlock } from "./components/SectionBlock";
 import { useUpdatePriceConfig } from "@/hooks/price-config/useUpdatePriceConfig";
 import { usePriceConfig } from "@/hooks/price-config/usePriceConfig";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Spinner } from "@/components/common";
 
 export function PricingForm() {
   const { data: priceConfigData, isPending: getPriceConfigLoading } = usePriceConfig();
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+
+  const callback = searchParams.get("callback");
 
   const isInitialized = useRef(false);
 
@@ -50,42 +54,47 @@ export function PricingForm() {
     },
   });
 
+  /**
+   * مقدار اولیه فرم را وقتی لودینگ تمام شد ست می‌کنیم، حتی اگر priceConfigData
+   * خالی/نال باشه (یعنی هنوز هیچ قیمتی ثبت نشده) — اینطوری isInitialized
+   * همیشه true میشه و auto-save از همون ادیت اول هم کار می‌کنه.
+   */
   useEffect(() => {
-    if (!priceConfigData || isInitialized.current) {
+    if (getPriceConfigLoading || isInitialized.current) {
       return;
     }
 
     reset({
       acrylicLiter: {
-        price: priceConfigData.acrylic_per_liter,
+        price: priceConfigData?.acrylic_per_liter,
       },
 
       plasticLiter: {
-        price: priceConfigData.plastic_per_liter,
+        price: priceConfigData?.plastic_per_liter,
       },
 
       oilLiter: {
-        price: priceConfigData.oil_per_liter,
+        price: priceConfigData?.oil_per_liter,
       },
 
       acrylicService: {
-        min: priceConfigData.acrylic_without_min,
-        max: priceConfigData.acrylic_without_max,
+        min: priceConfigData?.acrylic_without_min,
+        max: priceConfigData?.acrylic_without_max,
       },
 
       oilService: {
-        min: priceConfigData.oil_without_min,
-        max: priceConfigData.oil_without_max,
+        min: priceConfigData?.oil_without_min,
+        max: priceConfigData?.oil_without_max,
       },
 
       plasticService: {
-        min: priceConfigData.plastic_without_min,
-        max: priceConfigData.plastic_without_max,
+        min: priceConfigData?.plastic_without_min,
+        max: priceConfigData?.plastic_without_max,
       },
     });
 
     isInitialized.current = true;
-  }, [priceConfigData, reset]);
+  }, [priceConfigData, getPriceConfigLoading, reset]);
 
   const watchedValues = useWatch({
     control,
@@ -159,7 +168,9 @@ export function PricingForm() {
 
   const onManualSubmit = handleSubmit(values => {
     if (!isDirty) {
-      navigate(-1);
+      if (callback) {
+        navigate(callback);
+      } else navigate(-1);
       return;
     }
 
