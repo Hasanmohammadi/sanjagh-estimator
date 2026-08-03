@@ -37,15 +37,20 @@ const createTables = async (): Promise<void> => {
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS estimates (
-        id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        project_id     UUID REFERENCES projects(id) ON DELETE CASCADE UNIQUE,
-        paint_prices   JSONB,
-        notes          TEXT,
-        customer_name  TEXT,
-        visibility     JSONB DEFAULT '{"final_cost":true,"days":true,"paint_area":true,"materials":true,"accessories":true,"paints":true}',
-        created_at     TIMESTAMP DEFAULT NOW(),
-        updated_at     TIMESTAMP DEFAULT NOW()
-        );
+        project_id          UUID REFERENCES projects(id) ON DELETE CASCADE UNIQUE,
+        id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        customer_name       TEXT,
+        notes               TEXT,
+        total_material_cost NUMERIC(12,2),
+        total_cost          NUMERIC(12,2),
+        paints              JSONB,
+        accessories_cost    NUMERIC(12,2),
+        days                INTEGER,
+        meterage            NUMERIC(10,2),
+        created_at          TIMESTAMP DEFAULT NOW(),
+        visibility          JSONB DEFAULT '{"final_cost":true,"days":true,"paint_area":true,"materials":true,"accessories":true,"paints":true}',
+        updated_at          TIMESTAMP DEFAULT NOW()
+      );
     `);
 
     await client.query(`

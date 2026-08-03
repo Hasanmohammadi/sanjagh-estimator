@@ -36,35 +36,50 @@ export const estimateService = {
 
     const result = await pool.query(
       `INSERT INTO estimates
-      (project_id, paint_prices, notes, visibility, customer_name)
-     VALUES ($1, $2, $3, $4, $5)
-     ON CONFLICT (project_id) DO UPDATE SET
-       paint_prices  = EXCLUDED.paint_prices,
-       notes         = EXCLUDED.notes,
-       visibility    = EXCLUDED.visibility,
-       customer_name = EXCLUDED.customer_name,
-       updated_at    = NOW()
-     RETURNING *`,
+    (project_id, notes, customer_name, total_cost, total_material_cost, accessories_cost, paints, meterage, days, visibility)
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+   ON CONFLICT (project_id) DO UPDATE SET
+     notes               = EXCLUDED.notes,
+     customer_name       = EXCLUDED.customer_name,
+     total_cost          = EXCLUDED.total_cost,
+     total_material_cost = EXCLUDED.total_material_cost,
+     accessories_cost    = EXCLUDED.accessories_cost,
+     paints              = EXCLUDED.paints,
+     meterage            = EXCLUDED.meterage,
+     days                = EXCLUDED.days,
+     visibility          = EXCLUDED.visibility,
+     updated_at          = NOW()
+   RETURNING *`,
       [
         project_id,
-        JSON.stringify(data.paints),
         data.notes || null,
-        JSON.stringify(data.visibility),
         data.customerName || null,
+        data.totalCost,
+        data.totalMaterialCost,
+        data.accessoriesCost,
+        JSON.stringify(data.paints),
+        data.meterage,
+        data.days,
+        JSON.stringify(data.visibility),
       ],
     );
 
+    const row = result.rows[0];
+
     return {
-      ...result.rows[0],
-      customerName: data.customerName ?? "",
-      notes: data.notes ?? "",
-      totalCost: data.totalCost,
-      totalMaterialCost: data.totalMaterialCost,
-      accessoriesCost: data.accessoriesCost,
-      paints: data.paints,
-      meterage: data.meterage,
-      days: data.days,
-      visibility: data.visibility,
+      id: row.id,
+      project_id: row.project_id,
+      customerName: row.customer_name ?? "",
+      notes: row.notes ?? "",
+      totalCost: row.total_cost,
+      totalMaterialCost: row.total_material_cost,
+      accessoriesCost: row.accessories_cost,
+      paints: row.paints,
+      meterage: row.meterage,
+      days: row.days,
+      visibility: row.visibility,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
     };
   },
 
@@ -73,19 +88,29 @@ export const estimateService = {
       throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
     }
 
-    const result = await pool.query(
-      `SELECT * FROM estimates 
-       WHERE project_id = $1 
-       ORDER BY created_at DESC 
-       LIMIT 1`,
-      [project_id],
-    );
+    const result = await pool.query(`SELECT * FROM estimates WHERE project_id = $1`, [project_id]);
 
     if (result.rows.length === 0) {
       throw new AppError("No estimate found for this project", "برآوردی برای این پروژه یافت نشد", 404);
     }
 
-    return result.rows[0];
+    const row = result.rows[0];
+
+    return {
+      id: row.id,
+      project_id: row.project_id,
+      customerName: row.customer_name ?? "",
+      notes: row.notes ?? "",
+      totalCost: row.total_cost,
+      totalMaterialCost: row.total_material_cost,
+      accessoriesCost: row.accessories_cost,
+      paints: row.paints,
+      meterage: row.meterage,
+      days: row.days,
+      visibility: row.visibility,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+    };
   },
 
   async calculate(project_id: string, userId: string) {

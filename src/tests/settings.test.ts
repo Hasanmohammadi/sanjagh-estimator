@@ -13,22 +13,22 @@ describe("Settings API", () => {
     });
 
     it("بعد از ذخیره، settings رو برگردونه", async () => {
-      await request(app).put("/settings").send({ theme: "modern" });
+      await request(app).put("/settings").send({ theme: "light" });
 
       const res = await request(app).get("/settings");
 
       expect(res.status).toBe(200);
-      expect(res.body.data.theme).toBe("modern");
+      expect(res.body.data.theme).toBe("light");
     });
   });
 
   describe("PUT /settings", () => {
     it("theme رو ذخیره کنه", async () => {
-      const res = await request(app).put("/settings").send({ theme: "luxury" });
+      const res = await request(app).put("/settings").send({ theme: "professional" });
 
       expect(res.status).toBe(200);
       expect(res.body.status).toBe("success");
-      expect(res.body.data.theme).toBe("luxury");
+      expect(res.body.data.theme).toBe("professional");
     });
 
     it("دوبار ذخیره کنه (upsert)", async () => {
@@ -41,7 +41,7 @@ describe("Settings API", () => {
     });
 
     it("همه تم‌های معتبر رو قبول کنه", async () => {
-      const themes = ["simple", "normal", "modern", "luxury", "warm", "classic"];
+      const themes = ["professional", "light", "classic", "accurate"];
 
       for (const theme of themes) {
         const res = await request(app).put("/settings").send({ theme });
