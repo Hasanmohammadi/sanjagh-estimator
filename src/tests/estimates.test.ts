@@ -37,7 +37,7 @@ const priceConfig = {
 const validEstimate = {
   customerName: "ایمان نجاتی",
   notes: "تست",
-  totalCost: 100,
+  totalCost: 5000000,
   totalMaterialCost: 5000000,
   accessoriesCost: 500000,
   paints: {
@@ -130,9 +130,9 @@ describe("Estimates API", () => {
 
       const res = await request(app)
         .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, totalCost: 250 });
+        .send({ ...validEstimate, totalCost: 2500000 });
 
-      expect(res.body.data.totalCost).toBe(250);
+      expect(res.body.data.totalCost).toBe(2500000);
     });
 
     it("دوباره ذخیره کنه (upsert)", async () => {
@@ -143,9 +143,9 @@ describe("Estimates API", () => {
 
       const updated = await request(app)
         .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, totalCost: 999 });
+        .send({ ...validEstimate, totalCost: 9990000 });
 
-      expect(updated.body.data.totalCost).toBe(999);
+      expect(updated.body.data.totalCost).toBe(9990000);
     });
   });
 
