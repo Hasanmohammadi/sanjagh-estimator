@@ -13,7 +13,7 @@ RUN corepack enable
 ENV NODE_ENV=production
 ENV HUSKY=0
 COPY package.json pnpm-lock.yaml ./
-RUN HUSKY=0 pnpm install --frozen-lockfile --prod
+RUN HUSKY=0 pnpm install --frozen-lockfile --prod --ignore-scripts
 COPY --from=builder /app/dist ./dist
 EXPOSE 3001
 CMD ["node", "dist/index.js"]
