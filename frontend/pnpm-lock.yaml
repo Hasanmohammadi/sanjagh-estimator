@@ -4,10 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@skul/sanjagh-react-icons': file:vendor/sanjagh-react-icons-1.22.202601180926.tgz
-  '@skul/sanjagh-window-global-objects': file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz
-
 importers:
 
   .:
@@ -16,14 +12,8 @@ importers:
         specifier: ^5.4.0
         version: 5.4.0(react-hook-form@7.79.0(react@19.2.7))
       '@skul/sanjagh-design-system':
-        specifier: file:vendor/sanjagh-design-system-1.275.202607110528.tgz
-        version: file:vendor/sanjagh-design-system-1.275.202607110528.tgz(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@skul/sanjagh-react-icons':
-        specifier: file:vendor/sanjagh-react-icons-1.22.202601180926.tgz
-        version: file:vendor/sanjagh-react-icons-1.22.202601180926.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@skul/sanjagh-window-global-objects':
-        specifier: file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz
-        version: file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: ^1.275.202607110528
+        version: 1.275.202607110528(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tailwindcss/vite':
         specifier: ^4.3.1
         version: 4.3.1(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -592,19 +582,16 @@ packages:
   '@ryyppy/rescript-promise@2.1.0':
     resolution: {integrity: sha512-+dW6msBrj2Lr2hbEMX+HoWCvN89qVjl94RwbYWJgHQuj8jm/izdPC0YzxgpGoEFdeAEW2sOozoLcYHxT6o5WXQ==}
 
-  '@skul/sanjagh-design-system@file:vendor/sanjagh-design-system-1.275.202607110528.tgz':
-    resolution: {integrity: sha512-GDcY7dEeUo011a1sDln185lgecMwxH36MU0CPkZsJsER3Y3v5OXrBILeN5x7ywo4WCSviUbq5XtgV3y8KSThFA==, tarball: file:vendor/sanjagh-design-system-1.275.202607110528.tgz}
-    version: 1.275.202607110528
+  '@skul/sanjagh-design-system@1.275.202607110528':
+    resolution: {integrity: sha512-GDcY7dEeUo011a1sDln185lgecMwxH36MU0CPkZsJsER3Y3v5OXrBILeN5x7ywo4WCSviUbq5XtgV3y8KSThFA==}
     peerDependencies:
       react: ^18
 
-  '@skul/sanjagh-react-icons@file:vendor/sanjagh-react-icons-1.22.202601180926.tgz':
-    resolution: {integrity: sha512-4RoM92aInU5uZYZaaGC1bJZiarKFYW2fREcEvmw1b6+8/AhopaF1MWoUCdkUmENSSyicrF/C0FloI3Y9uLrhgQ==, tarball: file:vendor/sanjagh-react-icons-1.22.202601180926.tgz}
-    version: 1.22.202601180926
+  '@skul/sanjagh-react-icons@1.22.202601180926':
+    resolution: {integrity: sha512-4RoM92aInU5uZYZaaGC1bJZiarKFYW2fREcEvmw1b6+8/AhopaF1MWoUCdkUmENSSyicrF/C0FloI3Y9uLrhgQ==}
 
-  '@skul/sanjagh-window-global-objects@file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz':
-    resolution: {integrity: sha512-UV2LVhdOq8KEMNiSa0cIVKFRfWJKwKUoaZGEQ3S1e75IHlynLV9b6tgN4v/KFPUDnDBbSkhKecBSjuhbF8gyug==, tarball: file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz}
-    version: 1.19.202601180927
+  '@skul/sanjagh-window-global-objects@1.19.202601180927':
+    resolution: {integrity: sha512-UV2LVhdOq8KEMNiSa0cIVKFRfWJKwKUoaZGEQ3S1e75IHlynLV9b6tgN4v/KFPUDnDBbSkhKecBSjuhbF8gyug==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -2509,12 +2496,12 @@ snapshots:
 
   '@ryyppy/rescript-promise@2.1.0': {}
 
-  '@skul/sanjagh-design-system@file:vendor/sanjagh-design-system-1.275.202607110528.tgz(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@skul/sanjagh-design-system@1.275.202607110528(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@rescript/react': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@ryyppy/rescript-promise': 2.1.0
-      '@skul/sanjagh-react-icons': file:vendor/sanjagh-react-icons-1.22.202601180926.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@skul/sanjagh-window-global-objects': file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@skul/sanjagh-react-icons': 1.22.202601180926(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@skul/sanjagh-window-global-objects': 1.19.202601180927(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       body-scroll-lock: 4.0.0-beta.0
       next: 14.2.35(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react: 19.2.7
@@ -2533,7 +2520,7 @@ snapshots:
       - react-dom
       - sass
 
-  '@skul/sanjagh-react-icons@file:vendor/sanjagh-react-icons-1.22.202601180926.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@skul/sanjagh-react-icons@1.22.202601180926(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@rescript/react': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       rescript: 10.1.4
@@ -2541,7 +2528,7 @@ snapshots:
       - react
       - react-dom
 
-  '@skul/sanjagh-window-global-objects@file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@skul/sanjagh-window-global-objects@1.19.202601180927(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@rescript/react': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       rescript: 10.1.4
