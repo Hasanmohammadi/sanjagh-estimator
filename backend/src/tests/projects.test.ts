@@ -140,4 +140,125 @@ describe("Auto cleanup - پروژه‌های بدون اتاق", () => {
     const res = await request(app).get(`/projects/${projectId}`);
     expect(res.status).toBe(200);
   });
+
+  describe("POST /projects/:id/duplicate", () => {
+    it("پروژه رو با اتاق‌هاش کپی کنه", async () => {
+      const project = await request(app).post("/projects").send({ title: "پروژه اصلی", customerName: "ایمان نجاتی" });
+
+      const projectId = project.body.data.id;
+
+      await request(app).post(`/projects/${projectId}/rooms`).send({
+        type: "bedroom",
+        width: 4,
+        length: 5,
+        height: 2.8,
+        wall_paint_type: "plastic",
+        wall_coats: 2,
+        ceiling_enabled: false,
+      });
+
+      const res = await request(app).post(`/projects/${projectId}/duplicate`);
+
+      expect(res.status).toBe(201);
+      expect(res.body.status).toBe("success");
+      expect(res.body.data.title).toBe("پروژه اصلی");
+      expect(res.body.data.id).not.toBe(projectId);
+      expect(res.body.data.rooms).toHaveLength(1);
+    });
+
+    it("اتاق‌های کپی شده ابعاد یکسانی داشته باشن", async () => {
+      const project = await request(app).post("/projects").send({ title: "پروژه اصلی" });
+
+      const projectId = project.body.data.id;
+
+      await request(app).post(`/projects/${projectId}/rooms`).send({
+        type: "bedroom",
+        width: 4,
+        length: 5,
+        height: 2.8,
+        wall_paint_type: "plastic",
+        wall_coats: 2,
+        ceiling_enabled: false,
+      });
+
+      const res = await request(app).post(`/projects/${projectId}/duplicate`);
+
+      const room = res.body.data.rooms[0];
+      expect(Number(room.width)).toBe(4);
+      expect(Number(room.length)).toBe(5);
+      expect(Number(room.height)).toBe(2.8);
+      expect(room.wall_paint_type).toBe("plastic");
+    });
+
+    it("چند اتاق رو کپی کنه", async () => {
+      const project = await request(app).post("/projects").send({ title: "پروژه اصلی" });
+
+      const projectId = project.body.data.id;
+
+      await request(app).post(`/projects/${projectId}/rooms`).send({
+        type: "bedroom",
+        width: 4,
+        length: 5,
+        height: 2.8,
+        wall_paint_type: "plastic",
+        wall_coats: 2,
+        ceiling_enabled: false,
+      });
+
+      await request(app).post(`/projects/${projectId}/rooms`).send({
+        type: "living_room",
+        width: 6,
+        length: 7,
+        height: 2.8,
+        wall_paint_type: "oil",
+        wall_coats: 2,
+        ceiling_enabled: true,
+        ceiling_paint_type: "plastic",
+        ceiling_coats: 1,
+      });
+
+      const res = await request(app).post(`/projects/${projectId}/duplicate`);
+
+      expect(res.body.data.rooms).toHaveLength(2);
+    });
+
+    it("پروژه بدون اتاق هم کپی بشه", async () => {
+      const project = await request(app).post("/projects").send({ title: "پروژه بدون اتاق" });
+
+      const projectId = project.body.data.id;
+
+      const res = await request(app).post(`/projects/${projectId}/duplicate`);
+
+      expect(res.status).toBe(201);
+      expect(res.body.data.rooms).toHaveLength(0);
+    });
+
+    it("پروژه‌ای که وجود نداره رو کپی نکنه", async () => {
+      const res = await request(app).post(`/projects/${NON_EXISTENT_UUID}/duplicate`);
+
+      expect(res.status).toBe(404);
+      expect(res.body.status).toBe("error");
+    });
+
+    it("customer_name هم کپی بشه", async () => {
+      const project = await request(app).post("/projects").send({ title: "ایمان نجاتی", customer_name: "ایمان نجاتی" });
+
+      const projectId = project.body.data.id;
+
+      await request(app).post(`/projects/${projectId}/rooms`).send({
+        type: "bedroom",
+        width: 4,
+        length: 5,
+        height: 2.8,
+        wall_paint_type: "plastic",
+        wall_coats: 2,
+        ceiling_enabled: false,
+      });
+
+      const res = await request(app).post(`/projects/${projectId}/duplicate`);
+
+      expect(res.body.data.customer_name).toBe("ایمان نجاتی");
+      expect(res.body.data.title).toBe("ایمان نجاتی");
+    });
+  });
 });

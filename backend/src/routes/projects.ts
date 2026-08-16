@@ -43,4 +43,12 @@ router.delete(
   }),
 );
 
+router.post(
+  "/:id/duplicate",
+  asyncHandler<ProjectParams>(async (req, res) => {
+    const project = await projectService.duplicate(req.params.id, req.user!.id);
+    sendSuccess(res, project, 201);
+  }),
+);
+
 export default router;

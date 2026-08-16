@@ -13,12 +13,13 @@ import type { EstimateFormValues } from "@/pages/estimation-results/schema";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { useRef } from "react";
 import { useShareImage } from "@/hooks/useShareImage";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import blueColorBrush from "@/assets/pic/theme/light/blueColorBrush.png";
 import orangeColorBrushWithBrush from "@/assets/pic/theme/light/orangeColorBrushWithBrush.png";
 import paintBucket from "@/assets/pic/theme/light/paintBucket.png";
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
+import { useDuplicateProject } from "@/hooks/projects/useDuplicateProject";
 
 interface StatItemProps {
   icon: React.ReactNode;
@@ -105,6 +106,15 @@ interface Props {
 
 export default function LightTheme({ data }: Props) {
   const shareRef = useRef<HTMLDivElement>(null);
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get("projectId") as string;
+
+  const navigate = useNavigate();
+  const { mutate: duplicateProject } = useDuplicateProject({
+    onSuccess: project => {
+      navigate(`/create-projects?projectId=${project?.id}`);
+    },
+  });
 
   const { shareImage, isSharing } = useShareImage({
     fileName: "برآورد-رنگ-آمیزی.png",
@@ -167,13 +177,14 @@ export default function LightTheme({ data }: Props) {
 
                 <div className="flex items-center gap-1">
                   <DesignTitle color="BlackMain" sizeVariant="SmallBody" text="توسط:" titleVariant="Caption" />
-
-                  <DesignTitle
-                    color="BlackMain"
-                    sizeVariant="SmallBody"
-                    text={data.customerName}
-                    titleVariant="Caption"
-                  />
+                  <div className="shrink-0">
+                    <DesignTitle
+                      color="BlackMain"
+                      sizeVariant="SmallBody"
+                      text={data.customerName}
+                      titleVariant="Caption"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -186,13 +197,14 @@ export default function LightTheme({ data }: Props) {
 
             <div className="flex w-1/3 items-center justify-center gap-0.5">
               <DesignTitle color="BlackMain" sizeVariant="SmallBody" text="مشتری:" titleVariant="Caption" />
-
-              <DesignTitle
-                color="BlackMain"
-                sizeVariant="SmallBody"
-                text={`${data.customerName}`}
-                titleVariant="Caption"
-              />
+              <div className="shrink-0">
+                <DesignTitle
+                  color="BlackMain"
+                  sizeVariant="SmallBody"
+                  text={`${data.customerName}`}
+                  titleVariant="Caption"
+                />
+              </div>
             </div>
           </div>
 
@@ -339,7 +351,9 @@ export default function LightTheme({ data }: Props) {
           heightVariant="MDButton"
           widthVariant="AutoWidthButton"
           extraClassName="w-full"
-          onClick={() => {}}
+          onClick={() => {
+            duplicateProject(projectId);
+          }}
           disabled={isSharing}
         />
         <Button

@@ -33,4 +33,8 @@ export const projectApi = {
     const { data } = await apiClient.delete<ApiResponse<{ message: string }>>(`/projects/${id}`);
     return data.data;
   },
+  duplicate: async (id: string) => {
+    const { data } = await apiClient.post<ApiResponse<Project>>(`/projects/${id}/duplicate`);
+    return data.data;
+  },
 };

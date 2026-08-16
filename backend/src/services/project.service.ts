@@ -96,4 +96,50 @@ export const projectService = {
 
     return result.rows[0];
   },
+  async duplicate(id: string, userId: string) {
+    if (!isValidUUID(id)) {
+      throw new AppError("Invalid project id", "شناسه پروژه معتبر نیست", 400);
+    }
+
+    const project = await pool.query("SELECT * FROM projects WHERE id = $1 AND user_id = $2", [id, userId]);
+
+    if (project.rows.length === 0) {
+      throw new AppError("Project not found", "پروژه یافت نشد", 404);
+    }
+
+    const original = project.rows[0];
+
+    const newProject = await pool.query(
+      `INSERT INTO projects (user_id, title, customer_name)
+        VALUES ($1, $2, $3)
+      RETURNING *`,
+      [userId, original.title, original.title],
+    );
+
+    const newProjectId = newProject.rows[0].id;
+
+    const rooms = await pool.query("SELECT * FROM rooms WHERE project_id = $1", [id]);
+
+    for (const room of rooms.rows) {
+      await pool.query(
+        `INSERT INTO rooms 
+        (project_id, type, width, length, height, wall_paint_type, wall_coats, ceiling_enabled, ceiling_paint_type, ceiling_coats)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+        [
+          newProjectId,
+          room.type,
+          room.width,
+          room.length,
+          room.height,
+          room.wall_paint_type,
+          room.wall_coats,
+          room.ceiling_enabled,
+          room.ceiling_paint_type,
+          room.ceiling_coats,
+        ],
+      );
+    }
+
+    return this.findById(newProjectId, userId);
+  },
 };
