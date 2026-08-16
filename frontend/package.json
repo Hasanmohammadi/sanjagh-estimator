@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
-    "@skul/sanjagh-design-system": "file:vendor/sanjagh-design-system-1.275.202607110528.tgz",
+    "@skul/sanjagh-design-system": "file:vendor/skul-sanjagh-design-system-1.288.202608081359.tgz",
     "@skul/sanjagh-react-icons": "file:vendor/sanjagh-react-icons-1.22.202601180926.tgz",
     "@skul/sanjagh-window-global-objects": "file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz",
     "@tailwindcss/vite": "^4.3.1",
