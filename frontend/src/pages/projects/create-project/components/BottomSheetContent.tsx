@@ -117,7 +117,7 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
             list={ROOM_TYPES}
             value={field.value}
             onChange={field.onChange}
-            className="grid grid-cols-2 gap-x-3 gap-y-4 mt-4"
+            className="grid grid-cols-2 gap-x-2 gap-y-3 mt-4"
           />
         )}
       />
@@ -209,7 +209,7 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
               list={PAINT_TYPES}
               value={field.value}
               onChange={field.onChange}
-              className="grid grid-cols-3 gap-x-4 mt-1"
+              className="grid grid-cols-3 gap-x-1 mt-1"
             />
             <ErrorMessage message={form.formState.errors.wallPaintType?.message} />
           </>
@@ -265,7 +265,7 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
                   list={PAINT_TYPES}
                   value={field.value ?? "plastic"}
                   onChange={field.onChange}
-                  className="grid grid-cols-3 gap-x-3 gap-y-4 mt-4"
+                  className="grid grid-cols-3 gap-x-1 gap-y-4 mt-4"
                 />
               </>
             )}

@@ -44,14 +44,20 @@ export default function Projects() {
                 extraClassName="mt-3"
                 children={
                   <div className="flex justify-between items-center">
-                    <DesignTitle sizeVariant="Body" text={customer_name} titleVariant="Body" color="BlackMain" />
-                    <DesignTitle sizeVariant="Body" text={`${meterage} متر`} titleVariant="Body" color="BlackMain" />
-                    <DesignTitle
-                      sizeVariant="Body"
-                      text={formatJalaliDate(created_at)}
-                      titleVariant="Body"
-                      color="BlackMain"
-                    />
+                    <div className="w-1/2">
+                      <DesignTitle sizeVariant="Body" text={customer_name} titleVariant="Body" color="BlackMain" />
+                    </div>
+                    <div className="w-1/4">
+                      <DesignTitle sizeVariant="Body" text={`${meterage} متر`} titleVariant="Body" color="BlackMain" />
+                    </div>
+                    <div className="w-1/4">
+                      <DesignTitle
+                        sizeVariant="Body"
+                        text={formatJalaliDate(created_at)}
+                        titleVariant="Body"
+                        color="BlackMain"
+                      />
+                    </div>
                   </div>
                 }
                 shadow="Low"

@@ -13,7 +13,7 @@ import type { EstimateFormValues } from "@/pages/estimation-results/schema";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { useRef } from "react";
 import { useShareImage } from "@/hooks/useShareImage";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import blueColorBrush from "@/assets/pic/theme/light/blueColorBrush.png";
 import orangeColorBrushWithBrush from "@/assets/pic/theme/light/orangeColorBrushWithBrush.png";
@@ -104,8 +104,6 @@ interface Props {
 }
 
 export default function LightTheme({ data }: Props) {
-  const navigate = useNavigate();
-
   const shareRef = useRef<HTMLDivElement>(null);
 
   const { shareImage, isSharing } = useShareImage({
@@ -117,14 +115,14 @@ export default function LightTheme({ data }: Props) {
   const totalPaintLiters = data.paints.acrylic.liters + data.paints.oil.liters + data.paints.plastic.liters;
 
   return (
-    <div className="absolute top-0 w-full right-0 left-0">
+    <div className="absolute top-0 w-full right-0 left-0 pb-32">
       {/* =========================
           SHAREABLE CONTENT
       ========================== */}
 
-      <button type="button" className="absolute right-4 top-10 z-50" onClick={() => navigate(-1)}>
+      <Link to="/projects" className="absolute right-4 top-10 z-50">
         <BackRightIcon />
-      </button>
+      </Link>
 
       <div ref={shareRef} className="relative w-full bg-white " dir="rtl">
         {/* Header */}
@@ -263,9 +261,9 @@ export default function LightTheme({ data }: Props) {
           </div>
 
           {/* Materials */}
-          <div className="relative my-4 rounded-lg border border-design-gray-200 pb-4 pt-9">
+          <div className="relative mb-4 mt-7.5 rounded-lg border border-design-gray-200 pb-4 pt-9">
             <div className="border-b border-b-design-blue-2 px-6">
-              <div className="absolute -top-2 left-0 right-0 m-auto flex w-40 items-center justify-between rounded-lg bg-design-blue-1 px-4 py-1 opacity-75">
+              <div className="absolute -top-5 left-0 right-0 m-auto flex w-40 items-center justify-between rounded-lg bg-blue-300 px-4 py-1">
                 <ThreeLineIcon />
 
                 <DesignTitle
@@ -311,8 +309,8 @@ export default function LightTheme({ data }: Props) {
           </div>
 
           {/* Notes */}
-          <div className="relative mt-12 pb-4">
-            <div className="absolute -top-6 left-0 right-0 m-auto flex w-36 items-center justify-between rounded-lg bg-design-blue-1 p-1 px-2.5 opacity-75">
+          <div className="relative mt-8 pb-4">
+            <div className="absolute -top-5 left-0 right-0 m-auto flex w-36 items-center justify-between rounded-lg bg-blue-300 p-1 px-2.5">
               <ThreeLineIcon />
 
               <DesignTitle sizeVariant="SmallSubtitle" text="سایر توضیحات" titleVariant="Body" color="Gray100" />
@@ -334,18 +332,25 @@ export default function LightTheme({ data }: Props) {
       {/* =========================
           SHARE BUTTON
       ========================== */}
-      <div className="flex w-full justify-center">
-        <div className="my-4  w-11/12">
-          <Button
-            buttonVariant="PrimarySolidButton"
-            contentVariant={{ value: isSharing ? "در حال آماده‌سازی..." : "اشتراک گذاری", TAG: "Text" }}
-            heightVariant="MDButton"
-            widthVariant="AutoWidthButton"
-            extraClassName="w-full"
-            onClick={() => shareImage(shareRef.current)}
-            disabled={isSharing}
-          />
-        </div>
+      <div className="fixed bottom-0 left-0 right-0 px-4 py-4 shadow-design-black-1 shadow-2xl rounded-t-3xl bg-white border border-white z-10 flex flex-col gap-3">
+        <Button
+          buttonVariant="SecondaryOutlineButton"
+          contentVariant={{ value: "تکرار برآورد", TAG: "Text" }}
+          heightVariant="MDButton"
+          widthVariant="AutoWidthButton"
+          extraClassName="w-full"
+          onClick={() => {}}
+          disabled={isSharing}
+        />
+        <Button
+          buttonVariant="PrimarySolidButton"
+          contentVariant={{ value: isSharing ? "در حال آماده‌سازی..." : "اشتراک گذاری", TAG: "Text" }}
+          heightVariant="MDButton"
+          widthVariant="AutoWidthButton"
+          extraClassName="w-full"
+          onClick={() => shareImage(shareRef.current)}
+          disabled={isSharing}
+        />
       </div>
     </div>
   );
