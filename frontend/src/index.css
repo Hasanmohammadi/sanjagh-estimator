@@ -97,3 +97,9 @@ body {
   font-family: var(--font-fa), var(--font-en), sans-serif;
   direction: rtl;
 }
+
+html,
+body {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}

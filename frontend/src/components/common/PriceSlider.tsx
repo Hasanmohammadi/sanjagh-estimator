@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@/assets/icons";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/assets/icons";
 
 export interface PriceSliderProps {
   /** Heading shown in the top-right corner */
@@ -56,6 +56,7 @@ export function PriceSlider({
   const current = isControlled ? (value as number) : internal;
 
   const trackRef = React.useRef<HTMLDivElement>(null);
+  const handleRef = React.useRef<HTMLButtonElement>(null);
   const draggingRef = React.useRef(false);
 
   const percent = ((current - min) / (max - min)) * 100;
@@ -76,7 +77,6 @@ export function PriceSlider({
       const track = trackRef.current;
       if (!track) return current;
       const rect = track.getBoundingClientRect();
-      // Track is visually left = min, right = max (matches the labels below).
       const ratio = (clientX - rect.left) / rect.width;
       const clampedRatio = Math.min(1, Math.max(0, ratio));
       return min + clampedRatio * (max - min);
@@ -90,19 +90,37 @@ export function PriceSlider({
       commit(valueFromClientX(e.clientX));
     }
     function onUp() {
+      if (!draggingRef.current) return;
       draggingRef.current = false;
     }
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
     return () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
     };
   }, [commit, valueFromClientX]);
 
-  function handlePointerDown(e: React.PointerEvent) {
+  function startDrag(clientX: number, pointerId: number, target: Element) {
     draggingRef.current = true;
-    commit(valueFromClientX(e.clientX));
+    commit(valueFromClientX(clientX));
+
+    try {
+      (target as Element & { setPointerCapture?: (id: number) => void }).setPointerCapture?.(pointerId);
+    } catch {
+      // no-op: setPointerCapture can throw in some edge cases (e.g. detached nodes)
+    }
+  }
+
+  function handleTrackPointerDown(e: React.PointerEvent) {
+    startDrag(e.clientX, e.pointerId, e.currentTarget);
+  }
+
+  function handleHandlePointerDown(e: React.PointerEvent) {
+    e.stopPropagation();
+    startDrag(e.clientX, e.pointerId, e.currentTarget);
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -146,12 +164,17 @@ export function PriceSlider({
       ) : null}
 
       <div className="mt-2.5">
-        <div ref={trackRef} onPointerDown={handlePointerDown} className="relative flex h-6 cursor-pointer items-center">
-          {/* Track */}
+        <div
+          ref={trackRef}
+          onPointerDown={handleTrackPointerDown}
+          className="relative flex h-8 cursor-pointer items-center touch-none select-none"
+        >
           <div className="h-0.5 w-full rounded-full bg-border bg-design-black-1" />
 
-          {/* Handle */}
+          <div className="absolute h-0.5 rounded-full bg-primary" style={{ left: 0, width: `${percent}%` }} />
+
           <button
+            ref={handleRef}
             type="button"
             role="slider"
             aria-valuemin={min}
@@ -159,9 +182,10 @@ export function PriceSlider({
             aria-valuenow={current}
             aria-label={title}
             tabIndex={0}
+            onPointerDown={handleHandlePointerDown}
             onKeyDown={handleKeyDown}
-            style={{ left: `calc(${percent}% - 22px)` }}
-            className="absolute flex h-6 bg-design-white w-12 items-center justify-evenly rounded-full border border-design-gray-400 outline-none transition-shadow hover:shadow focus-visible:ring-2 focus-visible:ring-ring"
+            style={{ left: value === max ? `calc(${percent}% - 50px)` : `calc(${percent}% - 12px)` }}
+            className="absolute flex h-7.5 bg-design-white w-14 items-center justify-evenly rounded-full border border-design-gray-400 outline-none transition-shadow hover:shadow focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ChevronRightIcon />
             <ChevronLeftIcon />

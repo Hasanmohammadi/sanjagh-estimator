@@ -5,7 +5,6 @@ import ChevronUpIcon from "./ChevronUpIcon";
 import ChevronDownIcon from "./ChevronDownIcon";
 import DownloadIcon from "./DownloadIcon";
 import EditIcon from "./EditIcon";
-import HouseColorized from "./HouseColorized";
 import RemoveIcon from "./RemoveIcon";
 import PriceSettingIcon from "./PriceSettingIcon";
 import ColorPriceIcon from "./ColorPriceIcon";
@@ -22,6 +21,7 @@ import CallIcon from "./CallIcon";
 import HorizontalFrame from "./HorizontalFrame";
 import UserIcon from "./UserIcon";
 import ThreeLineIcon from "./ThreeLineIcon";
+import PhoneIcon from "./PhoneIcon";
 
 export {
   BackRightIcon,
@@ -31,7 +31,6 @@ export {
   ChevronDownIcon,
   DownloadIcon,
   EditIcon,
-  HouseColorized,
   RemoveIcon,
   PriceSettingIcon,
   ColorPriceIcon,
@@ -48,4 +47,5 @@ export {
   HorizontalFrame,
   UserIcon,
   ThreeLineIcon,
+  PhoneIcon,
 };

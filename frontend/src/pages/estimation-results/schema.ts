@@ -9,7 +9,7 @@ const paintDetailSchema = yup.object({
 export const estimateSchema = yup.object({
   customerName: yup.string().trim().max(20, "نام مشتری حداکثر 20 کاراکتر است").required("نام مشتری الزامی است"),
 
-  notes: yup.string().trim().max(1000, "توضیحات حداکثر 1000 کاراکتر است").required("توضیحات الزامی است"),
+  notes: yup.string().trim().max(1000, "توضیحات حداکثر 1000 کاراکتر است").defined(),
 
   totalCost: yup.number().required(),
 

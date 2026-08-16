@@ -76,7 +76,7 @@ export default function EstimationResult() {
   }, [accessoriesCost, acrylicCost, oilCost, plasticCost, form.setValue]);
 
   const { mutate: createEstimate, isPending: createEstimateLoading } = useCreateEstimate(projectId, {
-    onSuccess: () => navigate("/projects"),
+    onSuccess: () => navigate(`/final-estimation?projectId=${projectId}`),
   });
 
   const onSubmit = () => {

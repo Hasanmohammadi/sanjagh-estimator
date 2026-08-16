@@ -63,7 +63,7 @@ export const router = createBrowserRouter([
         path: "final-estimation",
         element: <FinalEstimation />,
         handle: {
-          title: "برآورد رنگ آمیزی",
+          title: "",
         },
       },
     ],

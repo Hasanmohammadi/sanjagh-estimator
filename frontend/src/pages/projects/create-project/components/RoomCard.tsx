@@ -52,23 +52,38 @@ export default function RoomCard({
       <div className="flex justify-between items-center mt-3">
         {!!ceiling_paint_type && (
           <DesignTitle
-            sizeVariant="Body"
+            sizeVariant="Subtitle"
             text={`سقف: ${PaintTypeDic[ceiling_paint_type]}`}
             titleVariant="Body"
             color="Gray500"
           />
         )}
         <DesignTitle
-          sizeVariant="Body"
+          sizeVariant="Subtitle"
           text={`دیوار: ${PaintTypeDic[wall_paint_type]}`}
           titleVariant="Body"
           color="Gray500"
         />
         <div className="flex gap-1 ">
-          <DesignTitle sizeVariant="Body" text={`${Number(height).toString()} x`} titleVariant="Body" color="Gray500" />
-          <DesignTitle sizeVariant="Body" text={`${Number(width).toString()} x`} titleVariant="Body" color="Gray500" />
-          <DesignTitle sizeVariant="Body" text={`${Number(length).toString()}`} titleVariant="Body" color="Gray500" />
-          <DesignTitle sizeVariant="Body" text="متر" titleVariant="Body" color="Gray500" />
+          <DesignTitle
+            sizeVariant="Subtitle"
+            text={`${Number(height).toString()} x`}
+            titleVariant="Body"
+            color="Gray500"
+          />
+          <DesignTitle
+            sizeVariant="Subtitle"
+            text={`${Number(width).toString()} x`}
+            titleVariant="Body"
+            color="Gray500"
+          />
+          <DesignTitle
+            sizeVariant="Subtitle"
+            text={`${Number(length).toString()}`}
+            titleVariant="Body"
+            color="Gray500"
+          />
+          <DesignTitle sizeVariant="Subtitle" text="متر" titleVariant="Body" color="Gray500" />
         </div>
       </div>
       <ConfirmModal

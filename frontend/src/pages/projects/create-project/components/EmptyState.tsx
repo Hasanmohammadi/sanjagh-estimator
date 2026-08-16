@@ -1,5 +1,4 @@
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
-import { HouseColorized } from "@/assets/icons";
 
 export default function EmptyState() {
   return (
@@ -17,8 +16,6 @@ export default function EmptyState() {
         titleVariant="SixthHeader"
         color="Gray400"
       />
-
-      <HouseColorized />
     </div>
   );
 }

@@ -53,7 +53,7 @@ export default function UserInfo() {
                   backgroundVariant="Outlined"
                   heightVariant="MDTextField"
                   onTextChanged={field.onChange}
-                  value={field.value}
+                  value={field.value || ""}
                   className="mt-2 border border-design-gray-200"
                   placeholder="توضیحات خود درباره جزییات رنگ آمیزی را اینجا بنویسید."
                 />
