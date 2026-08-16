@@ -1,4 +1,4 @@
-import { useMatches, useNavigate } from "react-router-dom";
+import { useLocation, useMatches, useNavigate } from "react-router-dom";
 import { BackRightIcon } from "@/assets/icons";
 import { useEffect } from "react";
 
@@ -10,8 +10,10 @@ interface RouteHandle {
 
 export default function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const matches = useMatches();
+
   const title = (matches[matches.length - 1]?.handle as RouteHandle | undefined)?.title ?? "محاسبه قیمت";
 
   useEffect(() => {
@@ -20,11 +22,16 @@ export default function Header() {
     }
   }, [title]);
 
+  if (location.pathname === "/final-estimation") {
+    return null;
+  }
+
   return (
     <header className="relative flex items-center justify-center">
       <button className="absolute right-4" onClick={() => navigate(-1)}>
         <BackRightIcon />
       </button>
+
       <DesignTitle sizeVariant="FirstTitle" text={title} titleVariant="Body" />
     </header>
   );

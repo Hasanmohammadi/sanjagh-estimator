@@ -96,9 +96,11 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
   });
 
   useEffect(() => {
+    if (bottomSheetState !== "create") return;
+
     form.setValue("ceilingPaintType", PaintType.Plastic);
     form.setValue("ceilingCoats", 1);
-  }, [hasCeilingConfig]);
+  }, [hasCeilingConfig, bottomSheetState, form]);
 
   return (
     <div className="mb-20">
@@ -265,11 +267,9 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
                   onChange={field.onChange}
                   className="grid grid-cols-3 gap-x-3 gap-y-4 mt-4"
                 />
-                <ErrorMessage message={form.formState.errors.ceilingPaintType?.message} />
               </>
             )}
           />
-
           {/* Roof Coat Count */}
           <div className="flex justify-between gap-2 items-center mt-6">
             <div className="flex flex-col items-start w-1/2">
@@ -279,6 +279,7 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
                 render={({ field }) => (
                   <TomanCounter
                     hasError={!!form.formState.errors.ceilingCoats}
+
                     initialCounterValue={String(field.value ?? 1)}
                     step={1}
                     onCounterChange={value => field.onChange(Number(value.value))}

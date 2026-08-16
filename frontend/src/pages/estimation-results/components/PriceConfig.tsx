@@ -13,7 +13,12 @@ export default function PriceConfig({ projectId }: Props) {
         children={
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-2.5">
-              <DesignTitle sizeVariant="Body" text="تنظیم قیمت پایه" titleVariant="Body" color="BlueMain" />
+              <DesignTitle
+                sizeVariant="ThirdTitle"
+                text="تنظیم قیمت پایه"
+                titleVariant="ThirdHeader"
+                color="BlueMain"
+              />
               <DesignTitle sizeVariant="Body" text="شامل قیمت رنگ و موارد مصرفی" titleVariant="Body" color="Gray600" />
             </div>
             <SettingsIcon />

@@ -1,10 +1,11 @@
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button.tsx";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
-import { Accordion, Spinner } from "@/components/common";
+import { Spinner } from "@/components/common";
 import { useNavigate } from "react-router-dom";
 import { useProjects } from "@/hooks/projects/useProjects";
 import { useCreateProject } from "@/hooks/projects/useCreateProject";
 import { formatJalaliDate } from "@/utils/date";
+import { Card } from "@skul/sanjagh-design-system/src/Design_Card";
 
 export default function Projects() {
   const navigate = useNavigate();
@@ -37,35 +38,25 @@ export default function Projects() {
       ) : projects?.length ? (
         <div className="mt-6">
           <DesignTitle sizeVariant="SecondTitle" text="پروژه های قبلی" titleVariant="Body" color="BlackMain" />
-          {projects.map(({ id, created_at, customer_name, meterage, title }) => (
-            <div className="mt-3" key={id}>
-              <Accordion date={formatJalaliDate(created_at)} title={`پروژه: ${title}`}>
-                <div className="flex justify-between items-center mt-4">
-                  <DesignTitle
-                    sizeVariant="SmallSubtitle"
-                    text={formatJalaliDate(created_at)}
-                    titleVariant="Body"
-                    color="BlackMain"
-                  />
-                  <DesignTitle sizeVariant="SmallSubtitle" text={customer_name} titleVariant="Body" color="BlackMain" />
-                  <DesignTitle
-                    sizeVariant="SmallSubtitle"
-                    text={`${meterage} متر`}
-                    titleVariant="Body"
-                    color="BlackMain"
-                  />
-                  <Button
-                    buttonVariant="PrimarySolidButton"
-                    contentVariant={{
-                      TAG: "Text",
-                      value: "جزئیات بیشتر",
-                    }}
-                    heightVariant="XSButton"
-                    widthVariant="AutoWidthButton"
-                    onClick={() => navigate(`/final-estimation?projectId=${id}`)}
-                  />
-                </div>
-              </Accordion>
+          {projects.map(({ id, created_at, customer_name, meterage }) => (
+            <div onClick={() => navigate(`/final-estimation?projectId=${id}`)} key={id}>
+              <Card
+                extraClassName="mt-3"
+                children={
+                  <div className="flex justify-between items-center">
+                    <DesignTitle sizeVariant="Body" text={customer_name} titleVariant="Body" color="BlackMain" />
+                    <DesignTitle sizeVariant="Body" text={`${meterage} متر`} titleVariant="Body" color="BlackMain" />
+                    <DesignTitle
+                      sizeVariant="Body"
+                      text={formatJalaliDate(created_at)}
+                      titleVariant="Body"
+                      color="BlackMain"
+                    />
+                  </div>
+                }
+                shadow="Low"
+                variant="SM"
+              />
             </div>
           ))}
         </div>
