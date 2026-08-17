@@ -35,8 +35,8 @@ export default function CalculationWithMaterial() {
     setValue("totalCost", value);
   };
 
-  const min = materialBasedTotalCost != null ? materialBasedTotalCost - 2 : 0;
-  const max = materialBasedTotalCost != null ? materialBasedTotalCost + 2 : 100;
+  const min = materialBasedTotalCost != null ? materialBasedTotalCost * 0.8 : 0;
+  const max = materialBasedTotalCost != null ? materialBasedTotalCost * 1.2 : 100;
 
   return (
     <Card extraClassName="border-2 border-design-gray-200" shadow="NoShadow" variant="SM">
@@ -61,8 +61,8 @@ export default function CalculationWithMaterial() {
           {materialBasedTotalCost != null && (
             <Card extraClassName="mt-3 border-2 border-design-gray-200" shadow="NoShadow" variant="SM">
               <PriceSlider
-                min={min}
-                max={max}
+                min={Math.ceil(min)}
+                max={Math.ceil(max)}
                 step={1}
                 value={totalCost ?? materialBasedTotalCost}
                 onValueChange={handleSliderChange}

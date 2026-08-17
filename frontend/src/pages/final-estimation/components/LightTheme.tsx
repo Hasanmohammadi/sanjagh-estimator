@@ -291,11 +291,11 @@ export default function LightTheme({ data }: Props) {
               </div>
 
               <div className="flex items-center justify-between pb-2">
-                <div className="text-right">
+                <div className="w-1/2 text-right">
                   <DesignTitle sizeVariant="Subtitle" text="رنگ" titleVariant="Body" color="BlueMain" />
                 </div>
 
-                <div className="w-1/4 text-left">
+                <div className="w-1/4 text-center">
                   <DesignTitle sizeVariant="Subtitle" text="لیتر" titleVariant="Body" color="BlueMain" />
                 </div>
 

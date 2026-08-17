@@ -28,9 +28,10 @@ interface Props {
   closeSheet: () => void;
   bottomSheetState: "edit" | "create";
   roomSelectedId: string;
+  bottomSheetOpen: boolean;
 }
 
-export default function BottomSheetContent({ closeSheet, bottomSheetState, roomSelectedId }: Props) {
+export default function BottomSheetContent({ closeSheet, bottomSheetState, roomSelectedId, bottomSheetOpen }: Props) {
   const queryClient = useQueryClient();
   const form = useFormContext<RoomFormData>();
 
@@ -42,10 +43,10 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
   const { mutate: createRoom } = useCreateRoom({
     projectId,
     onSuccess: () => {
+      closeSheet();
       queryClient.invalidateQueries({
         queryKey: queryKeys.project(projectId),
       });
-      closeSheet();
     },
   });
 
@@ -66,10 +67,10 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
   const { mutate: updateRoom } = useUpdateRoom({
     projectId,
     onSuccess: () => {
+      closeSheet();
       queryClient.invalidateQueries({
         queryKey: queryKeys.project(projectId),
       });
-      closeSheet();
     },
   });
 
@@ -98,8 +99,10 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
   useEffect(() => {
     if (bottomSheetState !== "create") return;
 
-    form.setValue("ceilingPaintType", PaintType.Plastic);
-    form.setValue("ceilingCoats", 1);
+    if (!bottomSheetOpen) {
+      form.setValue("ceilingPaintType", PaintType.Plastic);
+      form.setValue("ceilingCoats", 1);
+    }
   }, [hasCeilingConfig, bottomSheetState, form]);
 
   return (

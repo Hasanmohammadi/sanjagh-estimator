@@ -91,6 +91,7 @@ export default function CreateProjects() {
             bottomSheetState={bottomSheetState}
             closeSheet={() => setBottomSheetOpen(false)}
             roomSelectedId={roomSelectedId as string}
+            bottomSheetOpen={bottomSheetOpen}
           />
         </BottomSheet>
       </FormProvider>
