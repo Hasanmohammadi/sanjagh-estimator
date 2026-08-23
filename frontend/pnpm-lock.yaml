@@ -4,10 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@skul/sanjagh-react-icons': file:vendor/sanjagh-react-icons-1.22.202601180926.tgz
-  '@skul/sanjagh-window-global-objects': file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz
-
 importers:
 
   .:
@@ -16,14 +12,8 @@ importers:
         specifier: ^5.4.0
         version: 5.4.0(react-hook-form@7.79.0(react@19.2.7))
       '@skul/sanjagh-design-system':
-        specifier: file:vendor/skul-sanjagh-design-system-1.288.202608081359.tgz
-        version: file:vendor/skul-sanjagh-design-system-1.288.202608081359.tgz(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@skul/sanjagh-react-icons':
-        specifier: file:vendor/sanjagh-react-icons-1.22.202601180926.tgz
-        version: file:vendor/sanjagh-react-icons-1.22.202601180926.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@skul/sanjagh-window-global-objects':
-        specifier: file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz
-        version: file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: ^1.275.202607110528
+        version: 1.288.202608081359(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tailwindcss/vite':
         specifier: ^4.3.1
         version: 4.3.1(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -109,9 +99,6 @@ importers:
       globals:
         specifier: ^17.6.0
         version: 17.6.0
-      husky:
-        specifier: ^9.1.7
-        version: 9.1.7
       jsdom:
         specifier: ^29.1.1
         version: 29.1.1
@@ -595,19 +582,16 @@ packages:
   '@ryyppy/rescript-promise@2.1.0':
     resolution: {integrity: sha512-+dW6msBrj2Lr2hbEMX+HoWCvN89qVjl94RwbYWJgHQuj8jm/izdPC0YzxgpGoEFdeAEW2sOozoLcYHxT6o5WXQ==}
 
-  '@skul/sanjagh-design-system@file:vendor/skul-sanjagh-design-system-1.288.202608081359.tgz':
-    resolution: {integrity: sha512-FwPeSDOKMh6RQuyl0BOJGhsjjnogECqp8oOUHEODPuFKGs81hzhthIK9Y435jHs+yrpDxPPTUOP1dABm4RMp7g==, tarball: file:vendor/skul-sanjagh-design-system-1.288.202608081359.tgz}
-    version: 1.288.202608081359
+  '@skul/sanjagh-design-system@1.288.202608081359':
+    resolution: {integrity: sha512-FwPeSDOKMh6RQuyl0BOJGhsjjnogECqp8oOUHEODPuFKGs81hzhthIK9Y435jHs+yrpDxPPTUOP1dABm4RMp7g==}
     peerDependencies:
       react: ^18
 
-  '@skul/sanjagh-react-icons@file:vendor/sanjagh-react-icons-1.22.202601180926.tgz':
-    resolution: {integrity: sha512-4RoM92aInU5uZYZaaGC1bJZiarKFYW2fREcEvmw1b6+8/AhopaF1MWoUCdkUmENSSyicrF/C0FloI3Y9uLrhgQ==, tarball: file:vendor/sanjagh-react-icons-1.22.202601180926.tgz}
-    version: 1.22.202601180926
+  '@skul/sanjagh-react-icons@1.22.202601180926':
+    resolution: {integrity: sha512-4RoM92aInU5uZYZaaGC1bJZiarKFYW2fREcEvmw1b6+8/AhopaF1MWoUCdkUmENSSyicrF/C0FloI3Y9uLrhgQ==}
 
-  '@skul/sanjagh-window-global-objects@file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz':
-    resolution: {integrity: sha512-UV2LVhdOq8KEMNiSa0cIVKFRfWJKwKUoaZGEQ3S1e75IHlynLV9b6tgN4v/KFPUDnDBbSkhKecBSjuhbF8gyug==, tarball: file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz}
-    version: 1.19.202601180927
+  '@skul/sanjagh-window-global-objects@1.19.202601180927':
+    resolution: {integrity: sha512-UV2LVhdOq8KEMNiSa0cIVKFRfWJKwKUoaZGEQ3S1e75IHlynLV9b6tgN4v/KFPUDnDBbSkhKecBSjuhbF8gyug==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -1341,11 +1325,6 @@ packages:
   https-proxy-agent@5.0.1:
     resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
     engines: {node: '>= 6'}
-
-  husky@9.1.7:
-    resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
-    engines: {node: '>=18'}
-    hasBin: true
 
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
@@ -2515,12 +2494,12 @@ snapshots:
 
   '@ryyppy/rescript-promise@2.1.0': {}
 
-  '@skul/sanjagh-design-system@file:vendor/skul-sanjagh-design-system-1.288.202608081359.tgz(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@skul/sanjagh-design-system@1.288.202608081359(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@rescript/react': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@ryyppy/rescript-promise': 2.1.0
-      '@skul/sanjagh-react-icons': file:vendor/sanjagh-react-icons-1.22.202601180926.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@skul/sanjagh-window-global-objects': file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@skul/sanjagh-react-icons': 1.22.202601180926(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@skul/sanjagh-window-global-objects': 1.19.202601180927(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       body-scroll-lock: 4.0.0-beta.0
       next: 14.2.35(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react: 19.2.7
@@ -2539,7 +2518,7 @@ snapshots:
       - react-dom
       - sass
 
-  '@skul/sanjagh-react-icons@file:vendor/sanjagh-react-icons-1.22.202601180926.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@skul/sanjagh-react-icons@1.22.202601180926(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@rescript/react': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       rescript: 10.1.4
@@ -2547,7 +2526,7 @@ snapshots:
       - react
       - react-dom
 
-  '@skul/sanjagh-window-global-objects@file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@skul/sanjagh-window-global-objects@1.19.202601180927(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@rescript/react': 0.11.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       rescript: 10.1.4
@@ -3285,8 +3264,6 @@ snapshots:
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
-
-  husky@9.1.7: {}
 
   ignore@5.3.2: {}
 
