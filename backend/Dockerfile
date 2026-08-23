@@ -1,39 +1,41 @@
 # ==========================================
-# مرحله ۱: Build (بیلد و استخراج dependency ها)
+# مرحله ۱: Build
 # ==========================================
 FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# نصب pnpm (پایدارتر از corepack برای شبکه‌های ناپایدار)
+# نصب pnpm
 RUN npm install -g pnpm@10.12.1
 
-# کپی فایل‌های تنظیمات workspace
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY .npmrc ./
+# فایل‌های اصلی monorepo
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
-# کپی کردن package.json تمام ورک‌اسپیس‌ها برای جلوگیری از ارور pnpm
+# package.json ورک‌اسپیس‌ها
 COPY backend/package.json ./backend/package.json
 COPY frontend/package.json ./frontend/package.json
 
-# نصب تمام دیپندنسی‌ها
+# نصب dependencyها
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
-# کپی کردن سورس کدهای بک‌اند
+# سورس Backend
 COPY backend ./backend
 
-WORKDIR /app
-
+# Build TypeScript
 RUN pnpm --filter ./backend exec tsc
-RUN pnpm --filter ./backend deploy --prod /app/deploy/backend --legacy
+
+# ساخت production dependency tree
+RUN pnpm --filter ./backend deploy --prod /app/deploy/backend
+
+
 # ==========================================
-# مرحله ۲: Production (اجرا - بسیار سبک و بدون نیاز به pnpm)
+# مرحله ۲: Production
 # ==========================================
 FROM node:22-alpine
 
 WORKDIR /app
 
-# کپی کردن مستقیم خروجی مرحله قبل (نیازی به نصب هیچ چیز نیست!)
+# فقط Backend production را منتقل می‌کنیم
 COPY --from=builder /app/deploy/backend ./
 
 EXPOSE 3001
