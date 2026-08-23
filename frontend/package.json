@@ -6,21 +6,24 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint . ",
+    "lint": "eslint . --max-warnings=0",
     "preview": "vite preview",
+    "prepare": "husky",
     "test": "vitest run --coverage",
     "type-check": "tsc -b --noEmit",
     "check": "pnpm run type-check && pnpm run lint"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix ",
+      "eslint --fix --max-warnings=0",
       "prettier --write"
     ]
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
-    "@skul/sanjagh-design-system": "^1.275.202607110528",
+    "@skul/sanjagh-design-system": "file:vendor/skul-sanjagh-design-system-1.288.202608081359.tgz",
+    "@skul/sanjagh-react-icons": "file:vendor/sanjagh-react-icons-1.22.202601180926.tgz",
+    "@skul/sanjagh-window-global-objects": "file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz",
     "@tailwindcss/vite": "^4.3.1",
     "@tanstack/react-query": "^5.101.0",
     "axios": "^1.18.1",
@@ -51,6 +54,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^17.6.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "lint-staged": "^17.0.7",
     "prettier": "^3.8.4",
@@ -59,5 +63,11 @@
     "vite": "^8.0.12",
     "vitest": "^4.1.8"
   },
-  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
+  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac",
+  "pnpm": {
+    "overrides": {
+      "@skul/sanjagh-react-icons": "file:vendor/sanjagh-react-icons-1.22.202601180926.tgz",
+      "@skul/sanjagh-window-global-objects": "file:vendor/sanjagh-window-global-objects-1.19.202601180927.tgz"
+    }
+  }
 }
