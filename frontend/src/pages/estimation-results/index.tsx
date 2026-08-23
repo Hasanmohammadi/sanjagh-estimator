@@ -9,7 +9,7 @@ import PaintArea from "./components/PaintArea";
 import PaintSummary from "./components/PaintSummary";
 import UserInfo from "./components/UserInfo";
 import { useEffect, useRef } from "react";
-import { estimateSchema, type EstimateFormValues } from "./schema";
+import { estimateSchema } from "./schema";
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
 import { Spinner } from "@/components/common";
 import { useDraftCalculate } from "@/hooks/draft/useDraftCalculate";
@@ -21,7 +21,7 @@ export default function EstimationResult() {
 
   const { data: draftCalculate, isLoading } = useDraftCalculate();
 
-  const form = useForm<EstimateFormValues>({
+  const form = useForm({
     resolver: yupResolver(estimateSchema),
     shouldFocusError: true,
     defaultValues: {
