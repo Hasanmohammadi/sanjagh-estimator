@@ -1,6 +1,5 @@
 import { TomanCounter } from "@/components/common";
 import { Card } from "@skul/sanjagh-design-system/src/Design_Card";
-import Switch from "@skul/sanjagh-design-system/src/Design_Switch";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import type { EstimateFormValues } from "../schema";
@@ -23,7 +22,7 @@ export default function Period() {
       <div className="flex items-center justify-between">
         <DesignTitle sizeVariant="ThirdTitle" text="مدت زمان" titleVariant="Body" color="BlackMain" />
 
-        <Controller
+        {/* <Controller
           name="visibility.days"
           control={control}
           render={({ field }) => (
@@ -35,14 +34,13 @@ export default function Period() {
               onCheckedChange={field.onChange}
             />
           )}
-        />
+        /> */}
       </div>
 
       {isDaysVisible && (
         <>
-          <div className="mt-1.5 flex items-center justify-between">
+          <div className="mt-1.5 flex items-center justify-center gap-6">
             <div />
-
             <Controller
               name="days"
               control={control}

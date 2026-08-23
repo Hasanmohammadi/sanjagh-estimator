@@ -47,6 +47,8 @@ export interface EstimateResult {
   min_price: number;
   max_price: number;
   days: number;
+  min_total_price: number;
+  max_total_price: number;
 }
 
 const COVERAGE: Record<PaintType, number> = {
@@ -154,6 +156,32 @@ export const calculateEstimate = (rooms: RoomInput[], config: PriceConfig): Esti
   const min_price = base_cost * 0.8;
   const max_price = base_cost * 1.2;
 
+  let min_labor = 0;
+  let max_labor = 0;
+
+  rooms.forEach(room => {
+    const wallMin = (config[`${room.wall_paint_type}_without_min` as keyof PriceConfig] as number) ?? 0;
+    const wallMax = (config[`${room.wall_paint_type}_without_max` as keyof PriceConfig] as number) ?? 0;
+    const wallArea = 2 * (room.width + room.length) * room.height;
+
+    min_labor += Math.round(wallArea * room.wall_coats * WASTE_FACTOR * wallMin);
+    max_labor += Math.round(wallArea * room.wall_coats * WASTE_FACTOR * wallMax);
+
+    if (room.ceiling_enabled && room.ceiling_paint_type && room.ceiling_coats) {
+      const ceilMin = (config[`${room.ceiling_paint_type}_without_min` as keyof PriceConfig] as number) ?? 0;
+      const ceilMax = (config[`${room.ceiling_paint_type}_without_max` as keyof PriceConfig] as number) ?? 0;
+      const ceilArea = room.width * room.length;
+
+      min_labor += Math.round(ceilArea * room.ceiling_coats * WASTE_FACTOR * ceilMin);
+      max_labor += Math.round(ceilArea * room.ceiling_coats * WASTE_FACTOR * ceilMax);
+    }
+  });
+
+  const total_materials_cost = total_paint_cost + accessories_cost;
+
+  const min_total_price = min_labor + total_materials_cost;
+  const max_total_price = max_labor + total_materials_cost;
+
   return {
     rooms: roomEstimates,
     total_area,
@@ -165,5 +193,7 @@ export const calculateEstimate = (rooms: RoomInput[], config: PriceConfig): Esti
     min_price,
     max_price,
     days,
+    min_total_price,
+    max_total_price,
   };
 };

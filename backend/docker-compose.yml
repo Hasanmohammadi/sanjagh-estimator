@@ -1,6 +1,8 @@
 services:
   app:
-    build: .
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
     container_name: painting_estimator_app
     restart: unless-stopped
     ports:

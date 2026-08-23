@@ -4,12 +4,40 @@ import app from "../app";
 import { NON_EXISTENT_UUID } from "./setup";
 
 const createProject = async () => {
-  const res = await request(app).post("/projects").send({ title: "پروژه تست" });
-  return res.body.data;
-};
+  const estimate = {
+    customerName: "پروژه تست",
+    notes: "تست",
+    totalCost: 5000000,
+    totalMaterialCost: 4000000,
+    accessoriesCost: 500000,
+    paints: {
+      plastic: {
+        liters: 10,
+        total_cost: 7000000,
+        price_per_liter: 700000,
+      },
+      oil: {
+        liters: 0,
+        total_cost: 0,
+        price_per_liter: 850000,
+      },
+      acrylic: {
+        liters: 0,
+        total_cost: 0,
+        price_per_liter: 950000,
+      },
+    },
+    meterage: 51,
+    days: 2,
+    visibility: {
+      days: true,
+      final_cost: true,
+      materials: true,
+      paint_area: true,
+    },
+  };
 
-const addRoom = async (projectId: string) => {
-  const res = await request(app).post(`/projects/${projectId}/rooms`).send({
+  const roomRes = await request(app).post("/draft/rooms").send({
     type: "bedroom",
     width: 4,
     length: 5,
@@ -18,6 +46,49 @@ const addRoom = async (projectId: string) => {
     wall_coats: 2,
     ceiling_enabled: false,
   });
+
+  console.log("ADD ROOM:", roomRes.status, roomRes.body);
+
+  expect(roomRes.status).toBe(201);
+
+  const res = await request(app).post("/draft/complete").send(estimate);
+
+  console.log("COMPLETE PROJECT:", res.status, res.body);
+
+  expect(res.status).toBe(201);
+  expect(res.body.data).toBeDefined();
+
+  return res.body.data;
+};
+
+const addRoom = async (
+  overrides: Partial<{
+    type: string;
+    width: number;
+    length: number;
+    height: number;
+    wall_paint_type: string;
+    wall_coats: number;
+    ceiling_enabled: boolean;
+    ceiling_paint_type: string;
+    ceiling_coats: number;
+  }> = {},
+) => {
+  const res = await request(app)
+    .post(`/draft/rooms`)
+    .send({
+      type: "bedroom",
+      width: 4,
+      length: 5,
+      height: 2.8,
+      wall_paint_type: "plastic",
+      wall_coats: 2,
+      ceiling_enabled: false,
+      ...overrides,
+    });
+
+  expect(res.status).toBe(201);
+
   return res.body.data;
 };
 
@@ -34,127 +105,20 @@ const priceConfig = {
   acrylic_without_max: 1100000,
 };
 
-const validEstimate = {
-  customerName: "ایمان نجاتی",
-  notes: "تست",
-  totalCost: 5000000,
-  totalMaterialCost: 5000000,
-  accessoriesCost: 500000,
-  paints: {
-    plastic: { liters: 12, total_cost: 8400000, price_per_liter: 700000 },
-    oil: { liters: 0, total_cost: 0, price_per_liter: 850000 },
-    acrylic: { liters: 0, total_cost: 0, price_per_liter: 950000 },
-  },
-  meterage: 51,
-  days: 1,
-  visibility: {
-    days: true,
-    final_cost: true,
-    materials: true,
-    paint_area: true,
-  },
-};
-
 describe("Estimates API", () => {
-  describe("POST /projects/:project_id/estimates", () => {
-    it("should create estimate successfully", async () => {
+  describe("GET /projects/:project_id/estimates", () => {
+    it("should return estimate successfully", async () => {
       const project = await createProject();
-      await addRoom(project.id);
 
-      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
+      const res = await request(app).get(`/projects/${project.id}/estimates`);
 
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(200);
       expect(res.body.status).toBe("success");
       expect(res.body.data).toBeDefined();
     });
 
-    it("should return 404 if project not found", async () => {
-      const res = await request(app).post(`/projects/${NON_EXISTENT_UUID}/estimates`).send(validEstimate);
-
-      expect(res.status).toBe(404);
-    });
-
-    it("should return 400 if no rooms exist", async () => {
+    it("should return the correct project id on the estimate", async () => {
       const project = await createProject();
-      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
-
-      expect(res.status).toBe(400);
-    });
-
-    it("notes ذخیره بشه", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      const res = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, notes: "تست نوت" });
-
-      expect(res.body.data.notes).toBe("تست نوت");
-    });
-
-    it("customerName ذخیره بشه", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
-
-      expect(res.body.data.customerName).toBe("ایمان نجاتی");
-    });
-
-    it("paints ذخیره بشه", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      const res = await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
-
-      expect(res.body.data.paints.plastic.liters).toBe(12);
-      expect(res.body.data.paints.oil.liters).toBe(0);
-      expect(res.body.data.paints.acrylic.liters).toBe(0);
-    });
-
-    it("visibility ذخیره بشه", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      const res = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, visibility: { ...validEstimate.visibility, days: false } });
-
-      expect(res.body.data.visibility.days).toBe(false);
-      expect(res.body.data.visibility.final_cost).toBe(true);
-    });
-
-    it("totalCost ذخیره بشه", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      const res = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, totalCost: 2500000 });
-
-      expect(res.body.data.totalCost).toBe(2500000);
-    });
-
-    it("دوباره ذخیره کنه (upsert)", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
-
-      const updated = await request(app)
-        .post(`/projects/${project.id}/estimates`)
-        .send({ ...validEstimate, totalCost: 9990000 });
-
-      expect(updated.body.data.totalCost).toBe(9990000);
-    });
-  });
-
-  describe("GET /projects/:project_id/estimates", () => {
-    it("should return latest estimate", async () => {
-      const project = await createProject();
-      await addRoom(project.id);
-
-      await request(app).post(`/projects/${project.id}/estimates`).send(validEstimate);
 
       const res = await request(app).get(`/projects/${project.id}/estimates`);
 
@@ -162,63 +126,204 @@ describe("Estimates API", () => {
       expect(res.body.data.project_id).toBe(project.id);
     });
 
-    it("should return 404 if no estimate exists", async () => {
-      const project = await createProject();
-      const res = await request(app).get(`/projects/${project.id}/estimates`);
+    it("should return 404 if project does not exist", async () => {
+      const res = await request(app).get(`/projects/${NON_EXISTENT_UUID}/estimates`);
+
       expect(res.status).toBe(404);
+      expect(res.body.status).toBe("error");
+    });
+
+    it("should return 400 for invalid project id", async () => {
+      const res = await request(app).get("/projects/invalid-id/estimates");
+
+      expect(res.status).toBe(400);
+      expect(res.body.status).toBe("error");
     });
   });
 });
 
-describe("GET /projects/:project_id/estimates/calculate", () => {
-  it("بدون price config محاسبه کنه", async () => {
-    const project = await createProject();
-    await addRoom(project.id);
+describe("GET /draft/calculate", () => {
+  it("should return 400 if no price config exists", async () => {
+    await addRoom();
 
-    const res = await request(app).get(`/projects/${project.id}/estimates/calculate`);
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.has_price_config).toBe(false);
-    expect(res.body.data.calculation.paint_area).toBeGreaterThan(0);
-    expect(res.body.data.calculation.days).toBeGreaterThan(0);
-  });
-
-  it("با price config محاسبه کنه", async () => {
-    const project = await createProject();
-    await addRoom(project.id);
-    await request(app).put("/price-config").send(priceConfig);
-
-    const res = await request(app).get(`/projects/${project.id}/estimates/calculate`);
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.has_price_config).toBe(true);
-    expect(res.body.data.calculation.final_cost).toBeGreaterThan(0);
-  });
-
-  it("اگه پروژه وجود نداشته باشه ۴۰۴ بده", async () => {
-    const res = await request(app).get(`/projects/${NON_EXISTENT_UUID}/estimates/calculate`);
-
-    expect(res.status).toBe(404);
-    expect(res.body.status).toBe("error");
-  });
-
-  it("اگه اتاقی نداشته باشه ۴۰۰ بده", async () => {
-    const project = await createProject();
-
-    const res = await request(app).get(`/projects/${project.id}/estimates/calculate`);
+    const res = await request(app).get("/draft/calculate");
 
     expect(res.status).toBe(400);
     expect(res.body.status).toBe("error");
   });
 
-  it("چند اتاق رو با هم حساب کنه", async () => {
-    const project = await createProject();
-    await addRoom(project.id);
-    await addRoom(project.id);
+  it("should calculate estimate with price config", async () => {
+    await addRoom();
 
-    const res = await request(app).get(`/projects/${project.id}/estimates/calculate`);
+    await request(app).put("/price-config").send(priceConfig);
+
+    const res = await request(app).get("/draft/calculate");
+
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe("success");
+
+    expect(res.body.data.has_price_config).toBe(true);
+
+    expect(res.body.data.calculation.final_cost).toBeGreaterThan(0);
+
+    expect(res.body.data.calculation.materials).toBeDefined();
+
+    expect(res.body.data.calculation.materials.paints).toBeDefined();
+
+    expect(res.body.data.calculation.materials.total_materials_cost).toBeGreaterThan(0);
+  });
+
+  it("should return 400 if draft has no rooms", async () => {
+    // یک draft بدون room می‌سازیم تا شرط "no rooms" (نه "no draft") تست بشود
+    await request(app).put("/draft").send({ customer_name: "تست" });
+
+    const res = await request(app).get("/draft/calculate");
+
+    expect(res.status).toBe(400);
+    expect(res.body.status).toBe("error");
+  });
+
+  it("should calculate multiple rooms", async () => {
+    await addRoom();
+
+    await addRoom({
+      type: "living_room",
+      width: 6,
+      length: 7,
+      wall_paint_type: "oil",
+      wall_coats: 2,
+    });
+
+    await request(app).put("/price-config").send(priceConfig);
+
+    const res = await request(app).get("/draft/calculate");
+
+    expect(res.status).toBe(200);
 
     expect(res.body.data.calculation.paint_area).toBeGreaterThan(0);
     expect(res.body.data.calculation.days).toBeGreaterThan(0);
+  });
+
+  it("should calculate room with ceiling", async () => {
+    await addRoom({
+      ceiling_enabled: true,
+      ceiling_paint_type: "plastic",
+      ceiling_coats: 2,
+    });
+
+    await request(app).put("/price-config").send(priceConfig);
+
+    const res = await request(app).get("/draft/calculate");
+
+    expect(res.status).toBe(200);
+
+    expect(res.body.data.calculation.paint_area).toBeGreaterThan(0);
+
+    expect(res.body.data.calculation.materials.paints.plastic.liters).toBeGreaterThan(0);
+  });
+
+  it("should return paint summary for all paint types", async () => {
+    await addRoom({
+      wall_paint_type: "plastic",
+    });
+
+    await addRoom({
+      type: "living_room",
+      wall_paint_type: "oil",
+    });
+
+    await addRoom({
+      type: "kitchen",
+      wall_paint_type: "acrylic",
+    });
+
+    await request(app).put("/price-config").send(priceConfig);
+
+    const res = await request(app).get("/draft/calculate");
+
+    expect(res.status).toBe(200);
+
+    const paints = res.body.data.calculation.materials.paints;
+
+    expect(paints.plastic).toBeDefined();
+    expect(paints.oil).toBeDefined();
+    expect(paints.acrylic).toBeDefined();
+
+    expect(paints.plastic.liters).toBeGreaterThan(0);
+    expect(paints.oil.liters).toBeGreaterThan(0);
+    expect(paints.acrylic.liters).toBeGreaterThan(0);
+  });
+
+  it("should return correct price per liter when price config exists", async () => {
+    await addRoom({
+      wall_paint_type: "plastic",
+    });
+
+    await request(app).put("/price-config").send(priceConfig);
+
+    const res = await request(app).get("/draft/calculate");
+
+    expect(res.status).toBe(200);
+
+    const paints = res.body.data.calculation.materials.paints;
+
+    expect(paints.plastic.price_per_liter).toBe(700000);
+    expect(paints.oil.price_per_liter).toBe(850000);
+    expect(paints.acrylic.price_per_liter).toBe(950000);
+  });
+
+  it("should return zero for unused paint types", async () => {
+    await addRoom({
+      wall_paint_type: "plastic",
+    });
+
+    await request(app).put("/price-config").send(priceConfig);
+
+    const res = await request(app).get("/draft/calculate");
+
+    expect(res.status).toBe(200);
+
+    const paints = res.body.data.calculation.materials.paints;
+
+    expect(paints.plastic.liters).toBeGreaterThan(0);
+
+    expect(paints.oil.liters).toBe(0);
+    expect(paints.acrylic.liters).toBe(0);
+  });
+
+  it("should include minimum and maximum total price", async () => {
+    await addRoom();
+
+    await request(app).put("/price-config").send(priceConfig);
+
+    const res = await request(app).get("/draft/calculate");
+
+    expect(res.status).toBe(200);
+
+    const calculation = res.body.data.calculation;
+
+    expect(calculation.min_total_price).toBeDefined();
+    expect(calculation.max_total_price).toBeDefined();
+
+    expect(calculation.min_total_price).toBeGreaterThanOrEqual(0);
+    expect(calculation.max_total_price).toBeGreaterThanOrEqual(calculation.min_total_price);
+  });
+
+  it("should return accessories cost and total materials cost", async () => {
+    await addRoom();
+
+    await request(app).put("/price-config").send(priceConfig);
+
+    const res = await request(app).get("/draft/calculate");
+
+    expect(res.status).toBe(200);
+
+    const materials = res.body.data.calculation.materials;
+
+    expect(materials.accessories_cost).toBeDefined();
+    expect(materials.total_materials_cost).toBeDefined();
+
+    expect(materials.accessories_cost).toBeGreaterThanOrEqual(0);
+    expect(materials.total_materials_cost).toBeGreaterThanOrEqual(0);
   });
 });

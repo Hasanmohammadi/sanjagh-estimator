@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { dismiss, toastEmitter, type ToastItem, type ToastType } from "../utils/toast";
 

@@ -12,6 +12,8 @@ export const estimateSchema = yup.object({
   notes: yup.string().trim().max(1000, "توضیحات حداکثر 1000 کاراکتر است").defined(),
 
   totalCost: yup.number().required(),
+  minTotalPrice: yup.number(),
+  maxTotalPrice: yup.number(),
 
   accessoriesCost: yup.number().required(),
 

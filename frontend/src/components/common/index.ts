@@ -6,6 +6,7 @@ import { TomanCounter } from "./Counter";
 import HLine from "./HLine";
 import { PriceSlider } from "./PriceSlider";
 import Spinner from "./Spinner";
+import { Switch } from "./Switch";
 import VLine from "./VLine";
 
-export { Accordion, BottomSheet, ButtonList, HLine, TomanCounter, PriceSlider, ConfirmModal, Spinner, VLine };
+export { Accordion, BottomSheet, ButtonList, HLine, TomanCounter, PriceSlider, ConfirmModal, Spinner, VLine, Switch };

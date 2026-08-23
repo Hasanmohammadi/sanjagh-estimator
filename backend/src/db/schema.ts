@@ -10,7 +10,6 @@ const createTables = async (): Promise<void> => {
       CREATE TABLE IF NOT EXISTS projects (
         id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id       UUID NOT NULL,
-        title         VARCHAR(255) NOT NULL,
         customer_name VARCHAR(255),
         created_at    TIMESTAMP DEFAULT NOW(),
         updated_at    TIMESTAMP DEFAULT NOW()
@@ -79,6 +78,17 @@ const createTables = async (): Promise<void> => {
         theme      VARCHAR(20) NOT NULL DEFAULT 'simple',
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS drafts (
+        id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id       UUID NOT NULL UNIQUE,
+        customer_name VARCHAR(255),
+        rooms         JSONB DEFAULT '[]',
+        created_at    TIMESTAMP DEFAULT NOW(),
+        updated_at    TIMESTAMP DEFAULT NOW()
       );
     `);
 

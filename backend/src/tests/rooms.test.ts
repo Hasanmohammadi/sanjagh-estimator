@@ -3,11 +3,6 @@ import request from "supertest";
 import app from "../app";
 import { NON_EXISTENT_UUID } from "./setup";
 
-const createProject = async () => {
-  const res = await request(app).post("/projects").send({ title: "پروژه تست" });
-  return res.body.data;
-};
-
 const validRoom = {
   type: "bedroom",
   width: 4,
@@ -18,48 +13,60 @@ const validRoom = {
   ceiling_enabled: false,
 };
 
-describe("Rooms API", () => {
-  describe("POST /projects/:project_id/rooms", () => {
+describe("Draft Rooms API", () => {
+  describe("POST /draft/rooms", () => {
     it("should create a room successfully", async () => {
-      const project = await createProject();
-
-      const res = await request(app).post(`/projects/${project.id}/rooms`).send(validRoom);
+      const res = await request(app).post("/draft/rooms").send(validRoom);
 
       expect(res.status).toBe(201);
       expect(res.body.status).toBe("success");
+
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.id).toBeDefined();
       expect(res.body.data.type).toBe("bedroom");
-      expect(res.body.data.project_id).toBe(project.id);
+      expect(Number(res.body.data.width)).toBe(4);
+      expect(Number(res.body.data.length)).toBe(5);
     });
 
-    it("should fail if project does not exist", async () => {
-      const res = await request(app).post(`/projects/${NON_EXISTENT_UUID}/rooms`).send(validRoom);
+    it("should automatically create draft when first room is added", async () => {
+      const roomRes = await request(app).post("/draft/rooms").send(validRoom);
 
-      expect(res.status).toBe(404);
-      expect(res.body.status).toBe("error");
+      expect(roomRes.status).toBe(201);
+
+      const draftRes = await request(app).get("/draft");
+
+      expect(draftRes.status).toBe(200);
+      expect(draftRes.body.status).toBe("success");
+      expect(draftRes.body.data).toBeDefined();
+
+      expect(draftRes.body.data.rooms).toHaveLength(1);
+      expect(draftRes.body.data.rooms[0].id).toBe(roomRes.body.data.id);
     });
 
     it("should fail if required fields are missing", async () => {
-      const project = await createProject();
-      const res = await request(app).post(`/projects/${project.id}/rooms`).send({ type: "bedroom" });
+      const res = await request(app).post("/draft/rooms").send({
+        type: "bedroom",
+      });
 
       expect(res.status).toBe(400);
       expect(res.body.status).toBe("error");
     });
 
-    it("should fail if ceiling_enabled but ceiling_paint_type missing", async () => {
-      const project = await createProject();
+    it("should fail if ceiling is enabled without paint type", async () => {
       const res = await request(app)
-        .post(`/projects/${project.id}/rooms`)
-        .send({ ...validRoom, ceiling_enabled: true });
+        .post("/draft/rooms")
+        .send({
+          ...validRoom,
+          ceiling_enabled: true,
+        });
 
       expect(res.status).toBe(400);
       expect(res.body.status).toBe("error");
     });
 
     it("should create room with ceiling successfully", async () => {
-      const project = await createProject();
       const res = await request(app)
-        .post(`/projects/${project.id}/rooms`)
+        .post("/draft/rooms")
         .send({
           ...validRoom,
           ceiling_enabled: true,
@@ -68,48 +75,111 @@ describe("Rooms API", () => {
         });
 
       expect(res.status).toBe(201);
+      expect(res.body.status).toBe("success");
       expect(res.body.data.ceiling_enabled).toBe(true);
+      expect(res.body.data.ceiling_paint_type).toBe("plastic");
+      expect(res.body.data.ceiling_coats).toBe(2);
     });
   });
 
-  describe("PUT /projects/:project_id/rooms/:room_id", () => {
-    it("should update room successfully", async () => {
-      const project = await createProject();
-      const created = await request(app).post(`/projects/${project.id}/rooms`).send(validRoom);
+  describe("GET /draft/rooms", () => {
+    it("should return all draft rooms", async () => {
+      await request(app).post("/draft/rooms").send(validRoom);
 
-      const roomId = created.body.data.id;
-      const res = await request(app)
-        .put(`/projects/${project.id}/rooms/${roomId}`)
-        .send({ ...validRoom, width: 6 });
+      await request(app)
+        .post("/draft/rooms")
+        .send({
+          ...validRoom,
+          type: "living_room",
+        });
+
+      const res = await request(app).get("/draft/rooms");
 
       expect(res.status).toBe(200);
+      expect(res.body.status).toBe("success");
+
+      expect(res.body.data).toHaveLength(2);
+      expect(res.body.data[0].type).toBe("bedroom");
+      expect(res.body.data[1].type).toBe("living_room");
+    });
+
+    it("should return empty array when draft does not exist", async () => {
+      const res = await request(app).get("/draft/rooms");
+
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("success");
+      expect(res.body.data).toEqual([]);
+    });
+  });
+
+  describe("PATCH /draft/rooms/:roomId", () => {
+    it("should update room successfully", async () => {
+      const created = await request(app).post("/draft/rooms").send(validRoom);
+
+      const roomId = created.body.data.id;
+
+      const res = await request(app).patch(`/draft/rooms/${roomId}`).send({
+        width: 6,
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("success");
       expect(Number(res.body.data.width)).toBe(6);
+      expect(res.body.data.id).toBe(roomId);
     });
 
     it("should return 404 for non-existent room", async () => {
-      const project = await createProject();
-      const res = await request(app).put(`/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`).send(validRoom);
+      const res = await request(app).patch(`/draft/rooms/${NON_EXISTENT_UUID}`).send({
+        width: 6,
+      });
 
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");
     });
-  });
 
-  describe("DELETE /projects/:project_id/rooms/:room_id", () => {
-    it("should delete room successfully", async () => {
-      const project = await createProject();
-      const created = await request(app).post(`/projects/${project.id}/rooms`).send(validRoom);
+    it("should update only provided fields", async () => {
+      const created = await request(app).post("/draft/rooms").send(validRoom);
 
       const roomId = created.body.data.id;
-      const res = await request(app).delete(`/projects/${project.id}/rooms/${roomId}`);
+
+      const res = await request(app).patch(`/draft/rooms/${roomId}`).send({
+        width: 7,
+      });
+
+      expect(res.status).toBe(200);
+      expect(Number(res.body.data.width)).toBe(7);
+      expect(Number(res.body.data.length)).toBe(5);
+      expect(res.body.data.type).toBe("bedroom");
+    });
+  });
+
+  describe("DELETE /draft/rooms/:roomId", () => {
+    it("should delete room successfully", async () => {
+      const created = await request(app).post("/draft/rooms").send(validRoom);
+
+      const roomId = created.body.data.id;
+
+      const res = await request(app).delete(`/draft/rooms/${roomId}`);
 
       expect(res.status).toBe(200);
       expect(res.body.status).toBe("success");
     });
 
+    it("should remove room from draft", async () => {
+      const created = await request(app).post("/draft/rooms").send(validRoom);
+
+      const roomId = created.body.data.id;
+
+      await request(app).delete(`/draft/rooms/${roomId}`);
+
+      const roomsRes = await request(app).get("/draft/rooms");
+
+      expect(roomsRes.status).toBe(200);
+      expect(roomsRes.body.data).toHaveLength(0);
+    });
+
     it("should return 404 for non-existent room", async () => {
-      const project = await createProject();
-      const res = await request(app).delete(`/projects/${project.id}/rooms/${NON_EXISTENT_UUID}`);
+      const res = await request(app).delete(`/draft/rooms/${NON_EXISTENT_UUID}`);
 
       expect(res.status).toBe(404);
       expect(res.body.status).toBe("error");

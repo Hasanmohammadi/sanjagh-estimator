@@ -1,17 +1,12 @@
 import { SettingsIcon } from "@/assets/icons";
 import { TomanCounter } from "@/components/common";
 import { Card } from "@skul/sanjagh-design-system/src/Design_Card";
-import Switch from "@skul/sanjagh-design-system/src/Design_Switch";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Link } from "react-router-dom";
 import type { EstimateFormValues } from "../schema";
 
-interface Props {
-  projectId: string;
-}
-
-export default function PaintSummary({ projectId }: Props) {
+export default function PaintSummary() {
   const { control, setValue } = useFormContext<EstimateFormValues>();
 
   const paints = useWatch({
@@ -53,7 +48,7 @@ export default function PaintSummary({ projectId }: Props) {
       <div className="mb-1 flex items-center justify-between">
         <DesignTitle sizeVariant="ThirdTitle" text="نمایش جزییات رنگ ها" titleVariant="Body" color="BlackMain" />
 
-        <Controller
+        {/* <Controller
           name="visibility.materials"
           control={control}
           render={({ field }) => (
@@ -65,7 +60,7 @@ export default function PaintSummary({ projectId }: Props) {
               onCheckedChange={field.onChange}
             />
           )}
-        />
+        /> */}
       </div>
 
       {visibilityMaterials && (
@@ -81,10 +76,7 @@ export default function PaintSummary({ projectId }: Props) {
             <div className="mb-1 flex items-center justify-between">
               <DesignTitle sizeVariant="ThirdTitle" text="جزییات مصالح و لوازم" titleVariant="Body" color="BlackMain" />
 
-              <Link
-                to={`/settings/price-config?callback=/estimation-results?projectId=${projectId}`}
-                className="flex gap-2"
-              >
+              <Link to={`/settings/price-config?callback=/estimation-results`} className="flex gap-2">
                 <DesignTitle sizeVariant="Subtitle" text="قیمت رنگ من" titleVariant="Body" color="BlueMain" />
 
                 <SettingsIcon color="#3F93F3" />

@@ -16,10 +16,10 @@ import { useShareImage } from "@/hooks/useShareImage";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import blueColorBrush from "@/assets/pic/theme/light/blueColorBrush.png";
-import orangeColorBrushWithBrush from "@/assets/pic/theme/light/orangeColorBrushWithBrush.png";
+import orangeColorBrushWithBrush from "@/assets/pic/theme/light/orangeColorBrushWithBrush.webp";
 import paintBucket from "@/assets/pic/theme/light/paintBucket.png";
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
-import { useDuplicateProject } from "@/hooks/projects/useDuplicateProject";
+import { useCopyProjectToDraft } from "@/hooks/draft/useCopyProjectToDraft";
 
 interface StatItemProps {
   icon: React.ReactNode;
@@ -110,9 +110,10 @@ export default function LightTheme({ data }: Props) {
   const projectId = searchParams.get("projectId") as string;
 
   const navigate = useNavigate();
-  const { mutate: duplicateProject } = useDuplicateProject({
-    onSuccess: project => {
-      navigate(`/create-projects?projectId=${project?.id}`);
+
+  const { mutate: copyProjectToDraftAction } = useCopyProjectToDraft({
+    onSuccess: () => {
+      navigate(`/create-projects`);
     },
   });
 
@@ -351,9 +352,7 @@ export default function LightTheme({ data }: Props) {
           heightVariant="MDButton"
           widthVariant="AutoWidthButton"
           extraClassName="w-full"
-          onClick={() => {
-            duplicateProject(projectId);
-          }}
+          onClick={() => copyProjectToDraftAction(projectId)}
           disabled={isSharing}
         />
         <Button

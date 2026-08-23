@@ -3,7 +3,6 @@ import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { Spinner } from "@/components/common";
 import { useNavigate } from "react-router-dom";
 import { useProjects } from "@/hooks/projects/useProjects";
-import { useCreateProject } from "@/hooks/projects/useCreateProject";
 import { formatJalaliDate } from "@/utils/date";
 import { Card } from "@skul/sanjagh-design-system/src/Design_Card";
 
@@ -11,11 +10,6 @@ export default function Projects() {
   const navigate = useNavigate();
 
   const { data: projects, isPending } = useProjects();
-  const { mutate: createProject } = useCreateProject({
-    onSuccess: project => {
-      navigate(`/create-projects?projectId=${project?.id}`);
-    },
-  });
 
   return (
     <div className="flex flex-col">
@@ -25,9 +19,7 @@ export default function Projects() {
           contentVariant={{ TAG: "Text", value: "ایجاد پروژه ی جدید" }}
           heightVariant="MDButton"
           widthVariant="FixedWidthButton"
-          onClick={() => {
-            createProject({ title: `پروژه ناقص است` });
-          }}
+          onClick={() => navigate(`/create-projects`)}
         />
       </div>
 

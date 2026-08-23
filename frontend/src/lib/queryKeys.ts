@@ -12,4 +12,10 @@ export const queryKeys = {
   calculate: (projectId: string) => ["projects", projectId, "calculate"] as const,
 
   priceConfig: ["price-config"] as const,
+
+  draft: ["draft"] as const,
+
+  draftRooms: ["draft", "rooms"] as const,
+
+  draftCalculate: ["draft", "calculate"] as const,
 };

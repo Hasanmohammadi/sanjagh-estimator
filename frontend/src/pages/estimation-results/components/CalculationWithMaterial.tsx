@@ -1,6 +1,5 @@
 import { PriceSlider } from "@/components/common";
 import { Card } from "@skul/sanjagh-design-system/src/Design_Card";
-import Switch from "@skul/sanjagh-design-system/src/Design_Switch";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useState, useEffect, useRef } from "react";
@@ -12,6 +11,16 @@ export default function CalculationWithMaterial() {
   const totalCost = useWatch({
     control,
     name: "totalCost",
+  });
+
+  const minTotalPrice = useWatch({
+    control,
+    name: "minTotalPrice",
+  });
+
+  const maxTotalPrice = useWatch({
+    control,
+    name: "maxTotalPrice",
   });
 
   const finalCostVisibility = useWatch({
@@ -35,9 +44,6 @@ export default function CalculationWithMaterial() {
     setValue("totalCost", value);
   };
 
-  const min = materialBasedTotalCost != null ? materialBasedTotalCost * 0.8 : 0;
-  const max = materialBasedTotalCost != null ? materialBasedTotalCost * 1.2 : 100;
-
   return (
     <Card extraClassName="border-2 border-design-gray-200" shadow="NoShadow" variant="SM">
       <div className="flex items-center justify-between">
@@ -46,7 +52,7 @@ export default function CalculationWithMaterial() {
           <DesignTitle sizeVariant="Body" text="شامل قیمت رنگ و موارد مصرفی" titleVariant="Body" color="Gray600" />
         </div>
 
-        <Switch
+        {/* <Switch
           className="text-design-blue-1"
           label="نمایش"
           size="LG"
@@ -54,16 +60,16 @@ export default function CalculationWithMaterial() {
           onCheckedChange={checked => {
             setValue("visibility.final_cost", checked);
           }}
-        />
+        /> */}
       </div>
       {finalCostVisibility && (
         <>
           {materialBasedTotalCost != null && (
             <Card extraClassName="mt-3 border-2 border-design-gray-200" shadow="NoShadow" variant="SM">
               <PriceSlider
-                min={Math.ceil(min)}
-                max={Math.ceil(max)}
-                step={1}
+                min={minTotalPrice}
+                max={maxTotalPrice}
+                step={0.5}
                 value={totalCost ?? materialBasedTotalCost}
                 onValueChange={handleSliderChange}
               />

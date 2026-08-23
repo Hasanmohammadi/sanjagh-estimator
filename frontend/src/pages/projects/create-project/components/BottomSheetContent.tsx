@@ -1,19 +1,17 @@
 import { Controller, useFormContext, useWatch, type SubmitHandler } from "react-hook-form";
 
-import { ButtonList, HLine, TomanCounter } from "@/components/common";
+import { ButtonList, HLine, Switch, TomanCounter } from "@/components/common";
 
 import { Button } from "@skul/sanjagh-design-system/src/Design_Button";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
-import Switch from "@skul/sanjagh-design-system/src/Design_Switch";
-import { useCreateRoom } from "@/hooks/rooms/useCreateRoom";
-import { useSearchParams } from "react-router-dom";
+import { useCreateDraftRoom } from "@/hooks/draft-rooms/useCreateDraftRoom";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
-import { useUpdateRoom } from "@/hooks/rooms/useUpdateRoom";
+import { useUpdateDraftRoom } from "@/hooks/draft-rooms/useUpdateDraftRoom";
 import type { RoomFormData } from "../schema";
 import { PAINT_TYPES, ROOM_TYPES } from "../constants";
 import { useEffect } from "react";
-import { PaintType } from "@/api/services/rooms";
+import { PaintType } from "@/api/services/draft-rooms";
 
 const ErrorMessage = ({ message }: { message?: string }) => {
   if (!message) return null;
@@ -37,15 +35,11 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
 
   const ceilingEnabled = form.watch("ceilingEnabled");
 
-  const [searchParams] = useSearchParams();
-  const projectId = searchParams.get("projectId") as string;
-
-  const { mutate: createRoom } = useCreateRoom({
-    projectId,
+  const { mutate: createRoom } = useCreateDraftRoom({
     onSuccess: () => {
       closeSheet();
       queryClient.invalidateQueries({
-        queryKey: queryKeys.project(projectId),
+        queryKey: queryKeys.draft,
       });
     },
   });
@@ -59,17 +53,16 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
       wall_paint_type: data.wallPaintType,
       wall_coats: data.wallCoats,
       ceiling_enabled: data.ceilingEnabled,
-      ceiling_paint_type: data.ceilingPaintType,
-      ceiling_coats: data.ceilingCoats,
+      ...(data.ceilingEnabled && { ceiling_paint_type: data.ceilingPaintType }),
+      ...(data.ceilingEnabled && { ceiling_coats: data.ceilingCoats }),
     });
   };
 
-  const { mutate: updateRoom } = useUpdateRoom({
-    projectId,
+  const { mutate: updateRoom } = useUpdateDraftRoom({
     onSuccess: () => {
       closeSheet();
       queryClient.invalidateQueries({
-        queryKey: queryKeys.project(projectId),
+        queryKey: queryKeys.draft,
       });
     },
   });
@@ -245,13 +238,13 @@ export default function BottomSheetContent({ closeSheet, bottomSheetState, roomS
       <HLine />
 
       {/* Roof Color Switch */}
-      <div className="border-2 border-design-gray-200 rounded-lg flex justify-between px-4 py-3">
+      <div className="border-2 border-design-gray-200 rounded-lg flex justify-between px-4 py-3 items-center">
         <DesignTitle sizeVariant="SecondTitle" text="رنگ سقف" titleVariant="Body" />
 
         <Controller
           name="ceilingEnabled"
           control={form.control}
-          render={({ field }) => <Switch label=" " size="LG" checked={field.value} onCheckedChange={field.onChange} />}
+          render={({ field }) => <Switch label=" " checked={field.value} onCheckedChange={field.onChange} />}
         />
       </div>
       <ErrorMessage message={form.formState.errors.ceilingEnabled?.message} />

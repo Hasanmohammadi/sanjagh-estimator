@@ -47,7 +47,7 @@ export default function ThemeSelector() {
     </div>
   ) : (
     <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-4 justify-items-center">
         {themes.map(({ id, image, title }) => {
           const selected = selectedTheme === id;
 
@@ -56,7 +56,7 @@ export default function ThemeSelector() {
               key={id}
               type="button"
               onClick={() => setSelectedTheme(id)}
-              className={"rounded-xl p-2 shadow-design-gray-600 shadow"}
+              className="rounded-xl p-2 shadow-design-gray-600 shadow w-fit"
             >
               <div className="mb-2 flex items-center">
                 <RadioButton

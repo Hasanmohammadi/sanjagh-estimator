@@ -1,13 +1,12 @@
 import { PricingForm } from "./PricingForm";
-import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 
 export default function PriceConfig() {
   // const [configType, setConfigType] = useState<"sanjagh" | "custom">("sanjagh");
   return (
     <>
-      <div className="mr-5 my-2">
+      {/* <div className="mr-5 my-2">
         <DesignTitle sizeVariant="ThirdTitle" text="نحوه تعیین قیمت" titleVariant="ThirdHeader" color="BlackMain" />
-      </div>
+      </div> */}
 
       {/* <RadioButton
         checked={configType === "sanjagh"}

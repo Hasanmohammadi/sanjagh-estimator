@@ -1,4 +1,4 @@
-import { PaintType, RoomType } from "@/api/services/rooms";
+import { PaintType, RoomType } from "@/api/services/draft-rooms";
 import * as yup from "yup";
 
 export const roomSchema = yup.object({

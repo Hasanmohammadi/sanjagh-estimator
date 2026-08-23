@@ -1,7 +1,6 @@
 import { Card } from "@skul/sanjagh-design-system/src/Design_Card";
-import Switch from "@skul/sanjagh-design-system/src/Design_Switch";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
-import { Controller, useFormContext, useWatch } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import type { EstimateFormValues } from "../schema";
 
 export default function PaintArea() {
@@ -24,7 +23,7 @@ export default function PaintArea() {
           <div className="flex items-center justify-between">
             <DesignTitle sizeVariant="ThirdTitle" text="متر رنگ آمیزی" titleVariant="Body" color="BlackMain" />
 
-            <Controller
+            {/* <Controller
               name="visibility.paint_area"
               control={control}
               render={({ field }) => (
@@ -36,12 +35,13 @@ export default function PaintArea() {
                   onCheckedChange={field.onChange}
                 />
               )}
-            />
+            /> */}
           </div>
 
           {isPaintAreaVisible && (
             <>
-              <div className="mt-2 flex items-center justify-end gap-7">
+              <div className="mt-2 flex items-center justify-center gap-7">
+                <div className="w-1/4" />
                 <span className="text-4xl font-bold">{Math.ceil(meterage || 0)}</span>
                 <DesignTitle sizeVariant="ThirdTitle" text="متر مربع" titleVariant="Body" color="BlackMain" />
               </div>

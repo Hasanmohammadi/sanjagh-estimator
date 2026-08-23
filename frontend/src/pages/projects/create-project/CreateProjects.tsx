@@ -5,13 +5,13 @@ import EmptyState from "./components/EmptyState";
 import BottomSheetContent from "./components/BottomSheetContent";
 import RoomCard from "./components/RoomCard";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useProject } from "@/hooks/projects/useProject";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { roomSchema } from "./schema";
-import { PaintType, RoomType } from "@/api/services/rooms";
+import { PaintType, RoomType } from "@/api/services/draft-rooms";
 import { usePriceConfig } from "@/hooks/price-config/usePriceConfig";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
+import { useDraft } from "@/hooks/draft/useDraft";
 
 export default function CreateProjects() {
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -23,7 +23,7 @@ export default function CreateProjects() {
 
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get("projectId") as string;
-  const { data: projectData } = useProject(projectId);
+  const { data: draftData } = useDraft();
   const { data: configData } = usePriceConfig();
 
   const form = useForm({
@@ -57,9 +57,9 @@ export default function CreateProjects() {
           setBottomSheetOpen(true);
         }}
       />
-      {projectData?.rooms?.length ? (
+      {draftData?.rooms?.length ? (
         <div className="flex flex-col gap-3 mt-3.5">
-          {projectData.rooms.map(room => (
+          {draftData.rooms.map(room => (
             <RoomCard
               key={room.id}
               room={room}
@@ -95,7 +95,7 @@ export default function CreateProjects() {
           />
         </BottomSheet>
       </FormProvider>
-      {!!projectData?.rooms?.length && !!configData ? (
+      {!!draftData?.rooms?.length && !!configData ? (
         <Link
           to={`/estimation-results?projectId=${projectId}`}
           className="fixed bottom-0 py-2 left-0 right-0 px-4 bg-white z-1 border border-white"
@@ -115,6 +115,7 @@ export default function CreateProjects() {
             heightVariant="LGButton"
             widthVariant="FixedWidthButton"
             onClick={() => setPriceConfigNotice(true)}
+            disabled={!draftData?.rooms?.length}
           />
         </div>
       )}

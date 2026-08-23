@@ -1,7 +1,7 @@
-import { PaintTypeDic, RoomTypeDic, type Room } from "@/api/services/rooms";
+import { PaintTypeDic, RoomTypeDic, type Room } from "@/api/services/draft-rooms";
 import { EditIcon, RemoveIcon } from "@/assets/icons";
 import { ConfirmModal } from "@/components/common";
-import { useDeleteRoom } from "@/hooks/rooms/useDeleteRoom";
+import { useDeleteDraftRoom } from "@/hooks/draft-rooms/useDeleteDraftRoom";
 import { queryKeys } from "@/lib/queryKeys";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function RoomCard({
-  room: { height, length, type, wall_paint_type, width, ceiling_paint_type, id, project_id },
+  room: { height, length, type, wall_paint_type, width, ceiling_paint_type, id },
   onEdit,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,11 +21,10 @@ export default function RoomCard({
 
   const queryClient = useQueryClient();
 
-  const { mutate: deleteRoom } = useDeleteRoom({
-    projectId: project_id,
+  const { mutate: deleteDraftRoom } = useDeleteDraftRoom({
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.project(project_id),
+        queryKey: queryKeys.draft,
       });
     },
   });
@@ -50,6 +49,12 @@ export default function RoomCard({
         </div>
       </div>
       <div className="flex justify-between items-center mt-3">
+        <DesignTitle
+          sizeVariant="Subtitle"
+          text={`دیوار: ${PaintTypeDic[wall_paint_type]}`}
+          titleVariant="Body"
+          color="Gray500"
+        />
         {!!ceiling_paint_type && (
           <DesignTitle
             sizeVariant="Subtitle"
@@ -58,12 +63,6 @@ export default function RoomCard({
             color="Gray500"
           />
         )}
-        <DesignTitle
-          sizeVariant="Subtitle"
-          text={`دیوار: ${PaintTypeDic[wall_paint_type]}`}
-          titleVariant="Body"
-          color="Gray500"
-        />
         <div className="flex gap-1 ">
           <DesignTitle
             sizeVariant="Subtitle"
@@ -92,7 +91,7 @@ export default function RoomCard({
         title="حذف برآورد"
         onConfirm={() => {
           if (selectedRoomId) {
-            deleteRoom(selectedRoomId);
+            deleteDraftRoom(selectedRoomId);
           }
         }}
         description={

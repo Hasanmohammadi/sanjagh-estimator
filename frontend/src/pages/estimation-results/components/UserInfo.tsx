@@ -4,8 +4,13 @@ import { TextArea } from "@skul/sanjagh-design-system/src/Design_TextArea";
 import DesignTitle from "@skul/sanjagh-design-system/src/Design_Title";
 import { Controller, useFormContext } from "react-hook-form";
 import type { EstimateFormValues } from "../schema";
+import type { RefObject } from "react";
 
-export default function UserInfo() {
+interface UserInfoProps {
+  customerNameRef: RefObject<HTMLInputElement | null>;
+}
+
+export default function UserInfo({ customerNameRef }: UserInfoProps) {
   const {
     control,
     formState: { errors },
@@ -16,6 +21,7 @@ export default function UserInfo() {
       children={
         <>
           <DesignTitle sizeVariant="ThirdTitle" text="اطلاعات مشتری" titleVariant="Body" color="BlackMain" />
+
           <DesignTitle sizeVariant="SmallBody" text="نام مشتری" titleVariant="Body" color="BlackMain" />
 
           <Controller
@@ -28,6 +34,7 @@ export default function UserInfo() {
                 onTextChanged={field.onChange}
                 value={field.value}
                 className="mt-2 border border-design-gray-200"
+                ref={customerNameRef}
               />
             )}
           />

@@ -1,19 +1,12 @@
 import { Router, Request, Response } from "express";
 import { asyncHandler, sendSuccess } from "../utils/apiResponse";
-import { validate } from "../middlewares/validate";
-import { createProjectSchema } from "../validators/project.validator";
 import { projectService } from "../services/project.service";
 
-const router = Router();
+interface ProjectParams {
+  id: string;
+}
 
-router.post(
-  "/",
-  validate(createProjectSchema),
-  asyncHandler(async (req: Request, res: Response) => {
-    const project = await projectService.create(req.body, req.user!.id);
-    sendSuccess(res, project, 201);
-  }),
-);
+const router = Router();
 
 router.get(
   "/",
@@ -22,10 +15,6 @@ router.get(
     sendSuccess(res, projects);
   }),
 );
-
-interface ProjectParams {
-  id: string;
-}
 
 router.get(
   "/:id",
@@ -40,14 +29,6 @@ router.delete(
   asyncHandler<ProjectParams>(async (req, res) => {
     await projectService.delete(req.params.id, req.user!.id);
     sendSuccess(res, { message: "Project deleted successfully" });
-  }),
-);
-
-router.post(
-  "/:id/duplicate",
-  asyncHandler<ProjectParams>(async (req, res) => {
-    const project = await projectService.duplicate(req.params.id, req.user!.id);
-    sendSuccess(res, project, 201);
   }),
 );
 

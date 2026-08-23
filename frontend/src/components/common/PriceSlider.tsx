@@ -167,7 +167,7 @@ export function PriceSlider({
         <div
           ref={trackRef}
           onPointerDown={handleTrackPointerDown}
-          className="relative flex h-8 cursor-pointer items-center touch-none select-none"
+          className="w-[89%] relative flex h-8 cursor-pointer items-center touch-none select-none justify-self-center"
         >
           <div className="h-0.5 w-full rounded-full bg-border bg-design-black-1" />
 
@@ -184,7 +184,7 @@ export function PriceSlider({
             tabIndex={0}
             onPointerDown={handleHandlePointerDown}
             onKeyDown={handleKeyDown}
-            style={{ left: value === max ? `calc(${percent}% - 50px)` : `calc(${percent}% - 12px)` }}
+            style={{ left: `calc(${percent}% - 28px)` }}
             className="absolute flex h-7.5 bg-design-white w-14 items-center justify-evenly rounded-full border border-design-gray-400 outline-none transition-shadow hover:shadow focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ChevronRightIcon />

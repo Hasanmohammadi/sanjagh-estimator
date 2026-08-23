@@ -1,4 +1,4 @@
-import { PaintType, PaintTypeDic, RoomType, RoomTypeDic } from "@/api/services/rooms";
+import { PaintType, PaintTypeDic, RoomType, RoomTypeDic } from "@/api/services/draft-rooms";
 
 export const ROOM_TYPES = [
   { title: RoomTypeDic.bedroom, value: RoomType.Bedroom },
