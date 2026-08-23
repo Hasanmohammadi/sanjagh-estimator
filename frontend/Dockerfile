@@ -2,22 +2,22 @@
 FROM node:22-alpine AS builder
 
 WORKDIR /app
-
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-COPY frontend/package.json ./frontend/
-COPY backend/package.json ./backend/
-
+COPY package.json pnpm-lock.yaml ./
 RUN corepack enable && pnpm install --frozen-lockfile
-
 COPY . .
+RUN pnpm build
 
-RUN pnpm run frontend:build && ls -la /app
+FROM node:22-alpine
 
-# Production stage
-FROM nginx:alpine
 
-COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+WORKDIR /app
+RUN corepack enable
+ENV NODE_ENV=production
+ENV HUSKY=0
+COPY package.json pnpm-lock.yaml ./
+RUN HUSKY=0 pnpm install --frozen-lockfile --prod --ignore-scripts
+COPY --from=builder /app/dist ./dist
 
-EXPOSE 80
+EXPOSE 3001
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "dist/index.js"]

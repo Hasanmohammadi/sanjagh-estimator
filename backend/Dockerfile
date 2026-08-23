@@ -2,42 +2,20 @@
 # مرحله ۱: Build
 # ==========================================
 FROM node:22-alpine AS builder
-
 WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && pnpm install --frozen-lockfile
+COPY . .
+RUN pnpm build
 
-# نصب pnpm
-RUN npm install -g pnpm@10.12.1
-
-# فایل‌های اصلی monorepo
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-
-# package.json ورک‌اسپیس‌ها
-COPY backend/package.json ./backend/package.json
-COPY frontend/package.json ./frontend/package.json
-
-# نصب dependencyها
-RUN pnpm install --frozen-lockfile --ignore-scripts
-
-# سورس Backend
-COPY backend ./backend
-
-# Build TypeScript
-RUN pnpm --filter ./backend exec tsc
-
-# ساخت production dependency tree
-RUN pnpm --filter ./backend deploy --prod /app/deploy/backend
-
-
-# ==========================================
-# مرحله ۲: Production
-# ==========================================
 FROM node:22-alpine
-
 WORKDIR /app
 
-# فقط Backend production را منتقل می‌کنیم
-COPY --from=builder /app/deploy/backend ./
+RUN corepack enable
+ENV NODE_ENV=production
+ENV HUSKY=0
+COPY package.json pnpm-lock.yaml ./
+RUN HUSKY=0 pnpm install --frozen-lockfile --prod --ignore-scripts
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 3001
-
-CMD ["node", "dist/index.js"]
